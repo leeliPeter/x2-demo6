@@ -1,10 +1,2 @@
-譚利楊 
-Tam
-Lei Ieong
-Male
-國籍: 澳門 Macau
-MB0069919
-1995/06/01
-大學
-0916632505
-lei23lei91@gmail.com
+All data has Graph A
+Graph A has Community L1, L2, L3

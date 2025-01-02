@@ -38,7 +38,7 @@ export function Sidebar({ className }: SidebarProps) {
               X2.alpha
             </p>
           </div>
-          <div className="flex flex-col space-y-2 mt-4">
+          <div className="flex flex-col  mt-4">
             {links.map((link) => (
               <Link href={link.href} key={link.href}>
                 <div
@@ -58,8 +58,8 @@ export function Sidebar({ className }: SidebarProps) {
           </div>
         </div>
         <div className="user-icon p-3 flex items-center justify-center  border-t-2 border-border">
-          <div className="bg-orange-500 text-background rounded-lg p-2">
-            <UsersRound className="h-8 w-8" />
+          <div className="bg-orange-500 text-background rounded-lg p-3">
+            <UsersRound className="h-5 w-5" />
           </div>
         </div>
       </div>
