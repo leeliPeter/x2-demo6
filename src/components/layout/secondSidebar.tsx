@@ -48,6 +48,28 @@ const navItems: NavItem[] = [
           },
         ],
       },
+      {
+        title: "Graph B",
+        icon: <Waypoints size={16} />,
+        href: "/graph-b",
+        children: [
+          {
+            title: "Community L1",
+            href: "/graph-b/l1",
+            icon: <CircleDotDashed size={16} />,
+          },
+          {
+            title: "Community L2",
+            href: "/graph-b/l2",
+            icon: <CircleDotDashed size={16} />,
+          },
+          {
+            title: "Community L3",
+            href: "/graph-b/l3",
+            icon: <CircleDotDashed size={16} />,
+          },
+        ],
+      },
     ],
   },
 ];
