@@ -20,11 +20,14 @@ export const filterSlice = createSlice({
     ) => {
       state.selectedFilters[action.payload.label] = action.payload.value;
     },
+    clearFilter: (state, action: PayloadAction<string>) => {
+      delete state.selectedFilters[action.payload];
+    },
     clearFilters: (state) => {
       state.selectedFilters = {};
     },
   },
 });
 
-export const { setFilter, clearFilters } = filterSlice.actions;
+export const { setFilter, clearFilter, clearFilters } = filterSlice.actions;
 export default filterSlice.reducer;
