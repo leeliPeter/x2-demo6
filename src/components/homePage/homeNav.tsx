@@ -14,7 +14,11 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { FilterBar } from "./filterBar";
 
-export default function HomeNav() {
+interface HomeNavProps {
+  onViewChange: (view: string) => void;
+}
+
+export default function HomeNav({ onViewChange }: HomeNavProps) {
   const [activeView, setActiveView] = useState("graph");
   const [showFilter, setShowFilter] = useState(false);
   const byBtn = [
@@ -30,8 +34,13 @@ export default function HomeNav() {
     },
   ];
 
+  const handleViewChange = (value: string) => {
+    setActiveView(value);
+    onViewChange(value);
+  };
+
   return (
-    <div className="flex flex-col bg-sidebar  ">
+    <div className="flex flex-col bg-sidebar">
       <div className="flex items-center w-full p-1 px-3 gap-4 rounded-md">
         <div className="flex gap-1 p-1 rounded-md bg-border">
           {byBtn.map((btn) => (
@@ -42,7 +51,7 @@ export default function HomeNav() {
               className={`flex items-center gap-1 text-sm ${
                 activeView === btn.value ? "bg-white" : ""
               }`}
-              onClick={() => setActiveView(btn.value)}
+              onClick={() => handleViewChange(btn.value)}
             >
               {btn.icon}
               {btn.label}

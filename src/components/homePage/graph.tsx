@@ -1,16 +1,13 @@
 "use client";
 
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+interface GraphProps {
+  selectedPath: string[];
+  selectedFilters: {
+    [key: string]: string;
+  };
+}
 
-export default function Graph() {
-  const selectedPath = useSelector(
-    (state: RootState) => state.navigation.selectedPath
-  );
-  const selectedFilters = useSelector(
-    (state: RootState) => state.filter.selectedFilters
-  );
-
+export default function Graph({ selectedPath, selectedFilters }: GraphProps) {
   return (
     <div className="w-full h-full p-6">
       <div className="flex flex-col gap-4">
