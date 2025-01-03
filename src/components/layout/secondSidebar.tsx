@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { navItems } from "@/data/navData";
+import { useDispatch } from "react-redux";
+import { setPath } from "@/redux/features/navigationSlice";
 
 interface NavItem {
   title: string;
@@ -33,7 +35,16 @@ export function SecondSidebar({
   isOpen = true,
   className,
 }: SecondSidebarProps) {
+  const dispatch = useDispatch();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  const handleItemClick = (item: NavItem, parentTitles: string[] = []) => {
+    const newPath = [...parentTitles, item.title];
+    dispatch(setPath(newPath));
+    if (item.children) {
+      toggleItem(item.title);
+    }
+  };
 
   const toggleItem = (title: string) => {
     setExpandedItems((current) =>
@@ -43,10 +54,14 @@ export function SecondSidebar({
     );
   };
 
-  const renderNavItem = (item: NavItem, depth = 0) => (
+  const renderNavItem = (
+    item: NavItem,
+    depth = 0,
+    parentTitles: string[] = []
+  ) => (
     <div key={item.title} className="space-y-1">
       <button
-        onClick={() => item.children && toggleItem(item.title)}
+        onClick={() => handleItemClick(item, parentTitles)}
         className={cn(
           "w-full flex items-center justify-between px-3 py-2 text-sm rounded-md",
           "hover:bg-gray-100 transition-colors",
@@ -70,7 +85,9 @@ export function SecondSidebar({
       {item.children && expandedItems.includes(item.title) && (
         <div className={cn("relative space-y-1", depth > 0 ? "ml-9" : "ml-6")}>
           <div className="absolute left-[-16px] top-0 bottom-0 w-px bg-gray-200" />
-          {item.children.map((child) => renderNavItem(child, depth + 1))}
+          {item.children.map((child) =>
+            renderNavItem(child, depth + 1, [...parentTitles, item.title])
+          )}
         </div>
       )}
     </div>
