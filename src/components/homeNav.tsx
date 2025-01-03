@@ -46,20 +46,20 @@ function FilterBar() {
   ];
 
   return (
-    <div className="flex items-center gap-4 w-[1000px] p-2 pl-3 border-t-2 border-border mt-1 overflow-x-auto">
+    <div className="flex items-center gap-4 w-full p-2 pl-3 border-t-2 border-border mt-1 overflow-x-auto">
       {filter.map((item) => (
         <div
           key={item.label}
-          className="flex flex-col items-start text-xs gap-2 flex-shrink-0"
+          className="flex flex-col items-start text-xs gap-2 flex-1"
         >
           <p>{item.label}</p>
-          <div className="relative">
+          <div className="relative w-full">
             <Select>
-              <SelectTrigger className="h-[37px] pl-8 text-xs w-[350px] bg-background min-w-[180px]">
+              <SelectTrigger className="h-[37px] pl-8 text-xs bg-background w-full min-w-[180px]">
                 <CircleChevronDown className="h-4 w-4 absolute left-2 top-[10px]" />
                 <SelectValue placeholder="Select.." />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="w-full min-w-[180px]">
                 {item.value.map((option) => (
                   <SelectItem key={option} value={option}>
                     {option}
