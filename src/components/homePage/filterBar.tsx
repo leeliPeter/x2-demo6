@@ -8,33 +8,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CircleChevronDown } from "lucide-react";
+import { filter } from "@/data/filterData";
+import { useDispatch, useSelector } from "react-redux";
+import { setFilter } from "@/redux/features/filterSlice";
+import { RootState } from "@/redux/store";
 
 export function FilterBar() {
-  const filter = [
-    {
-      label: "Level",
-      value: ["Level 0", "Level 1", "Level 2", "Level 3"],
-    },
-    {
-      label: "Type",
-      value: ["Inbound", "Outbound"],
-    },
-    {
-      label: "Community Size",
-      value: ["Small", "Medium", "Large"],
-    },
-    {
-      label: "Source",
-      value: ["Source 0", "Source 1", "Source 2", "Source 3"],
-    },
-    {
-      label: "Status",
-      value: ["Active", "Inactive"],
-    },
-  ];
+  const dispatch = useDispatch();
+  const selectedFilters = useSelector(
+    (state: RootState) => state.filter.selectedFilters
+  );
+
+  const handleFilterChange = (label: string, value: string) => {
+    dispatch(setFilter({ label, value }));
+  };
 
   return (
-    <div className="flex items-center gap-4 w-full p-3  border-t-2 border-border mt-1 overflow-x-auto">
+    <div className="flex items-center gap-4 w-full p-3 border-t-2 border-border mt-1 overflow-x-auto">
       {filter.map((item) => (
         <div
           key={item.label}
@@ -42,7 +32,10 @@ export function FilterBar() {
         >
           <p>{item.label}</p>
           <div className="relative w-full">
-            <Select>
+            <Select
+              value={selectedFilters[item.label]}
+              onValueChange={(value) => handleFilterChange(item.label, value)}
+            >
               <SelectTrigger className="h-[37px] pl-8 text-xs bg-background w-full min-w-[180px]">
                 <CircleChevronDown className="h-4 w-4 absolute left-2 top-[10px]" />
                 <SelectValue placeholder="Select.." />
