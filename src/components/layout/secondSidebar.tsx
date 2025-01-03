@@ -8,11 +8,11 @@ import {
   CircleDotDashed,
 } from "lucide-react";
 import { useState } from "react";
+import { navItems } from "@/data/navData";
 
 interface NavItem {
   title: string;
   icon?: React.ReactNode;
-  href?: string;
   children?: NavItem[];
 }
 
@@ -21,58 +21,13 @@ interface SecondSidebarProps {
   className?: string;
 }
 
-const navItems: NavItem[] = [
-  {
-    title: "All Data",
-    icon: <Database size={16} />,
-    children: [
-      {
-        title: "Graph A",
-        icon: <Waypoints size={16} />,
-        href: "/graph-a",
-        children: [
-          {
-            title: "Community L1",
-            href: "/graph-a/l1",
-            icon: <CircleDotDashed size={16} />,
-          },
-          {
-            title: "Community L2",
-            href: "/graph-a/l2",
-            icon: <CircleDotDashed size={16} />,
-          },
-          {
-            title: "Community L3",
-            href: "/graph-a/l3",
-            icon: <CircleDotDashed size={16} />,
-          },
-        ],
-      },
-      {
-        title: "Graph B",
-        icon: <Waypoints size={16} />,
-        href: "/graph-b",
-        children: [
-          {
-            title: "Community L1",
-            href: "/graph-b/l1",
-            icon: <CircleDotDashed size={16} />,
-          },
-          {
-            title: "Community L2",
-            href: "/graph-b/l2",
-            icon: <CircleDotDashed size={16} />,
-          },
-          {
-            title: "Community L3",
-            href: "/graph-b/l3",
-            icon: <CircleDotDashed size={16} />,
-          },
-        ],
-      },
-    ],
-  },
-];
+// Function to get icon based on item title and depth
+const getIcon = (title: string, depth: number) => {
+  if (title === "All Data") return <Database size={16} />;
+  if (title.startsWith("Graph")) return <Waypoints size={16} />;
+  if (title.startsWith("Community")) return <CircleDotDashed size={16} />;
+  return null;
+};
 
 export function SecondSidebar({
   isOpen = true,
@@ -99,7 +54,7 @@ export function SecondSidebar({
         )}
       >
         <div className="flex items-center gap-2">
-          {item.icon}
+          {getIcon(item.title, depth)}
           <span>{item.title}</span>
         </div>
         {item.children && (
