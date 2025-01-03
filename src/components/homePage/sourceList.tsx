@@ -20,6 +20,13 @@ interface SourceListProps {
   };
 }
 
+interface NavItem {
+  title: string;
+  size?: string;
+  date?: string;
+  children?: NavItem[];
+}
+
 export default function SourceList({
   selectedPath,
   selectedFilters,
@@ -42,7 +49,7 @@ export default function SourceList({
     return currentItems;
   };
 
-  const handleRowClick = (item: { title: string; children?: any[] }) => {
+  const handleRowClick = (item: NavItem) => {
     if (item.children) {
       const newPath = [...selectedPath, item.title];
       dispatch(setPath(newPath));

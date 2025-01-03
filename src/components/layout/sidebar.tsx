@@ -2,15 +2,14 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import {
-  GlobeIcon,
   GalleryVerticalEnd,
-  FileIcon,
   Database,
   LayoutGrid,
   UsersRound,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
-interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+type SidebarProps = React.HTMLAttributes<HTMLDivElement>;
 
 export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();

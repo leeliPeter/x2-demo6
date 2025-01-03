@@ -1,7 +1,6 @@
 "use client";
 
-import { ChevronRight, Home, PanelLeft } from "lucide-react";
-import Link from "next/link";
+import { ChevronRight, PanelLeft } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { Button } from "@/components/ui/button";

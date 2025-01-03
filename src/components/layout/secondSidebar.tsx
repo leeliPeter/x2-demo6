@@ -23,8 +23,8 @@ interface SecondSidebarProps {
   className?: string;
 }
 
-// Function to get icon based on item title and depth
-const getIcon = (title: string, depth: number) => {
+// Function to get icon based on item title
+const getIcon = (title: string) => {
   if (title === "All Data") return <Database size={16} />;
   if (title.startsWith("Graph")) return <Waypoints size={16} />;
   if (title.startsWith("Community")) return <CircleDotDashed size={16} />;
@@ -69,7 +69,7 @@ export function SecondSidebar({
         )}
       >
         <div className="flex items-center gap-2">
-          {getIcon(item.title, depth)}
+          {getIcon(item.title)}
           <span>{item.title}</span>
         </div>
         {item.children && (
@@ -83,8 +83,8 @@ export function SecondSidebar({
         )}
       </button>
       {item.children && expandedItems.includes(item.title) && (
-        <div className={cn("relative space-y-1", depth > 0 ? "ml-9" : "ml-6")}>
-          <div className="absolute left-[-16px] top-0 bottom-0 w-px bg-gray-200" />
+        <div className={cn("relative space-y-1", depth > 0 ? "ml-3" : "ml-3")}>
+          <div className="absolute left-[-10px] top-0 bottom-0 w-px bg-gray-200" />
           {item.children.map((child) =>
             renderNavItem(child, depth + 1, [...parentTitles, item.title])
           )}
