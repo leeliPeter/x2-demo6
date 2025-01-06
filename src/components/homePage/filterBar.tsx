@@ -60,7 +60,7 @@ export function FilterBar() {
               value={selectedFilters[item.label]}
               onValueChange={handleFilterChange.bind(null, item.label)}
             >
-              <SelectTrigger className="h-[37px] pl-8 text-xs bg-background w-full min-w-[180px]">
+              <SelectTrigger className="h-[37px] pl-8 text-xs bg-background w-full min-w-[100px]">
                 <CircleChevronDown className="h-4 w-4 absolute left-2 top-[10px]" />
                 <SelectValue placeholder="Select.." />
               </SelectTrigger>
