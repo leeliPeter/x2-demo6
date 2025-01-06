@@ -25,6 +25,14 @@ export default function Graph() {
   const graphRef = useRef<any>(null);
   const [hoverNode, setHoverNode] = useState<HoverNode | null>(null);
 
+  const getScreenCoordinates = (x: number, y: number) => {
+    if (!graphRef.current) return { x: 0, y: 0 };
+
+    // Convert graph coordinates to screen coordinates
+    const screenPos = graphRef.current.graph2ScreenCoords(x, y);
+    return screenPos;
+  };
+
   useEffect(() => {
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -79,9 +87,10 @@ export default function Graph() {
               height={dimensions.height}
               onNodeHover={(node: any) => {
                 if (node) {
+                  const { x, y } = getScreenCoordinates(node.x, node.y);
                   setHoverNode({
-                    x: node.x,
-                    y: node.y,
+                    x,
+                    y,
                     icon: node.icon,
                     level: node.level,
                     description: node.description,
@@ -110,11 +119,11 @@ export default function Graph() {
             />
             {hoverNode && (
               <div
-                className="absolute bg-white p-4 rounded-lg shadow-lg flex max-w-80 gap-4  transition-all duration-200"
+                className="absolute bg-white p-4 rounded-lg shadow-lg flex max-w-80 gap-4 transition-all duration-200"
                 style={{
-                  left: `${hoverNode.x + 800}px`,
-                  top: `${hoverNode.y + 320}px`,
-                  transform: "translateX(-50%)",
+                  left: `${hoverNode.x}px`,
+                  top: `${hoverNode.y + 20}px`,
+                  transform: "translate(-50%, 0)",
                   zIndex: 10,
                 }}
               >
