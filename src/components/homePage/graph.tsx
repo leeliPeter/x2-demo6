@@ -3,7 +3,22 @@
 import React, { useRef, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { graphData } from "@/data/graphData";
-import { CircleDotDashed, FolderUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CircleDotDashed, FolderUp, X } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetClose,
+} from "@/components/ui/sheet";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
   ssr: false,
@@ -19,11 +34,19 @@ interface HoverNode {
   date?: string;
 }
 
+interface SelectedNode extends HoverNode {
+  label: string;
+  communityName: string;
+  citedDocuments: string;
+  communityReport: string;
+}
+
 export default function Graph() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const graphRef = useRef<any>(null);
   const [hoverNode, setHoverNode] = useState<HoverNode | null>(null);
+  const [selectedNode, setSelectedNode] = useState<SelectedNode | null>(null);
 
   const getScreenCoordinates = (x: number, y: number) => {
     if (!graphRef.current) return { x: 0, y: 0 };
@@ -85,6 +108,20 @@ export default function Graph() {
               backgroundColor="#ffffff"
               width={dimensions.width}
               height={dimensions.height}
+              onNodeClick={(node: any) => {
+                setSelectedNode({
+                  x: node.x,
+                  y: node.y,
+                  icon: node.icon,
+                  level: node.level,
+                  description: node.description,
+                  date: node.date,
+                  label: node.label,
+                  communityName: node.communityName,
+                  citedDocuments: node.citedDocuments,
+                  communityReport: node.communityReport,
+                });
+              }}
               onNodeHover={(node: any) => {
                 if (node) {
                   const { x, y } = getScreenCoordinates(node.x, node.y);
@@ -144,6 +181,53 @@ export default function Graph() {
                 </div>
               </div>
             )}
+
+            <Sheet
+              open={!!selectedNode}
+              onOpenChange={() => setSelectedNode(null)}
+            >
+              <SheetContent className="w-[400px]  sm:w-[540px]">
+                <SheetHeader>
+                  <SheetTitle className="flex items-center gap-2 ">
+                    {selectedNode?.level}
+                  </SheetTitle>
+                  <SheetDescription className="flex flex-col w-full gap-4">
+                    {selectedNode?.description}
+                    <Button variant="primary">Expand detail</Button>
+                    <Accordion
+                      type="single"
+                      collapsible
+                      className="w-full mt-5 text-foreground"
+                    >
+                      <AccordionItem value="community-name">
+                        <AccordionTrigger className="text-base">
+                          Community Name
+                        </AccordionTrigger>
+                        <AccordionContent className="text-sm">
+                          {selectedNode?.communityName}
+                        </AccordionContent>
+                      </AccordionItem>
+                      <AccordionItem value="community-report">
+                        <AccordionTrigger className="text-base">
+                          Community Report
+                        </AccordionTrigger>
+                        <AccordionContent className="text-sm">
+                          {selectedNode?.communityReport}
+                        </AccordionContent>
+                      </AccordionItem>
+                      <AccordionItem value="cited-documents">
+                        <AccordionTrigger className="text-base">
+                          Cited Documents
+                        </AccordionTrigger>
+                        <AccordionContent className="text-sm">
+                          {selectedNode?.citedDocuments}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </SheetDescription>
+                </SheetHeader>
+              </SheetContent>
+            </Sheet>
           </>
         )}
       </div>

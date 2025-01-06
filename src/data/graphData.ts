@@ -5,7 +5,8 @@ export const graphData = {
       label: "Social Sources",
       icon: "CircleDotDashed",
       level: "Community L2",
-      description: "This is a description of the Social Sources node",
+      description:
+        "This is a description of the Social Sources node, it is a node that is used to represent the social sources of a community",
       communityName: "Yes. it adheres to the WAI-ARIA design pattern",
       citedDocuments: "It is cited from the following documents",
       communityReport: "This is a community report",
@@ -17,7 +18,8 @@ export const graphData = {
       label: "News Sources",
       icon: "CircleDotDashed",
       level: "Community L2",
-      description: "This is a description of the News Sources node",
+      description:
+        "This is a description of the News Sources node, it is a node that is used to represent the news sources of a community",
       communityName: "Yes. it adheres to the WAI-ARIA design pattern",
       citedDocuments: "It is cited from the following documents",
       communityReport: "This is a community report",
@@ -29,7 +31,8 @@ export const graphData = {
       label: "Blog Sources",
       icon: "CircleDotDashed",
       level: "Community L2",
-      description: "This is a description of the Blog Sources node",
+      description:
+        "This is a description of the Blog Sources node, it is a node that is used to represent the blog sources of a community",
       communityName: "Yes. it adheres to the WAI-ARIA design pattern",
       citedDocuments: "It is cited from the following documents",
       communityReport: "This is a community report",
@@ -41,7 +44,8 @@ export const graphData = {
       label: "Forum Sources",
       icon: "CircleDotDashed",
       level: "Community L2",
-      description: "This is a description of the Forum Sources node",
+      description:
+        "This is a description of the Forum Sources node, it is a node that is used to represent the forum sources of a community",
       communityName: "Yes. it adheres to the WAI-ARIA design pattern",
       citedDocuments: "It is cited from the following documents",
       communityReport: "This is a community report",
@@ -53,7 +57,8 @@ export const graphData = {
       label: "Social Sources",
       icon: "CircleDotDashed",
       level: "Community L2",
-      description: "This is a description of the Social Sources node",
+      description:
+        "This is a description of the Social Sources node, it is a node that is used to represent the social sources of a community",
       communityName: "Yes. it adheres to the WAI-ARIA design pattern",
       citedDocuments: "It is cited from the following documents",
       communityReport: "This is a community report",
@@ -65,7 +70,8 @@ export const graphData = {
       label: "Social Sources",
       icon: "CircleDotDashed",
       level: "Community L2",
-      description: "This is a description of the Social Sources node",
+      description:
+        "This is a description of the Social Sources node, it is a node that is used to represent the social sources of a community",
       communityName: "Yes. it adheres to the WAI-ARIA design pattern",
       citedDocuments: "It is cited from the following documents",
       communityReport: "This is a community report",
@@ -76,7 +82,8 @@ export const graphData = {
       label: "Social Sources",
       icon: "CircleDotDashed",
       level: "Community L2",
-      description: "This is a description of the Social Sources node",
+      description:
+        "This is a description of the Social Sources node, it is a node that is used to represent the social sources of a community",
       communityName: "Yes. it adheres to the WAI-ARIA design pattern",
       citedDocuments: "It is cited from the following documents",
       communityReport: "This is a community report",
@@ -88,7 +95,8 @@ export const graphData = {
       label: "Social Sources",
       icon: "CircleDotDashed",
       level: "Community L2",
-      description: "This is a description of the Social Sources node",
+      description:
+        "This is a description of the Social Sources node, it is a node that is used to represent the social sources of a community",
       communityName: "Yes. it adheres to the WAI-ARIA design pattern",
       citedDocuments: "It is cited from the following documents",
       communityReport: "This is a community report",
@@ -100,7 +108,8 @@ export const graphData = {
       label: "Social Sources",
       icon: "CircleDotDashed",
       level: "Community L2",
-      description: "This is a description of the Social Sources node",
+      description:
+        "This is a description of the Social Sources node, it is a node that is used to represent the social sources of a community",
       communityName: "Yes. it adheres to the WAI-ARIA design pattern",
       citedDocuments: "It is cited from the following documents",
       communityReport: "This is a community report",
@@ -112,7 +121,8 @@ export const graphData = {
       label: "Social Sources",
       icon: "CircleDotDashed",
       level: "Community L2",
-      description: "This is a description of the Social Sources node",
+      description:
+        "This is a description of the Social Sources node, it is a node that is used to represent the social sources of a community",
       communityName: "Yes. it adheres to the WAI-ARIA design pattern",
       citedDocuments: "It is cited from the following documents",
       communityReport: "This is a community report",
