@@ -22,8 +22,8 @@ export default function HomePage() {
       <div className="flex-1">
         {currentView === "graph" ? (
           <Graph
-          // selectedPath={selectedPath}
-          // selectedFilters={selectedFilters}
+            selectedPath={selectedPath}
+            // selectedFilters={selectedFilters}
           />
         ) : (
           <SourceList

@@ -3,22 +3,10 @@
 import React, { useRef, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { graphData } from "@/data/graphData";
-import { Button } from "@/components/ui/button";
-import { CircleDotDashed, FolderUp, X } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-  SheetClose,
-} from "@/components/ui/sheet";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { CircleDotDashed, FolderUp, Settings2, ArrowLeft } from "lucide-react";
+import { NodeSheet } from "./sheet";
+import { useDispatch } from "react-redux";
+import { setPath } from "@/redux/features/navigationSlice";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
   ssr: false,
@@ -41,7 +29,12 @@ interface SelectedNode extends HoverNode {
   communityReport: string;
 }
 
-export default function Graph() {
+interface GraphProps {
+  selectedPath: string[];
+}
+
+export default function Graph({ selectedPath }: GraphProps) {
+  const dispatch = useDispatch();
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const graphRef = useRef<any>(null);
@@ -91,11 +84,44 @@ export default function Graph() {
     });
   };
 
+  const handleBackClick = () => {
+    if (selectedPath.length > 1) {
+      const newPath = selectedPath.slice(0, -1);
+      dispatch(setPath(newPath));
+    }
+  };
+
   return (
     <div
       ref={containerRef}
       className="flex-1 w-full h-full relative overflow-hidden"
     >
+      <div className="absolute items-center w-full top-4 left-1/2 -translate-x-1/2 z-20">
+        <div className="flex items-center w-full px-6 justify-between text-xl font-semibold text-foreground">
+          {selectedPath.length > 1 ? (
+            <button
+              onClick={handleBackClick}
+              className="flex items-center gap-1 text-sm hover:text-primary transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </button>
+          ) : (
+            <div />
+          )}
+
+          {selectedPath.length > 0 ? (
+            <span className="underline">
+              {selectedPath[selectedPath.length - 1]}
+            </span>
+          ) : (
+            <span className="text-gray-400">No path selected</span>
+          )}
+
+          <Settings2 className="w-4 h-4" />
+        </div>
+      </div>
+
       <div className="absolute inset-0">
         {dimensions.width > 0 && dimensions.height > 0 && (
           <>
@@ -164,7 +190,7 @@ export default function Graph() {
                   zIndex: 10,
                 }}
               >
-                <CircleDotDashed className="w-10 h-10" />
+                <CircleDotDashed className="min-w-8 min-h-8 " />
                 <div className="flex flex-col items-start gap-1.5">
                   <span className="font-semibold text-sm leading-5">
                     {hoverNode.level}
@@ -181,53 +207,11 @@ export default function Graph() {
                 </div>
               </div>
             )}
-
-            <Sheet
-              open={!!selectedNode}
-              onOpenChange={() => setSelectedNode(null)}
-            >
-              <SheetContent className="w-[400px]  sm:w-[540px]">
-                <SheetHeader>
-                  <SheetTitle className="flex items-center gap-2 ">
-                    {selectedNode?.level}
-                  </SheetTitle>
-                  <SheetDescription className="flex flex-col w-full gap-4">
-                    {selectedNode?.description}
-                    <Button variant="primary">Expand detail</Button>
-                    <Accordion
-                      type="single"
-                      collapsible
-                      className="w-full mt-5 text-foreground"
-                    >
-                      <AccordionItem value="community-name">
-                        <AccordionTrigger className="text-base">
-                          Community Name
-                        </AccordionTrigger>
-                        <AccordionContent className="text-sm">
-                          {selectedNode?.communityName}
-                        </AccordionContent>
-                      </AccordionItem>
-                      <AccordionItem value="community-report">
-                        <AccordionTrigger className="text-base">
-                          Community Report
-                        </AccordionTrigger>
-                        <AccordionContent className="text-sm">
-                          {selectedNode?.communityReport}
-                        </AccordionContent>
-                      </AccordionItem>
-                      <AccordionItem value="cited-documents">
-                        <AccordionTrigger className="text-base">
-                          Cited Documents
-                        </AccordionTrigger>
-                        <AccordionContent className="text-sm">
-                          {selectedNode?.citedDocuments}
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </SheetDescription>
-                </SheetHeader>
-              </SheetContent>
-            </Sheet>
+            <NodeSheet
+              isOpen={!!selectedNode}
+              onClose={() => setSelectedNode(null)}
+              selectedNode={selectedNode}
+            />
           </>
         )}
       </div>
