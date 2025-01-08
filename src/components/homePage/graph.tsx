@@ -133,18 +133,23 @@ export default function Graph({ selectedPath }: GraphProps) {
         ...node,
         label: node.title,
         communityTitle: currentCommunity.title,
-        communityPeriod: currentCommunity.period,
+        period: currentCommunity.period,
         citedDocuments: currentCommunity.citedDocuments,
         communityReport: currentCommunity.communityReport,
       }));
 
-      // Filter links to only include connections between visible nodes
       const nodeIds = new Set(nodes.map((node) => node.id));
-      const filteredLinks = links.filter(
-        (link) => nodeIds.has(link.source) && nodeIds.has(link.target)
-      );
+      const filteredLinks = links
+        .map((link) => ({
+          source: link.source,
+          target: link.target,
+        }))
+        .filter((link) => nodeIds.has(link.source) && nodeIds.has(link.target));
 
-      setGraphData2D({ nodes, links: filteredLinks });
+      setGraphData2D({
+        nodes: [...nodes],
+        links: filteredLinks,
+      });
     }
   }, [selectedPath]);
 
@@ -236,6 +241,19 @@ export default function Graph({ selectedPath }: GraphProps) {
                 ctx.fillStyle = "#4b5563";
                 ctx.fillText(label, node.x, node.y + 8);
               }}
+              linkDirectionalParticles={0}
+              linkDirectionalParticleSpeed={0.005}
+              d3AlphaDecay={0.02}
+              d3VelocityDecay={0.3}
+              warmupTicks={100}
+              cooldownTicks={Infinity}
+              onEngineStop={() => {}}
+              // onEngineStopDefault={() => {
+
+              //   if (graphRef.current && graphData2D.nodes.length > 0) {
+              //     graphRef.current.zoomToFit(400, 100);
+              //   }
+              // }}
             />
             {hoverNode && (
               <div
