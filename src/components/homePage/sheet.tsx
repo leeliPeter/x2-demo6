@@ -24,6 +24,7 @@ interface NodeSheetProps {
     communityName: string;
     communityReport: string;
     citedDocuments: string;
+    title: string;
   } | null;
 }
 
@@ -38,7 +39,7 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
       >
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
-            {selectedNode.level}
+            {selectedNode.title} - Level {selectedNode.level}
           </SheetTitle>
           <div className="flex flex-col w-full gap-4">
             <p className="text-sm text-muted-foreground">

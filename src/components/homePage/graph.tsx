@@ -7,6 +7,15 @@ import { CircleDotDashed, FolderUp, Settings2, ArrowLeft } from "lucide-react";
 import { NodeSheet } from "./sheet";
 import { useDispatch } from "react-redux";
 import { setPath } from "@/redux/features/navigationSlice";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Switch } from "@/components/ui/switch";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
   ssr: false,
@@ -24,6 +33,7 @@ interface HoverNode {
 
 interface SelectedNode extends HoverNode {
   label: string;
+  title: string;
   communityName: string;
   citedDocuments: string;
   communityReport: string;
@@ -49,6 +59,29 @@ export default function Graph({ selectedPath }: GraphProps) {
     nodes: [],
     links: [],
   });
+  const [switchStates, setSwitchStates] = useState({
+    Titles: true,
+    Relations: true,
+    Preview: true,
+  });
+
+  const dropDownMenuItems = [
+    {
+      title: "Titles",
+      description:
+        "Show or hide the titles on the nodes for easier identification.",
+    },
+    {
+      title: "Relations",
+      description:
+        "Display or hide the connections between nodes to visualize relationships.",
+    },
+    {
+      title: "Preview",
+      description:
+        "Enable or disable a hover preview of the node's content on the graph.",
+    },
+  ];
 
   const getScreenCoordinates = (x: number, y: number) => {
     if (!graphRef.current) return { x: 0, y: 0 };
@@ -250,11 +283,11 @@ export default function Graph({ selectedPath }: GraphProps) {
       className="flex-1 w-full h-full relative overflow-hidden"
     >
       <div className="absolute items-center w-full top-4 left-1/2 -translate-x-1/2 z-20">
-        <div className="flex items-center w-full px-6 justify-between text-xl font-semibold text-foreground">
+        <div className="flex items-start w-full px-6 justify-between text-xl font-semibold text-foreground">
           {selectedPath.length > 1 ? (
             <button
               onClick={handleBackClick}
-              className="flex items-center gap-1 text-sm hover:text-primary transition-colors"
+              className="flex items-center gap-1 text-sm hover:text-primary transition-colors hover:bg-border p-1 px-2 rounded-md cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4" />
               Back
@@ -271,7 +304,44 @@ export default function Graph({ selectedPath }: GraphProps) {
             <span className="text-gray-400">No path selected</span>
           )}
 
-          <Settings2 className="w-4 h-4" />
+          <DropdownMenu>
+            <DropdownMenuTrigger className="hover:bg-border p-2 rounded-md cursor-pointer outline-none">
+              <Settings2 className="w-4 h-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="">
+              <DropdownMenuLabel>Graph Appearance</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {dropDownMenuItems.map((item) => (
+                <DropdownMenuItem
+                  key={item.title}
+                  onSelect={(e) => {
+                    e.preventDefault();
+                  }}
+                  className="hover:bg-transparent focus:bg-transparent"
+                >
+                  <div className="flex gap-4">
+                    <div className="flex flex-col">
+                      <div className="text-xs font-semibold">{item.title}</div>
+                      <div className="text-xs text-muted-foreground w-32">
+                        {item.description}
+                      </div>
+                    </div>
+                    <Switch
+                      checked={
+                        switchStates[item.title as keyof typeof switchStates]
+                      }
+                      onCheckedChange={(checked) => {
+                        setSwitchStates((prev) => ({
+                          ...prev,
+                          [item.title]: checked,
+                        }));
+                      }}
+                    />
+                  </div>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -298,6 +368,7 @@ export default function Graph({ selectedPath }: GraphProps) {
                     description: node.description,
                     period: node.period,
                     label: node.label,
+                    title: node.title,
                     communityName: node.communityTitle,
                     citedDocuments: node.citedDocuments,
                     communityReport: node.communityReport,
@@ -337,13 +408,19 @@ export default function Graph({ selectedPath }: GraphProps) {
                 ctx.fillStyle = "#4b5563";
                 ctx.fillText(label, node.x, node.y + 8);
               }}
-              linkDirectionalParticles={0}
-              linkDirectionalParticleSpeed={0.005}
+              linkDirectionalParticles={2}
+              linkDirectionalParticleWidth={2}
+              linkDirectionalParticleSpeed={0.01}
+              linkDirectionalParticleColor={() => "#94a3b8"}
               d3AlphaDecay={0.02}
               d3VelocityDecay={0.3}
               warmupTicks={100}
               cooldownTicks={Infinity}
               onEngineStop={() => {}}
+              linkDirectionalArrowLength={3.5}
+              linkDirectionalArrowRelPos={1}
+              linkDirectionalArrowColor={() => "#94a3b8"}
+              linkWidth={1}
             />
             {hoverNode && (
               <div

@@ -59,7 +59,7 @@ export const graphData: GraphData = {
           period: "2024-10-01",
           size: 100,
           citedDocuments: [],
-          communityReport: "This is a community report",
+          communityReport: "This is a community report for Graph A",
           nodes: [
             {
               id: "a-1-1",
@@ -418,7 +418,7 @@ export const graphData: GraphData = {
           period: "2024-10-01",
           size: 100,
           citedDocuments: [],
-          communityReport: "This is a community report",
+          communityReport: "This is a community report for community 0",
           nodes: [
             {
               id: "b-1-1",
