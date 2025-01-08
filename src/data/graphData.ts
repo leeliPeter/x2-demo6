@@ -33,6 +33,7 @@ export interface Graph {
   id: string;
   title: string;
   icon?: string;
+  color?: string;
   communities: Community[];
 }
 
@@ -49,6 +50,7 @@ export const graphData: GraphData = {
     {
       id: "0001",
       title: "Graph A",
+      color: "#62BEB3",
       communities: [
         {
           id: "001",
@@ -404,8 +406,60 @@ export const graphData: GraphData = {
         },
       ],
     },
+    {
+      id: "0002",
+      title: "Graph B",
+      color: "#F472B6",
+      communities: [
+        {
+          id: "b-001",
+          title: "Community 0",
+          level: 0,
+          period: "2024-10-01",
+          size: 100,
+          citedDocuments: [],
+          communityReport: "This is a community report",
+          nodes: [
+            {
+              id: "b-1-1",
+              title: "Node B",
+              icon: "CircleDotDashed",
+              level: 0,
+              description: "This is a description of the node",
+              color: "#F472B6",
+              type: "equipment",
+            },
+            {
+              id: "b-1-2",
+              title: "Node B",
+              icon: "CircleDotDashed",
+              level: 0,
+              description: "This is a description of the node",
+              color: "#F472B6",
+              type: "equipment",
+            },
+          ],
+        },
+      ],
+    },
   ],
 };
+
+export const companyNode = {
+  id: "company-futurenest",
+  title: "FutureNest",
+  icon: "CircleDotDashed",
+  level: 0,
+  type: "company",
+  description: "Company root node",
+  color: "#1F2B7B",
+  label: "FutureNest",
+};
+
+export const companyLinks = [
+  { source: "company-futurenest", target: "0001" },
+  { source: "company-futurenest", target: "0002" },
+];
 
 export const links = [
   { source: "a-1-1", target: "a-1-2" },
@@ -451,4 +505,5 @@ export const links = [
   { source: "a-3-1", target: "a-2-8" },
   { source: "a-3-3", target: "a-2-9" },
   { source: "a-3-3", target: "a-3-3" },
+  { source: "b-1-1", target: "b-1-2" },
 ];

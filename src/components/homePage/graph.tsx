@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { graphData, links } from "@/data/graphData";
+import { graphData, links, companyNode, companyLinks } from "@/data/graphData";
 import { CircleDotDashed, FolderUp, Settings2, ArrowLeft } from "lucide-react";
 import { NodeSheet } from "./sheet";
 import { useDispatch } from "react-redux";
@@ -103,20 +103,22 @@ export default function Graph({ selectedPath }: GraphProps) {
   const findCurrentCommunity = (path: string[]) => {
     if (path.length === 0) return null;
 
-    // Skip "All Data" instead of company name
-    if (path[0] === "All Data") {
-      path = path.slice(1);
+    // Don't slice the path when it's "All Data"
+    let searchPath = path;
+    if (searchPath[0] === "All Data" && searchPath.length > 1) {
+      searchPath = searchPath.slice(1);
     }
 
     // Find the graph
-    const targetGraph = graphData.graphs.find((g) => g.title === path[0]);
-    if (!targetGraph || path.length === 1) return targetGraph?.communities[0];
+    const targetGraph = graphData.graphs.find((g) => g.title === searchPath[0]);
+    if (!targetGraph || searchPath.length === 1)
+      return targetGraph?.communities[0];
 
     // Find the community
     let community = targetGraph.communities[0];
-    for (let i = 1; i < path.length; i++) {
+    for (let i = 1; i < searchPath.length; i++) {
       const nextCommunity = community.children?.find(
-        (c) => c.title === path[i]
+        (c) => c.title === searchPath[i]
       );
       if (nextCommunity) {
         community = nextCommunity;
@@ -126,10 +128,98 @@ export default function Graph({ selectedPath }: GraphProps) {
     return community;
   };
 
+  // Add this helper function to get all nodes from current and lower levels
+  const getNodesForCommunity = (community: any, currentLevel: number) => {
+    let allNodes: any[] = [];
+
+    // Only include nodes if they're at current level or below
+    allNodes = [
+      ...allNodes,
+      ...community.nodes.filter((node: any) => node.level >= currentLevel),
+    ];
+
+    // Recursively get nodes from child communities
+    if (community.children) {
+      community.children.forEach((childCommunity: any) => {
+        allNodes = [...allNodes, ...childCommunity.nodes];
+
+        // Get nodes from level 2 if they exist
+        if (childCommunity.children) {
+          childCommunity.children.forEach((grandChild: any) => {
+            allNodes = [...allNodes, ...grandChild.nodes];
+          });
+        }
+      });
+    }
+
+    return allNodes;
+  };
+
   useEffect(() => {
+    // Only show company and graphs view when explicitly on "All Data"
+    if (selectedPath.length === 1 && selectedPath[0] === "All Data") {
+      // Show company and its graphs
+      const graphNodes = graphData.graphs.map((graph) => ({
+        id: graph.id,
+        title: graph.title,
+        icon: "CircleDotDashed",
+        level: 0,
+        type: "graph",
+        description: `Graph ${graph.title}`,
+        color: graph.color || "#94a3b8",
+        label: graph.title,
+      }));
+
+      // Create proper links by mapping the companyLinks
+      const mappedLinks = companyLinks.map((link) => ({
+        source: link.source,
+        target: link.target,
+      }));
+
+      setGraphData2D({
+        nodes: [companyNode, ...graphNodes],
+        links: mappedLinks, // Use the mapped links
+      });
+      return;
+    }
+
+    // Handle graph-level view (when at All Data > Graph X)
+    if (selectedPath.length === 2 && selectedPath[0] === "All Data") {
+      const selectedGraph = graphData.graphs.find(
+        (graph) => graph.title === selectedPath[1]
+      );
+
+      if (selectedGraph) {
+        const graphNode = {
+          id: selectedGraph.id,
+          title: selectedGraph.title,
+          icon: "CircleDotDashed",
+          level: 0,
+          type: "graph",
+          description: `Graph ${selectedGraph.title}`,
+          color: selectedGraph.color || "#94a3b8",
+          label: selectedGraph.title,
+          period: selectedGraph.communities[0]?.period,
+        };
+
+        setGraphData2D({
+          nodes: [graphNode],
+          links: [],
+        });
+        return;
+      }
+    }
+
+    // Handle community view
     const currentCommunity = findCurrentCommunity(selectedPath);
     if (currentCommunity) {
-      const nodes = currentCommunity.nodes.map((node) => ({
+      // Get all relevant nodes based on current level
+      const allNodes = getNodesForCommunity(
+        currentCommunity,
+        currentCommunity.level
+      );
+
+      const nodes = allNodes.map((node) => ({
         ...node,
         label: node.title,
         communityTitle: currentCommunity.title,
@@ -138,6 +228,7 @@ export default function Graph({ selectedPath }: GraphProps) {
         communityReport: currentCommunity.communityReport,
       }));
 
+      // Filter links to only include connections between visible nodes
       const nodeIds = new Set(nodes.map((node) => node.id));
       const filteredLinks = links
         .map((link) => ({
@@ -197,21 +288,25 @@ export default function Graph({ selectedPath }: GraphProps) {
               width={dimensions.width}
               height={dimensions.height}
               onNodeClick={(node: any) => {
-                setSelectedNode({
-                  x: node.x,
-                  y: node.y,
-                  icon: node.icon,
-                  level: node.level,
-                  description: node.description,
-                  period: node.period,
-                  label: node.label,
-                  communityName: node.communityTitle,
-                  citedDocuments: node.citedDocuments,
-                  communityReport: node.communityReport,
-                });
+                // Only show node sheet for community nodes
+                if (selectedPath.length > 2) {
+                  setSelectedNode({
+                    x: node.x,
+                    y: node.y,
+                    icon: node.icon,
+                    level: node.level,
+                    description: node.description,
+                    period: node.period,
+                    label: node.label,
+                    communityName: node.communityTitle,
+                    citedDocuments: node.citedDocuments,
+                    communityReport: node.communityReport,
+                  });
+                }
               }}
               onNodeHover={(node: any) => {
-                if (node) {
+                // Only show hover card for community nodes
+                if (node && selectedPath.length > 2) {
                   const { x, y } = getScreenCoordinates(node.x, node.y);
                   setHoverNode({
                     x,
@@ -228,12 +323,13 @@ export default function Graph({ selectedPath }: GraphProps) {
               nodeCanvasObject={(node: any, ctx: any, globalScale: number) => {
                 // Draw the node circle
                 ctx.beginPath();
-                ctx.arc(node.x, node.y, 5, 0, 2 * Math.PI);
+                const radius = node.type === "company" ? 8 : 5;
+                ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI);
                 ctx.fillStyle = node.color;
                 ctx.fill();
 
                 // Draw the text below the node
-                const label = node.label;
+                const label = node.label || node.title;
                 const fontSize = 12 / globalScale;
                 ctx.font = `${fontSize}px Sans-Serif`;
                 ctx.textAlign = "center";
@@ -248,12 +344,6 @@ export default function Graph({ selectedPath }: GraphProps) {
               warmupTicks={100}
               cooldownTicks={Infinity}
               onEngineStop={() => {}}
-              // onEngineStopDefault={() => {
-
-              //   if (graphRef.current && graphData2D.nodes.length > 0) {
-              //     graphRef.current.zoomToFit(400, 100);
-              //   }
-              // }}
             />
             {hoverNode && (
               <div
