@@ -2,20 +2,12 @@
 
 import React, { useRef, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { graphData } from "@/data/graphData";
+import { graphData, links } from "@/data/graphData";
 import { CircleDotDashed, FolderUp, Settings2, ArrowLeft } from "lucide-react";
 import { NodeSheet } from "./sheet";
 import { useDispatch } from "react-redux";
 import { setPath } from "@/redux/features/navigationSlice";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Switch } from "@/components/ui/switch";
+
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
   ssr: false,
   loading: () => <div className="flex-1 w-full h-full bg-gray-100" />,
@@ -27,7 +19,7 @@ interface HoverNode {
   icon: string;
   level: string;
   description: string;
-  date?: string;
+  period?: string;
 }
 
 interface SelectedNode extends HoverNode {
@@ -41,6 +33,11 @@ interface GraphProps {
   selectedPath: string[];
 }
 
+interface ForceGraphData {
+  nodes: any[];
+  links: { source: string; target: string }[];
+}
+
 export default function Graph({ selectedPath }: GraphProps) {
   const dispatch = useDispatch();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,42 +45,10 @@ export default function Graph({ selectedPath }: GraphProps) {
   const graphRef = useRef<any>(null);
   const [hoverNode, setHoverNode] = useState<HoverNode | null>(null);
   const [selectedNode, setSelectedNode] = useState<SelectedNode | null>(null);
-  const [graphSettings, setGraphSettings] = useState({
-    titles: true,
-    relations: true,
-    preview: true,
+  const [graphData2D, setGraphData2D] = useState<ForceGraphData>({
+    nodes: [],
+    links: [],
   });
-
-  const dropdownMenuItems = [
-    {
-      id: "titles",
-      title: "Titles",
-      description:
-        "Show or hide the titles on the nodes for easier identifiction.",
-      switch: graphSettings.titles,
-    },
-    {
-      id: "relations",
-      title: "Relations",
-      description:
-        "Display or hide the connections between nodes to visualize relationships.",
-      switch: graphSettings.relations,
-    },
-    {
-      id: "preview",
-      title: "Preview",
-      description:
-        "Enable or disable a hover preview of the node's content on the graph.",
-      switch: graphSettings.preview,
-    },
-  ];
-
-  const handleSettingChange = (settingId: string) => {
-    setGraphSettings((prev) => ({
-      ...prev,
-      [settingId]: !prev[settingId as keyof typeof prev],
-    }));
-  };
 
   const getScreenCoordinates = (x: number, y: number) => {
     if (!graphRef.current) return { x: 0, y: 0 };
@@ -135,17 +100,65 @@ export default function Graph({ selectedPath }: GraphProps) {
     }
   };
 
+  const findCurrentCommunity = (path: string[]) => {
+    if (path.length === 0) return null;
+
+    // Skip "All Data" instead of company name
+    if (path[0] === "All Data") {
+      path = path.slice(1);
+    }
+
+    // Find the graph
+    const targetGraph = graphData.graphs.find((g) => g.title === path[0]);
+    if (!targetGraph || path.length === 1) return targetGraph?.communities[0];
+
+    // Find the community
+    let community = targetGraph.communities[0];
+    for (let i = 1; i < path.length; i++) {
+      const nextCommunity = community.children?.find(
+        (c) => c.title === path[i]
+      );
+      if (nextCommunity) {
+        community = nextCommunity;
+      }
+    }
+
+    return community;
+  };
+
+  useEffect(() => {
+    const currentCommunity = findCurrentCommunity(selectedPath);
+    if (currentCommunity) {
+      const nodes = currentCommunity.nodes.map((node) => ({
+        ...node,
+        label: node.title,
+        communityTitle: currentCommunity.title,
+        communityPeriod: currentCommunity.period,
+        citedDocuments: currentCommunity.citedDocuments,
+        communityReport: currentCommunity.communityReport,
+      }));
+
+      // Filter links to only include connections between visible nodes
+      const nodeIds = new Set(nodes.map((node) => node.id));
+      const filteredLinks = links.filter(
+        (link) => nodeIds.has(link.source) && nodeIds.has(link.target)
+      );
+
+      setGraphData2D({ nodes, links: filteredLinks });
+    }
+  }, [selectedPath]);
+
   return (
     <div
       ref={containerRef}
       className="flex-1 w-full h-full relative overflow-hidden"
     >
       <div className="absolute items-center w-full top-4 left-1/2 -translate-x-1/2 z-20">
-        <div className="flex items-start w-full px-6 justify-between text-xl font-semibold text-foreground">
+        <div className="flex items-center w-full px-6 justify-between text-xl font-semibold text-foreground">
           {selectedPath.length > 1 ? (
             <button
               onClick={handleBackClick}
-              className="flex items-center gap-1 text-sm hover:text-primary px-3 py-1 rounded-md hover:bg-border transition-colors"
+              className="flex items-center gap-1 text-sm hover:text-primary transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               Back
@@ -162,37 +175,7 @@ export default function Graph({ selectedPath }: GraphProps) {
             <span className="text-gray-400">No path selected</span>
           )}
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="hover:bg-border rounded-md p-2">
-                <Settings2 className="w-4 h-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>Graph Appearance</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {dropdownMenuItems.map((item) => (
-                <DropdownMenuItem
-                  key={item.id}
-                  onSelect={(e) => e.preventDefault()}
-                  className="hover:bg-transparent focus:bg-transparent"
-                >
-                  <div className="flex my-2 w-full justify-between items-start">
-                    <div className="flex flex-col">
-                      <p className="text-xs font-semibold">{item.title}</p>
-                      <p className="text-xs font-normal text-muted-foreground max-w-40">
-                        {item.description}
-                      </p>
-                    </div>
-                    <Switch
-                      checked={item.switch}
-                      onCheckedChange={() => handleSettingChange(item.id)}
-                    />
-                  </div>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Settings2 className="w-4 h-4" />
         </div>
       </div>
 
@@ -201,16 +184,10 @@ export default function Graph({ selectedPath }: GraphProps) {
           <>
             <ForceGraph2D
               ref={graphRef}
-              graphData={graphData}
+              graphData={graphData2D}
               nodeLabel=""
               nodeColor={(node: any) => node.color}
               linkColor={() => "#e5e7eb"}
-              linkDirectionalArrowLength={3.5}
-              linkDirectionalArrowRelPos={1}
-              linkDirectionalParticles={2}
-              linkDirectionalParticleSpeed={0.005}
-              linkDirectionalParticleWidth={2}
-              linkDirectionalParticleColor={() => "#94a3b8"}
               backgroundColor="#ffffff"
               width={dimensions.width}
               height={dimensions.height}
@@ -221,9 +198,9 @@ export default function Graph({ selectedPath }: GraphProps) {
                   icon: node.icon,
                   level: node.level,
                   description: node.description,
-                  date: node.date,
+                  period: node.period,
                   label: node.label,
-                  communityName: node.communityName,
+                  communityName: node.communityTitle,
                   citedDocuments: node.citedDocuments,
                   communityReport: node.communityReport,
                 });
@@ -237,7 +214,7 @@ export default function Graph({ selectedPath }: GraphProps) {
                     icon: node.icon,
                     level: node.level,
                     description: node.description,
-                    date: node.date,
+                    period: node.period,
                   });
                 } else {
                   setHoverNode(null);
@@ -273,7 +250,7 @@ export default function Graph({ selectedPath }: GraphProps) {
                 <CircleDotDashed className="min-w-8 min-h-8 " />
                 <div className="flex flex-col items-start gap-1.5">
                   <span className="font-semibold text-sm leading-5">
-                    {hoverNode.level}
+                    level {hoverNode.level}
                   </span>
                   <span className="text-sm leading-5">
                     {hoverNode.description}
@@ -281,7 +258,8 @@ export default function Graph({ selectedPath }: GraphProps) {
                   <span className="text-xs text-muted-foreground leading-4 flex items-center gap-1">
                     <FolderUp className="w-4 h-4" />
                     <p>
-                      Generated @{hoverNode.date && formatDate(hoverNode.date)}
+                      Generated @
+                      {hoverNode.period && formatDate(hoverNode.period)}
                     </p>
                   </span>
                 </div>

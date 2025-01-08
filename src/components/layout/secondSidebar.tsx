@@ -8,7 +8,7 @@ import {
   CircleDotDashed,
 } from "lucide-react";
 import { useState } from "react";
-import { navItems } from "@/data/navData";
+import { graphData } from "@/data/graphData";
 import { useDispatch } from "react-redux";
 import { setPath } from "@/redux/features/navigationSlice";
 
@@ -23,12 +23,44 @@ interface SecondSidebarProps {
   className?: string;
 }
 
-// Function to get icon based on item title
-const getIcon = (title: string) => {
+// Function to get icon based on item title or type
+const getIcon = (title: string, type?: string) => {
   if (title === "All Data") return <Database size={16} />;
   if (title.startsWith("Graph")) return <Waypoints size={16} />;
   if (title.startsWith("Community")) return <CircleDotDashed size={16} />;
-  return null;
+  return <CircleDotDashed size={16} />;
+};
+
+// Function to transform graphData into navigation items
+const transformGraphDataToNav = (data: typeof graphData): NavItem[] => {
+  const navItems: NavItem[] = [
+    {
+      title: "All Data",
+      icon: <Database size={16} />,
+      children: data.graphs.map((graph) => ({
+        title: graph.title,
+        icon: <Waypoints size={16} />,
+        children: graph.communities.map((community) => ({
+          title: community.title,
+          icon: <CircleDotDashed size={16} />,
+          children: community.children
+            ? community.children.map((subCommunity) => ({
+                title: subCommunity.title,
+                icon: <CircleDotDashed size={16} />,
+                children: subCommunity.children
+                  ? subCommunity.children.map((lastCommunity) => ({
+                      title: lastCommunity.title,
+                      icon: <CircleDotDashed size={16} />,
+                    }))
+                  : undefined,
+              }))
+            : undefined,
+        })),
+      })),
+    },
+  ];
+
+  return navItems;
 };
 
 export function SecondSidebar({
@@ -37,6 +69,7 @@ export function SecondSidebar({
 }: SecondSidebarProps) {
   const dispatch = useDispatch();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const navigationItems = transformGraphDataToNav(graphData);
 
   const handleItemClick = (item: NavItem, parentTitles: string[] = []) => {
     const newPath = [...parentTitles, item.title];
@@ -69,7 +102,7 @@ export function SecondSidebar({
         )}
       >
         <div className="flex items-center gap-2">
-          {getIcon(item.title)}
+          {item.icon}
           <span>{item.title}</span>
         </div>
         {item.children && (
@@ -104,7 +137,7 @@ export function SecondSidebar({
       <div className="p-4 ">
         <div className="text-xs mb-2 text-sidebar-foreground">Data Center</div>
         <nav className="space-y-1">
-          {navItems.map((item) => renderNavItem(item))}
+          {navigationItems.map((item) => renderNavItem(item))}
         </nav>
       </div>
     </div>
