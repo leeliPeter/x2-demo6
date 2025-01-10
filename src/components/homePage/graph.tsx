@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { nodeData, linkData } from "@/data/nodeData";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
-import { ArrowLeft, FolderUp, Settings2 } from "lucide-react";
+import { ArrowLeft, CircleDotDashed, FolderUp, Settings2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -68,12 +68,6 @@ export default function Graph({ selectedPath }: GraphProps) {
       const newPath = selectedPath.slice(0, -1);
       dispatch(setPath(newPath));
     }
-  };
-
-  const getScreenCoordinates = (x: number, y: number) => {
-    if (!graphRef.current) return { x: 0, y: 0 };
-    const screenPos = graphRef.current.graph2ScreenCoords(x, y);
-    return screenPos;
   };
 
   const selectedCommunityNumber = useSelector(
@@ -213,20 +207,6 @@ export default function Graph({ selectedPath }: GraphProps) {
               backgroundColor="#ffffff"
               width={dimensions.width}
               height={dimensions.height}
-              onNodeHover={(node: any) => {
-                // Only show hover card for community nodes
-                if (node && selectedPath.length > 2) {
-                  const { x, y } = getScreenCoordinates(node.x, node.y);
-                  setHoverNode({
-                    x,
-                    y,
-                    title: node.title,
-                    entity_id: node.entity_id,
-                  });
-                } else {
-                  setHoverNode(null);
-                }
-              }}
               nodeCanvasObject={(node: any, ctx: any, globalScale: number) => {
                 // Draw the node circle
                 ctx.beginPath();
@@ -258,28 +238,6 @@ export default function Graph({ selectedPath }: GraphProps) {
               linkDirectionalArrowColor={() => "#94a3b8"}
               linkWidth={1}
             />
-            {hoverNode && (
-              <div
-                className="absolute bg-white p-4 rounded-lg shadow-lg flex max-w-80 gap-4 transition-all duration-200"
-                style={{
-                  left: `${hoverNode.x}px`,
-                  top: `${hoverNode.y + 20}px`,
-                  transform: "translate(-50%, 0)",
-                  zIndex: 10,
-                }}
-              >
-                <div className="flex flex-col items-start gap-1.5">
-                  <span className="font-semibold text-sm leading-5">
-                    {hoverNode.title}
-                  </span>
-                  <span className="text-sm leading-5">123</span>
-                  <span className="text-xs text-muted-foreground leading-4 flex items-center gap-1">
-                    <FolderUp className="w-4 h-4" />
-                    <p>Generated @</p>
-                  </span>
-                </div>
-              </div>
-            )}
           </>
         )}
       </div>
