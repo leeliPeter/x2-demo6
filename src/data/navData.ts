@@ -131,5 +131,31 @@ export const navData: Company = {
         },
       ],
     },
+    {
+      id: "graph_B_1",
+      name: "Graph B",
+      communities: [
+        {
+          id: "community_id_7",
+          human_readable_id: "community_id_7_human_readable_id",
+          level: 0,
+          title: "強固型手機及其技術要求",
+          size: 100,
+          period: "2024-01-01",
+          community: 5,
+          parent: -1,
+          entity_ids: [
+            "community_7_entity_id_1",
+            "community_7_entity_id_2",
+            "community_7_entity_id_3",
+          ],
+          text_unit_ids: [
+            "community_7_text_unit_id_1",
+            "community_7_text_unit_id_2",
+            "community_7_text_unit_id_3",
+          ],
+        },
+      ],
+    },
   ],
 };

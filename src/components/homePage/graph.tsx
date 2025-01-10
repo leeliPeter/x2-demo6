@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { nodeData, linkData } from "@/data/nodeData";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
-import { ArrowLeft, Settings2 } from "lucide-react";
+import { ArrowLeft, FolderUp, Settings2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -17,7 +17,6 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { setPath } from "@/redux/features/navigationSlice";
 
-// Import ForceGraph2D dynamically for client-side rendering
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
   ssr: false,
   loading: () => <div className="flex-1 w-full h-full bg-gray-100" />,
@@ -33,6 +32,16 @@ interface HoverNode {
   title: string;
   entity_id: string;
 }
+
+const getCanvasContext = (canvas: HTMLCanvasElement) => {
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    ctx.font = "4px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+  }
+  return ctx;
+};
 
 export default function Graph({ selectedPath }: GraphProps) {
   const dispatch = useDispatch();
@@ -71,18 +80,21 @@ export default function Graph({ selectedPath }: GraphProps) {
     }
   };
 
-  // Get the selected community number from Redux
+  const getScreenCoordinates = (x: number, y: number) => {
+    if (!graphRef.current) return { x: 0, y: 0 };
+    const screenPos = graphRef.current.graph2ScreenCoords(x, y);
+    return screenPos;
+  };
+
   const selectedCommunityNumber = useSelector(
     (state: RootState) => state.navigation.selectedCommunityNumber
   );
 
-  // Filter nodes based on selected community
   const filteredNodes =
     selectedCommunityNumber !== null
       ? nodeData.filter((node) => node.community === selectedCommunityNumber)
       : nodeData;
 
-  // Filter links to only include connections between visible nodes
   const filteredLinks = linkData[0].links.filter((link) => {
     const sourceNode = filteredNodes.find(
       (node) => node.entity_id === link.source
@@ -93,7 +105,6 @@ export default function Graph({ selectedPath }: GraphProps) {
     return sourceNode && targetNode;
   });
 
-  // Prepare graph data
   const graphData = {
     nodes: filteredNodes.map((node) => ({
       id: node.entity_id,
@@ -106,19 +117,23 @@ export default function Graph({ selectedPath }: GraphProps) {
     })),
   };
 
-  const getScreenCoordinates = (x: number, y: number) => {
-    if (!graphRef.current) return { x: 0, y: 0 };
-    return graphRef.current.graph2ScreenCoords(x, y);
-  };
-
-  // Update dimensions on resize
   useEffect(() => {
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        setDimensions({
+        const newDimensions = {
           width: entry.contentRect.width,
           height: entry.contentRect.height,
-        });
+        };
+        setDimensions(newDimensions);
+
+        if (graphRef.current) {
+          graphRef.current
+            .d3Force("center", null)
+            .d3Force("charge")
+            .strength(-100)
+            .distanceMax(200);
+          graphRef.current.resumeAnimation();
+        }
       }
     });
 
@@ -196,76 +211,78 @@ export default function Graph({ selectedPath }: GraphProps) {
           </DropdownMenu>
         </div>
       </div>
-      <p className="text-sm font-semibold absolute top-24 left-4 z-20">
-        Selected Community:{" "}
-        {selectedCommunityNumber === null ? "All" : selectedCommunityNumber}
-      </p>
+      <div className="absolute inset-0">
+        {dimensions.width > 0 && dimensions.height > 0 && (
+          <>
+            <ForceGraph2D
+              ref={graphRef}
+              graphData={graphData}
+              nodeLabel="label"
+              nodeColor={() => "#4CAF50"}
+              linkColor={() => "#999"}
+              backgroundColor="#ffffff"
+              width={dimensions.width}
+              height={dimensions.height}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              nodeCanvasObject={(node: any, ctx: any, globalScale: number) => {
+                // Draw the node circle
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = "#4CAF50";
+                ctx.fill();
 
-      {dimensions.width > 0 && dimensions.height > 0 && (
-        <>
-          <ForceGraph2D
-            ref={graphRef}
-            graphData={graphData}
-            nodeId="entity_id"
-            linkSource="source"
-            linkTarget="target"
-            nodeLabel=""
-            nodeColor={() => "#94a3b8"}
-            linkColor={() => "#e5e7eb"}
-            linkWidth={1}
-            backgroundColor="#ffffff"
-            width={dimensions.width}
-            height={dimensions.height}
-            onNodeHover={(node: any) => {
-              if (node) {
-                const { x, y } = getScreenCoordinates(node.x, node.y);
-                setHoverNode({
-                  x,
-                  y,
-                  title: node.title,
-                  entity_id: node.entity_id,
-                });
-              } else {
-                setHoverNode(null);
-              }
-            }}
-            nodeCanvasObject={(node: any, ctx: any, globalScale: number) => {
-              // Draw node circle
-              ctx.beginPath();
-              ctx.arc(node.x, node.y, 5, 0, 2 * Math.PI);
-              ctx.fillStyle = `hsl(${node.community * 40}, 70%, 60%)`;
-              ctx.fill();
-
-              // Draw node label
-              const label = `${node.title} (C${node.community})`;
-              const fontSize = 12 / globalScale;
-              ctx.font = `${fontSize}px Sans-Serif`;
-              ctx.textAlign = "center";
-              ctx.textBaseline = "top";
-              ctx.fillStyle = "#4b5563";
-              ctx.fillText(label, node.x, node.y + 8);
-            }}
-          />
-          {hoverNode && (
-            <div
-              className="absolute bg-white p-4 rounded-lg shadow-lg border"
-              style={{
-                left: `${hoverNode.x}px`,
-                top: `${hoverNode.y + 20}px`,
-                transform: "translate(-50%, 0)",
-                zIndex: 10,
+                // Only draw text if Titles switch is enabled
+                if (switchStates.Titles) {
+                  // Draw the text below the node
+                  const label = node.title;
+                  const fontSize = 12 / globalScale;
+                  ctx.font = `${fontSize}px Sans-Serif`;
+                  ctx.textAlign = "center";
+                  ctx.textBaseline = "top";
+                  ctx.fillStyle = "#4b5563";
+                  ctx.fillText(label, node.x, node.y + 8);
+                }
               }}
-            >
-              <div className="flex flex-col gap-2">
-                <h3 className="font-semibold">{hoverNode.title}</h3>
-                <p className="text-sm text-gray-600">
-                  ID: {hoverNode.entity_id}
-                </p>
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onNodeHover={(node: any) => {
+                if (node) {
+                  const { x, y } = getScreenCoordinates(node.x, node.y);
+                  setHoverNode({
+                    x,
+                    y,
+                    title: node.title,
+                    entity_id: node.entity_id,
+                  });
+                } else {
+                  setHoverNode(null);
+                }
+              }}
+            />
+            {hoverNode && (
+              <div
+                className="absolute bg-white p-4 rounded-lg shadow-lg flex max-w-80 gap-4 transition-all duration-200"
+                style={{
+                  left: `${hoverNode.x}px`,
+                  top: `${hoverNode.y + 20}px`,
+                  transform: "translate(-50%, 0)",
+                  zIndex: 10,
+                }}
+              >
+                <div className="flex flex-col items-start gap-1.5">
+                  <span className="font-semibold text-sm leading-5">
+                    {hoverNode.title}
+                  </span>
+                  <span className="text-sm leading-5">123</span>
+                  <span className="text-xs text-muted-foreground leading-4 flex items-center gap-1">
+                    <FolderUp className="w-4 h-4" />
+                    <p>Generated @</p>
+                  </span>
+                </div>
               </div>
-            </div>
-          )}
-        </>
-      )}
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }
