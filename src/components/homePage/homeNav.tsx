@@ -2,14 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Menu,
-  Search,
-  ListFilter,
-  Plus,
-  Waypoints,
-  ChevronDown,
-} from "lucide-react";
+import { Menu, Search, ListFilter, Waypoints, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { FilterBar } from "./filterBar";
@@ -81,14 +74,6 @@ export default function HomeNav({ onViewChange }: HomeNavProps) {
               showFilter ? "rotate-180" : ""
             )}
           />
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          className="bg-orange-800 text-primary-foreground hover:bg-orange-800/80"
-        >
-          <Plus className="h-4 w-4" />
         </Button>
       </div>
       {showFilter && <FilterBar />}

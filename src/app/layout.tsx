@@ -7,6 +7,7 @@ import { SecondSidebar } from "@/components/layout/secondSidebar";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/redux/provider";
+import { AddBtn } from "@/components/layout/addBtn";
 
 export default function RootLayout({
   children,
@@ -14,14 +15,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const [isSecondSidebarOpen, setIsSecondSidebarOpen] = useState(true);
-
   const toggleSidebar = () => setIsSecondSidebarOpen(!isSecondSidebarOpen);
 
   return (
     <html lang="en">
       <body>
         <Providers>
-          <div className="flex min-h-screen overflow-x-hidden">
+          <AddBtn />
+          <div className="flex min-h-screen">
             <Sidebar className="w-24 border-r" />
             <main className="flex-1">
               <div className="p-4 border-b">

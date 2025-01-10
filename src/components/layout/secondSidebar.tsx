@@ -38,27 +38,24 @@ const transformGraphDataToNav = () => {
           // First get level 0 communities (parent === -1)
           .filter((community) => community.level === 0)
           .map((community) => ({
-            title: community.title,
+            title: `Community ${community.community}`,
             icon: <CircleDotDashed size={16} />,
             community: community.community,
-            // Get level 1 communities that have this community as parent
             children: graph.communities
               .filter((c) => c.level === 1 && c.parent === community.community)
               .map((level1Community) => ({
-                title: level1Community.title,
+                title: `Community ${level1Community.community}`,
                 icon: <CircleDotDashed size={16} />,
                 community: level1Community.community,
-                // Get level 2 communities that have level 1 community as parent
                 children: graph.communities
                   .filter(
                     (c) =>
                       c.level === 2 && c.parent === level1Community.community
                   )
                   .map((level2Community) => ({
-                    title: level2Community.title,
+                    title: `Community ${level2Community.community}`,
                     icon: <CircleDotDashed size={16} />,
                     community: level2Community.community,
-                    // Get level 3 communities that have level 2 community as parent
                     children: graph.communities
                       .filter(
                         (c) =>
@@ -66,7 +63,7 @@ const transformGraphDataToNav = () => {
                           c.parent === level2Community.community
                       )
                       .map((level3Community) => ({
-                        title: level3Community.title,
+                        title: `Community ${level3Community.community}`,
                         icon: <CircleDotDashed size={16} />,
                         community: level3Community.community,
                       })),
@@ -101,8 +98,9 @@ export function SecondSidebar({
     if (!selectedGraph) return null;
 
     const communityTitle = path[path.length - 1];
+    const communityNumber = parseInt(communityTitle.split(" ")[1]);
     const community = selectedGraph.communities.find(
-      (community) => community.title === communityTitle
+      (community) => community.community === communityNumber
     );
 
     return community?.community ?? null;

@@ -13,8 +13,9 @@ interface _Document {
 // Community Report table
 interface CommunityReport {
   id: string;
-  human_readable_id: string;
+  title: string;
   summary: string;
+  community: number;
   full_content: string; // to explain the community
   rank: number;
   rank_explanation: string;
@@ -24,9 +25,7 @@ interface CommunityReport {
 interface Community {
   id: string;
   level: number;
-  title: string;
   size: number;
-  human_readable_id: string; // for getting report
   period: string;
   community: number; //for the parent child relationship
   parent?: number; //for the parent child relationship

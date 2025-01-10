@@ -11,9 +11,7 @@ export const navData: Company = {
       communities: [
         {
           id: "community_id_1",
-          human_readable_id: "community_id_1_human_readable_id",
           level: 0,
-          title: "5G分享器与5G路由器的关系",
           size: 12,
           period: "2024-01-01",
           community: 0,
@@ -31,9 +29,7 @@ export const navData: Company = {
         },
         {
           id: "community_id_2",
-          human_readable_id: "community_id_2_human_readable_id",
           level: 1,
-          title: "5G模組及其關聯設備",
           size: 46,
           period: "2024-01-01",
           community: 1,
@@ -51,9 +47,7 @@ export const navData: Company = {
         },
         {
           id: "community_id_3",
-          human_readable_id: "community_id_3_human_readable_id",
           level: 2,
-          title: "電子產品市場中的主要企業互動",
           size: 100,
           period: "2024-01-01",
           community: 2,
@@ -71,9 +65,7 @@ export const navData: Company = {
         },
         {
           id: "community_id_4",
-          human_readable_id: "community_id_4_human_readable_id",
           level: 2,
-          title: "電子產品市場及其供應鏈動態",
           size: 100,
           period: "2024-01-01",
           community: 3,
@@ -91,9 +83,7 @@ export const navData: Company = {
         },
         {
           id: "community_id_5",
-          human_readable_id: "community_id_5_human_readable_id",
           level: 3,
-          title: "110年与111年财务动态分析",
           size: 100,
           period: "2024-01-01",
           community: 4,
@@ -111,9 +101,7 @@ export const navData: Company = {
         },
         {
           id: "community_id_6",
-          human_readable_id: "community_id_6_human_readable_id",
           level: 0,
-          title: "強固型手機及其技術要求",
           size: 100,
           period: "2024-01-01",
           community: 5,
@@ -137,9 +125,7 @@ export const navData: Company = {
       communities: [
         {
           id: "community_id_7",
-          human_readable_id: "community_id_7_human_readable_id",
           level: 0,
-          title: "強固型手機及其技術要求",
           size: 100,
           period: "2024-01-01",
           community: 5,
