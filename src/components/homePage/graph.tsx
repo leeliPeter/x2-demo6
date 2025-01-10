@@ -33,16 +33,6 @@ interface HoverNode {
   entity_id: string;
 }
 
-const getCanvasContext = (canvas: HTMLCanvasElement) => {
-  const ctx = canvas.getContext("2d");
-  if (ctx) {
-    ctx.font = "4px Arial";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-  }
-  return ctx;
-};
-
 export default function Graph({ selectedPath }: GraphProps) {
   const dispatch = useDispatch();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -217,35 +207,15 @@ export default function Graph({ selectedPath }: GraphProps) {
             <ForceGraph2D
               ref={graphRef}
               graphData={graphData}
-              nodeLabel="label"
-              nodeColor={() => "#4CAF50"}
-              linkColor={() => "#999"}
+              nodeLabel=""
+              nodeColor={(node: any) => node.color}
+              linkColor={() => "#e5e7eb"}
               backgroundColor="#ffffff"
               width={dimensions.width}
               height={dimensions.height}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              nodeCanvasObject={(node: any, ctx: any, globalScale: number) => {
-                // Draw the node circle
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, 5, 0, 2 * Math.PI);
-                ctx.fillStyle = "#4CAF50";
-                ctx.fill();
-
-                // Only draw text if Titles switch is enabled
-                if (switchStates.Titles) {
-                  // Draw the text below the node
-                  const label = node.title;
-                  const fontSize = 12 / globalScale;
-                  ctx.font = `${fontSize}px Sans-Serif`;
-                  ctx.textAlign = "center";
-                  ctx.textBaseline = "top";
-                  ctx.fillStyle = "#4b5563";
-                  ctx.fillText(label, node.x, node.y + 8);
-                }
-              }}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onNodeHover={(node: any) => {
-                if (node) {
+                // Only show hover card for community nodes
+                if (node && selectedPath.length > 2) {
                   const { x, y } = getScreenCoordinates(node.x, node.y);
                   setHoverNode({
                     x,
@@ -257,6 +227,36 @@ export default function Graph({ selectedPath }: GraphProps) {
                   setHoverNode(null);
                 }
               }}
+              nodeCanvasObject={(node: any, ctx: any, globalScale: number) => {
+                // Draw the node circle
+                ctx.beginPath();
+                const radius = node.type === "company" ? 8 : 5;
+                ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI);
+                ctx.fillStyle = node.color;
+                ctx.fill();
+
+                // Draw the text below the node
+                const label = node.label || node.title;
+                const fontSize = 12 / globalScale;
+                ctx.font = `${fontSize}px Sans-Serif`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "top";
+                ctx.fillStyle = "#4b5563";
+                ctx.fillText(label, node.x, node.y + 8);
+              }}
+              linkDirectionalParticles={2}
+              linkDirectionalParticleWidth={2}
+              linkDirectionalParticleSpeed={0.01}
+              linkDirectionalParticleColor={() => "#94a3b8"}
+              d3AlphaDecay={0.02}
+              d3VelocityDecay={0.3}
+              warmupTicks={100}
+              cooldownTicks={Infinity}
+              onEngineStop={() => {}}
+              linkDirectionalArrowLength={3.5}
+              linkDirectionalArrowRelPos={1}
+              linkDirectionalArrowColor={() => "#94a3b8"}
+              linkWidth={1}
             />
             {hoverNode && (
               <div
