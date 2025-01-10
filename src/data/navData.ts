@@ -1,180 +1,135 @@
-interface NavItem {
-  title: string;
-  icon?: React.ReactNode;
-  size?: string;
-  date?: string;
-  children?: NavItem[];
-}
+import { Company } from "../type/graph";
 
-export const navItems: NavItem[] = [
-  {
-    title: "All Data",
-    children: [
-      {
-        title: "Graph A",
-        size: "316MB",
-        date: "2024-01-01",
-        children: [
-          {
-            title: "Community L1",
-            size: "100MB",
-            date: "2024-01-01",
-            children: [
-              {
-                title: "Node 1",
-                size: "45MB",
-                date: "2024-01-01",
-                children: [
-                  {
-                    title: "Node A1",
-                    size: "15MB",
-                    date: "2024-01-01",
-                  },
-                  {
-                    title: "Node A2",
-                    size: "15MB",
-                    date: "2024-01-01",
-                  },
-                  {
-                    title: "Node A3",
-                    size: "15MB",
-                    date: "2024-01-01",
-                  },
-                ],
-              },
-              {
-                title: "Node 2",
-                size: "55MB",
-                date: "2024-01-01",
-                children: [
-                  {
-                    title: "Node B1",
-                    size: "20MB",
-                    date: "2024-01-01",
-                  },
-                  {
-                    title: "Node B2",
-                    size: "35MB",
-                    date: "2024-01-01",
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            title: "Community L2",
-            size: "100MB",
-            date: "2024-01-01",
-            children: [
-              {
-                title: "Node 3",
-                size: "60MB",
-                date: "2024-01-01",
-                children: [
-                  {
-                    title: "Node C1",
-                    size: "30MB",
-                    date: "2024-01-01",
-                  },
-                  {
-                    title: "Node C2",
-                    size: "30MB",
-                    date: "2024-01-01",
-                  },
-                ],
-              },
-              {
-                title: "Node 4",
-                size: "40MB",
-                date: "2024-01-01",
-                children: [
-                  {
-                    title: "Node D1",
-                    size: "20MB",
-                    date: "2024-01-01",
-                  },
-                  {
-                    title: "Node D2",
-                    size: "20MB",
-                    date: "2024-01-01",
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            title: "Community L3",
-            size: "116MB",
-            date: "2024-01-01",
-            children: [
-              {
-                title: "Node 5",
-                size: "66MB",
-                date: "2024-01-01",
-                children: [
-                  {
-                    title: "Node E1",
-                    size: "22MB",
-                    date: "2024-01-01",
-                  },
-                  {
-                    title: "Node E2",
-                    size: "22MB",
-                    date: "2024-01-01",
-                  },
-                  {
-                    title: "Node E3",
-                    size: "22MB",
-                    date: "2024-01-01",
-                  },
-                ],
-              },
-              {
-                title: "Node Group 6",
-                size: "50MB",
-                date: "2024-01-01",
-                children: [
-                  {
-                    title: "Node F1",
-                    size: "25MB",
-                    date: "2024-01-01",
-                  },
-                  {
-                    title: "Node F2",
-                    size: "25MB",
-                    date: "2024-01-01",
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-      {
-        title: "Graph B",
-        size: "316MB",
-        date: "2024-01-01",
-        children: [
-          {
-            title: "Community B1",
-            size: "100MB",
-            date: "2024-01-01",
-            children: [],
-          },
-          {
-            title: "Community B2",
-            size: "100MB",
-            date: "2024-01-01",
-            children: [],
-          },
-          {
-            title: "Community B3",
-            size: "100MB",
-            date: "2024-01-01",
-            children: [],
-          },
-        ],
-      },
-    ],
-  },
-];
+// get navigation data
+export const navData: Company = {
+  id: "1",
+  name: "FutureNest",
+  graphs: [
+    {
+      id: "graph_A_1",
+      name: "Graph A",
+      communities: [
+        {
+          id: "community_id_1",
+          human_readable_id: "community_id_1_human_readable_id",
+          level: 0,
+          title: "5G分享器与5G路由器的关系",
+          size: 12,
+          period: "2024-01-01",
+          community: 0,
+          parent: -1,
+          entity_ids: [
+            "community_1_entity_id_1",
+            "community_1_entity_id_2",
+            "community_1_entity_id_3",
+          ],
+          text_unit_ids: [
+            "community_1_text_unit_id_1",
+            "community_1_text_unit_id_2",
+            "community_1_text_unit_id_3",
+          ],
+        },
+        {
+          id: "community_id_2",
+          human_readable_id: "community_id_2_human_readable_id",
+          level: 1,
+          title: "5G模組及其關聯設備",
+          size: 46,
+          period: "2024-01-01",
+          community: 1,
+          parent: 0,
+          entity_ids: [
+            "community_2_entity_id_1",
+            "community_2_entity_id_2",
+            "community_2_entity_id_3",
+          ],
+          text_unit_ids: [
+            "community_2_text_unit_id_1",
+            "community_2_text_unit_id_2",
+            "community_2_text_unit_id_3",
+          ],
+        },
+        {
+          id: "community_id_3",
+          human_readable_id: "community_id_3_human_readable_id",
+          level: 2,
+          title: "電子產品市場中的主要企業互動",
+          size: 100,
+          period: "2024-01-01",
+          community: 2,
+          parent: 1,
+          entity_ids: [
+            "community_3_entity_id_1",
+            "community_3_entity_id_2",
+            "community_3_entity_id_3",
+          ],
+          text_unit_ids: [
+            "community_3_text_unit_id_1",
+            "community_3_text_unit_id_2",
+            "community_3_text_unit_id_3",
+          ],
+        },
+        {
+          id: "community_id_4",
+          human_readable_id: "community_id_4_human_readable_id",
+          level: 2,
+          title: "電子產品市場及其供應鏈動態",
+          size: 100,
+          period: "2024-01-01",
+          community: 3,
+          parent: 1,
+          entity_ids: [
+            "community_4_entity_id_1",
+            "community_4_entity_id_2",
+            "community_4_entity_id_3",
+          ],
+          text_unit_ids: [
+            "community_4_text_unit_id_1",
+            "community_4_text_unit_id_2",
+            "community_4_text_unit_id_3",
+          ],
+        },
+        {
+          id: "community_id_5",
+          human_readable_id: "community_id_5_human_readable_id",
+          level: 3,
+          title: "110年与111年财务动态分析",
+          size: 100,
+          period: "2024-01-01",
+          community: 4,
+          parent: 2,
+          entity_ids: [
+            "community_5_entity_id_1",
+            "community_5_entity_id_2",
+            "community_5_entity_id_3",
+          ],
+          text_unit_ids: [
+            "community_5_text_unit_id_1",
+            "community_5_text_unit_id_2",
+            "community_5_text_unit_id_3",
+          ],
+        },
+        {
+          id: "community_id_6",
+          human_readable_id: "community_id_6_human_readable_id",
+          level: 0,
+          title: "強固型手機及其技術要求",
+          size: 100,
+          period: "2024-01-01",
+          community: 5,
+          parent: -1,
+          entity_ids: [
+            "community_6_entity_id_1",
+            "community_6_entity_id_2",
+            "community_6_entity_id_3",
+          ],
+          text_unit_ids: [
+            "community_6_text_unit_id_1",
+            "community_6_text_unit_id_2",
+            "community_6_text_unit_id_3",
+          ],
+        },
+      ],
+    },
+  ],
+};

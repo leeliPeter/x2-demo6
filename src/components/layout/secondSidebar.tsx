@@ -7,15 +7,17 @@ import {
   Database,
   CircleDotDashed,
 } from "lucide-react";
-import { useState } from "react";
-import { graphData } from "@/data/graphData";
-import { useDispatch } from "react-redux";
-import { setPath } from "@/redux/features/navigationSlice";
+import { useState, useEffect } from "react";
+import { navData } from "@/data/navData";
+import { useDispatch, useSelector } from "react-redux";
+import { setPath, setCommunityNumber } from "@/redux/features/navigationSlice";
+import { RootState } from "@/redux/store";
 
 interface NavItem {
   title: string;
   icon?: React.ReactNode;
   children?: NavItem[];
+  community?: number;
 }
 
 interface SecondSidebarProps {
@@ -23,39 +25,54 @@ interface SecondSidebarProps {
   className?: string;
 }
 
-// Function to get icon based on item title or type
-const getIcon = (title: string, type?: string) => {
-  if (title === "All Data") return <Database size={16} />;
-  if (title.startsWith("Graph")) return <Waypoints size={16} />;
-  if (title.startsWith("Community")) return <CircleDotDashed size={16} />;
-  return <CircleDotDashed size={16} />;
-};
-
-// Function to transform graphData into navigation items
-const transformGraphDataToNav = (data: typeof graphData): NavItem[] => {
+// Function to transform navData into navigation items
+const transformGraphDataToNav = () => {
   const navItems: NavItem[] = [
     {
       title: "All Data",
       icon: <Database size={16} />,
-      children: data.graphs.map((graph) => ({
-        title: graph.title,
+      children: navData.graphs.map((graph) => ({
+        title: graph.name,
         icon: <Waypoints size={16} />,
-        children: graph.communities.map((community) => ({
-          title: community.title,
-          icon: <CircleDotDashed size={16} />,
-          children: community.children
-            ? community.children.map((subCommunity) => ({
-                title: subCommunity.title,
+        children: graph.communities
+          // First get level 0 communities (parent === -1)
+          .filter((community) => community.level === 0)
+          .map((community) => ({
+            title: community.title,
+            icon: <CircleDotDashed size={16} />,
+            community: community.community,
+            // Get level 1 communities that have this community as parent
+            children: graph.communities
+              .filter((c) => c.level === 1 && c.parent === community.community)
+              .map((level1Community) => ({
+                title: level1Community.title,
                 icon: <CircleDotDashed size={16} />,
-                children: subCommunity.children
-                  ? subCommunity.children.map((lastCommunity) => ({
-                      title: lastCommunity.title,
-                      icon: <CircleDotDashed size={16} />,
-                    }))
-                  : undefined,
-              }))
-            : undefined,
-        })),
+                community: level1Community.community,
+                // Get level 2 communities that have level 1 community as parent
+                children: graph.communities
+                  .filter(
+                    (c) =>
+                      c.level === 2 && c.parent === level1Community.community
+                  )
+                  .map((level2Community) => ({
+                    title: level2Community.title,
+                    icon: <CircleDotDashed size={16} />,
+                    community: level2Community.community,
+                    // Get level 3 communities that have level 2 community as parent
+                    children: graph.communities
+                      .filter(
+                        (c) =>
+                          c.level === 3 &&
+                          c.parent === level2Community.community
+                      )
+                      .map((level3Community) => ({
+                        title: level3Community.title,
+                        icon: <CircleDotDashed size={16} />,
+                        community: level3Community.community,
+                      })),
+                  })),
+              })),
+          })),
       })),
     },
   ];
@@ -68,12 +85,39 @@ export function SecondSidebar({
   className,
 }: SecondSidebarProps) {
   const dispatch = useDispatch();
+  const selectedPath = useSelector(
+    (state: RootState) => state.navigation.selectedPath
+  );
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
-  const navigationItems = transformGraphDataToNav(graphData);
+  const navigationItems = transformGraphDataToNav();
+
+  const findCommunityNumber = (path: string[]) => {
+    if (path.length < 3) return null;
+
+    const graphName = path[1];
+    const selectedGraph = navData.graphs.find(
+      (graph) => graph.name === graphName
+    );
+    if (!selectedGraph) return null;
+
+    const communityTitle = path[path.length - 1];
+    const community = selectedGraph.communities.find(
+      (community) => community.title === communityTitle
+    );
+
+    return community?.community ?? null;
+  };
+
+  // Watch for path changes and update community number
+  useEffect(() => {
+    const communityNumber = findCommunityNumber(selectedPath);
+    dispatch(setCommunityNumber(communityNumber));
+  }, [selectedPath, dispatch]);
 
   const handleItemClick = (item: NavItem, parentTitles: string[] = []) => {
     const newPath = [...parentTitles, item.title];
     dispatch(setPath(newPath));
+    // Remove the direct community number setting since useEffect will handle it
     if (item.children) {
       toggleItem(item.title);
     }
@@ -101,9 +145,9 @@ export function SecondSidebar({
           expandedItems.includes(item.title) ? "bg-gray-100" : "text-gray-600"
         )}
       >
-        <div className="flex items-center gap-2">
-          {item.icon}
-          <span>{item.title}</span>
+        <div className="flex items-center gap-2 ">
+          <div className="min-w-4">{item.icon}</div>
+          <span className="truncate max-w-28">{item.title}</span>
         </div>
         {item.children && (
           <ChevronDown
