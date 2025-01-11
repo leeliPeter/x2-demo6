@@ -35,24 +35,39 @@ export default function Graph() {
     relations: true,
     preview: true,
   });
+  const selectedCommunityNumber = useSelector(
+    (state: RootState) => state.navigation.selectedCommunityNumber
+  );
 
-  // Prepare the data in the format required by ForceGraph2D
+  // Update graphData to filter by community
   const graphData = useMemo(() => {
-    return {
-      nodes: nodeData.map((node) => ({
-        id: node.entity_id,
-        label: node.title,
-        val: node.degree, // Node size based on degree
-        level: node.level,
-        community: node.community,
-      })),
-      links: linkData[0].links.map((link) => ({
+    const filteredNodes =
+      selectedCommunityNumber !== null
+        ? nodeData.filter((node) => node.community === selectedCommunityNumber)
+        : nodeData;
+
+    const nodes = filteredNodes.map((node) => ({
+      id: node.entity_id,
+      label: node.title,
+      val: node.degree,
+      level: node.level,
+      community: node.community,
+    }));
+
+    const links = linkData[0].links
+      .filter(
+        (link) =>
+          nodes.some((n) => n.id === link.source) &&
+          nodes.some((n) => n.id === link.target)
+      )
+      .map((link) => ({
         source: link.source,
         target: link.target,
         id: link.relationship_id,
-      })),
-    };
-  }, []);
+      }));
+
+    return { nodes, links };
+  }, [selectedCommunityNumber]);
 
   const dropdownMenuItems = [
     {
