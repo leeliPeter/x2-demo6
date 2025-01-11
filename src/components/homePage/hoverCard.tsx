@@ -48,7 +48,9 @@ export default function HoverCard({ node, position, show }: HoverCardProps) {
         <div className="">
           <h3 className="font-semibold mb-2 text-sm">{node.label}</h3>
           <div className="text-xs text-muted-foreground flex flex-col gap-1">
-            {node.level && <p>Community Level: {node.level}</p>}
+            {typeof node.level === "number" && (
+              <p>Community Level: {node.level}</p>
+            )}
             {node.size && <p>Size: {node.size}</p>}
             {node.period && (
               <p className="flex items-center gap-1">
