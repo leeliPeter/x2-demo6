@@ -1,105 +1,82 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { nodeData, linkData } from "@/data/nodeData";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/redux/store";
-import { ArrowLeft, CircleDotDashed, FolderUp, Settings2 } from "lucide-react";
+import { ArrowLeft, Settings2 } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { setPath } from "@/redux/features/navigationSlice";
+import type { RootState } from "@/redux/store";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
-import { setPath } from "@/redux/features/navigationSlice";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
   ssr: false,
   loading: () => <div className="flex-1 w-full h-full bg-gray-100" />,
 });
 
-interface GraphProps {
-  selectedPath: string[];
-}
-
-interface HoverNode {
-  x: number;
-  y: number;
-  title: string;
-  entity_id: string;
-}
-
-export default function Graph({ selectedPath }: GraphProps) {
-  const dispatch = useDispatch();
+export default function Graph() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const graphRef = useRef<any>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const [hoverNode, setHoverNode] = useState<HoverNode | null>(null);
-  const [switchStates, setSwitchStates] = useState({
-    Titles: true,
-    Relations: true,
-    Preview: true,
+  const graphRef = useRef<any>(null);
+  const dispatch = useDispatch();
+  const selectedPath = useSelector(
+    (state: RootState) => state.navigation.selectedPath
+  );
+  const [graphSettings, setGraphSettings] = useState({
+    titles: true,
+    relations: true,
+    preview: true,
   });
 
-  const dropDownMenuItems = [
+  // Prepare the data in the format required by ForceGraph2D
+  const graphData = useMemo(() => {
+    return {
+      nodes: nodeData.map((node) => ({
+        id: node.entity_id,
+        label: node.title,
+        val: node.degree, // Node size based on degree
+        level: node.level,
+        community: node.community,
+      })),
+      links: linkData[0].links.map((link) => ({
+        source: link.source,
+        target: link.target,
+        id: link.relationship_id,
+      })),
+    };
+  }, []);
+
+  const dropdownMenuItems = [
     {
+      id: "titles",
       title: "Titles",
       description:
-        "Show or hide the titles on the nodes for easier identification.",
+        "Show or hide the titles on the nodes for easier identifiction.",
+      switch: graphSettings.titles,
     },
     {
+      id: "relations",
       title: "Relations",
       description:
         "Display or hide the connections between nodes to visualize relationships.",
+      switch: graphSettings.relations,
     },
     {
+      id: "preview",
       title: "Preview",
       description:
         "Enable or disable a hover preview of the node's content on the graph.",
+      switch: graphSettings.preview,
     },
   ];
-
-  const handleBackClick = () => {
-    if (selectedPath.length > 1) {
-      const newPath = selectedPath.slice(0, -1);
-      dispatch(setPath(newPath));
-    }
-  };
-
-  const selectedCommunityNumber = useSelector(
-    (state: RootState) => state.navigation.selectedCommunityNumber
-  );
-
-  const filteredNodes =
-    selectedCommunityNumber !== null
-      ? nodeData.filter((node) => node.community === selectedCommunityNumber)
-      : nodeData;
-
-  const filteredLinks = linkData[0].links.filter((link) => {
-    const sourceNode = filteredNodes.find(
-      (node) => node.entity_id === link.source
-    );
-    const targetNode = filteredNodes.find(
-      (node) => node.entity_id === link.target
-    );
-    return sourceNode && targetNode;
-  });
-
-  const graphData = {
-    nodes: filteredNodes.map((node) => ({
-      id: node.entity_id,
-      ...node,
-    })),
-    links: filteredLinks.map((link) => ({
-      source: link.source,
-      target: link.target,
-      id: link.relationship_id,
-    })),
-  };
 
   useEffect(() => {
     const observer = new ResizeObserver((entries) => {
@@ -128,6 +105,26 @@ export default function Graph({ selectedPath }: GraphProps) {
     return () => observer.disconnect();
   }, []);
 
+  const handleBackClick = () => {
+    if (selectedPath.length > 1) {
+      const newPath = selectedPath.slice(0, -1);
+      dispatch(setPath(newPath));
+    }
+  };
+
+  const handleNodeClick = (node: any) => {
+    console.log("Clicked node:", node);
+    // Add the clicked node's label to the path
+    dispatch(setPath([...selectedPath, node.label]));
+  };
+
+  const handleSettingChange = (id: string) => {
+    setGraphSettings((prev) => ({
+      ...prev,
+      [id]: !prev[id as keyof typeof prev],
+    }));
+  };
+
   return (
     <div
       ref={containerRef}
@@ -138,7 +135,7 @@ export default function Graph({ selectedPath }: GraphProps) {
           {selectedPath.length > 1 ? (
             <button
               onClick={handleBackClick}
-              className="flex items-center gap-1 text-sm hover:text-primary transition-colors hover:bg-border p-1 px-2 rounded-md cursor-pointer"
+              className="flex items-center gap-1 text-sm hover:text-primary px-3 py-1 rounded-md hover:bg-border transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               Back
@@ -156,37 +153,30 @@ export default function Graph({ selectedPath }: GraphProps) {
           )}
 
           <DropdownMenu>
-            <DropdownMenuTrigger className="hover:bg-border p-2 rounded-md cursor-pointer outline-none">
-              <Settings2 className="w-4 h-4" />
+            <DropdownMenuTrigger asChild>
+              <button className="hover:bg-border rounded-md p-2">
+                <Settings2 className="w-4 h-4" />
+              </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="">
+            <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>Graph Appearance</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {dropDownMenuItems.map((item) => (
+              {dropdownMenuItems.map((item) => (
                 <DropdownMenuItem
-                  key={item.title}
-                  onSelect={(e) => {
-                    e.preventDefault();
-                  }}
+                  key={item.id}
+                  onSelect={(e) => e.preventDefault()}
                   className="hover:bg-transparent focus:bg-transparent"
                 >
-                  <div className="flex gap-4">
+                  <div className="flex my-2 w-full justify-between items-start">
                     <div className="flex flex-col">
-                      <div className="text-xs font-semibold">{item.title}</div>
-                      <div className="text-xs text-muted-foreground w-32">
+                      <p className="text-xs font-semibold">{item.title}</p>
+                      <p className="text-xs font-normal text-muted-foreground max-w-40">
                         {item.description}
-                      </div>
+                      </p>
                     </div>
                     <Switch
-                      checked={
-                        switchStates[item.title as keyof typeof switchStates]
-                      }
-                      onCheckedChange={(checked) => {
-                        setSwitchStates((prev) => ({
-                          ...prev,
-                          [item.title]: checked,
-                        }));
-                      }}
+                      checked={item.switch}
+                      onCheckedChange={() => handleSettingChange(item.id)}
                     />
                   </div>
                 </DropdownMenuItem>
@@ -195,50 +185,22 @@ export default function Graph({ selectedPath }: GraphProps) {
           </DropdownMenu>
         </div>
       </div>
+
       <div className="absolute inset-0">
         {dimensions.width > 0 && dimensions.height > 0 && (
-          <>
-            <ForceGraph2D
-              ref={graphRef}
-              graphData={graphData}
-              nodeLabel=""
-              nodeColor={(node: any) => node.color}
-              linkColor={() => "#e5e7eb"}
-              backgroundColor="#ffffff"
-              width={dimensions.width}
-              height={dimensions.height}
-              nodeCanvasObject={(node: any, ctx: any, globalScale: number) => {
-                // Draw the node circle
-                ctx.beginPath();
-                const radius = node.type === "company" ? 8 : 5;
-                ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI);
-                ctx.fillStyle = node.color;
-                ctx.fill();
-
-                // Draw the text below the node
-                const label = node.label || node.title;
-                const fontSize = 12 / globalScale;
-                ctx.font = `${fontSize}px Sans-Serif`;
-                ctx.textAlign = "center";
-                ctx.textBaseline = "top";
-                ctx.fillStyle = "#4b5563";
-                ctx.fillText(label, node.x, node.y + 8);
-              }}
-              linkDirectionalParticles={2}
-              linkDirectionalParticleWidth={2}
-              linkDirectionalParticleSpeed={0.01}
-              linkDirectionalParticleColor={() => "#94a3b8"}
-              d3AlphaDecay={0.02}
-              d3VelocityDecay={0.3}
-              warmupTicks={100}
-              cooldownTicks={Infinity}
-              onEngineStop={() => {}}
-              linkDirectionalArrowLength={3.5}
-              linkDirectionalArrowRelPos={1}
-              linkDirectionalArrowColor={() => "#94a3b8"}
-              linkWidth={1}
-            />
-          </>
+          <ForceGraph2D
+            ref={graphRef}
+            graphData={graphData}
+            nodeLabel="label"
+            nodeRelSize={6}
+            nodeVal={(node) => node.val}
+            nodeAutoColorBy="community"
+            linkColor={() => "#999"}
+            backgroundColor="#ffffff"
+            width={dimensions.width}
+            height={dimensions.height}
+            onNodeClick={handleNodeClick}
+          />
         )}
       </div>
     </div>
