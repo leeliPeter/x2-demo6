@@ -16,6 +16,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
+import { Card } from "@/components/ui/card";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
   ssr: false,
@@ -38,6 +39,9 @@ export default function Graph() {
   const selectedCommunityNumber = useSelector(
     (state: RootState) => state.navigation.selectedCommunityNumber
   );
+  const [hoveredNode, setHoveredNode] = useState<any>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const fgRef = useRef<any>(null);
 
   // Update graphData to filter by community
   const graphData = useMemo(() => {
@@ -127,17 +131,24 @@ export default function Graph() {
     }
   };
 
-  const handleNodeClick = (node: any) => {
-    console.log("Clicked node:", node);
-    // Add the clicked node's label to the path
-    dispatch(setPath([...selectedPath, node.label]));
-  };
-
   const handleSettingChange = (id: string) => {
     setGraphSettings((prev) => ({
       ...prev,
       [id]: !prev[id as keyof typeof prev],
     }));
+  };
+
+  // Add this function to convert graph coordinates to screen coordinates
+  const getScreenCoordinates = (x: number, y: number) => {
+    if (!fgRef.current) return { x: 0, y: 0 };
+
+    // Get the current zoom transform
+    const transform = fgRef.current.zoom();
+
+    return {
+      x: x * transform + dimensions.width / 2,
+      y: y * transform + dimensions.height / 2,
+    };
   };
 
   return (
@@ -204,9 +215,9 @@ export default function Graph() {
       <div className="absolute inset-0">
         {dimensions.width > 0 && dimensions.height > 0 && (
           <ForceGraph2D
-            ref={graphRef}
+            ref={fgRef}
             graphData={graphData}
-            nodeLabel="label"
+            nodeLabel=""
             nodeRelSize={6}
             nodeVal={(node) => node.val}
             nodeAutoColorBy="community"
@@ -214,10 +225,35 @@ export default function Graph() {
             backgroundColor="#ffffff"
             width={dimensions.width}
             height={dimensions.height}
-            onNodeClick={handleNodeClick}
+            onNodeHover={(node: any) => {
+              setHoveredNode(node);
+              if (node) {
+                const screenPos = getScreenCoordinates(node.x, node.y);
+                setMousePosition(screenPos);
+              }
+            }}
           />
         )}
       </div>
+
+      {hoveredNode && graphSettings.preview && (
+        <Card
+          className="absolute p-4 bg-white shadow-lg rounded-lg z-30 max-w-[300px]"
+          style={{
+            left: mousePosition.x,
+            top: mousePosition.y + 20,
+            transform: "translate(-50%, 0)",
+            pointerEvents: "none",
+          }}
+        >
+          <h3 className="font-semibold mb-2">{hoveredNode.label}</h3>
+          <div className="text-sm text-muted-foreground">
+            <p>Community: {hoveredNode.community}</p>
+            <p>Level: {hoveredNode.level}</p>
+            <p>Connections: {hoveredNode.val}</p>
+          </div>
+        </Card>
+      )}
     </div>
   );
 }
