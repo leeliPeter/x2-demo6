@@ -7,6 +7,7 @@ import { ArrowLeft, Settings2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPath } from "@/redux/features/navigationSlice";
 import type { RootState } from "@/redux/store";
+import { navData } from "@/data/navData";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -16,7 +17,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
-import { Card } from "@/components/ui/card";
+import HoverCard from "./hoverCard";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
   ssr: false,
@@ -45,6 +46,73 @@ export default function Graph() {
 
   // Update graphData to filter by community
   const graphData = useMemo(() => {
+    // If path length is 1 (All Data), show company-graph connections
+    if (selectedPath.length === 1) {
+      const nodes = [
+        // Company node
+        {
+          id: navData.company_id,
+          label: navData.conpanyName,
+          type: "company",
+          val: 10, // Larger size for company node
+        },
+        // Graph nodes
+        ...navData.graph.map((graph) => ({
+          id: graph.graph_id,
+          label: graph.graph_name,
+          type: "graph",
+          val: 7,
+        })),
+      ];
+
+      // Create links from company to all graphs
+      const links = navData.graph.map((graph) => ({
+        source: navData.company_id,
+        target: graph.graph_id,
+        id: `link-${navData.company_id}-${graph.graph_id}`,
+      }));
+
+      return { nodes, links };
+    }
+
+    // If path length is 2 (Graph level), show all communities in the graph
+    if (selectedPath.length === 2) {
+      const currentGraph = navData.graph.find(
+        (g) => g.graph_name === selectedPath[1]
+      );
+      if (!currentGraph) return { nodes: [], links: [] };
+
+      const nodes = [
+        // Graph node at center
+        {
+          id: currentGraph.graph_id,
+          label: currentGraph.graph_name,
+          val: 8,
+          type: "graph",
+        },
+        // Community nodes
+        ...currentGraph.communities.map((comm) => ({
+          id: comm.community_id,
+          label: comm.community_title,
+          val: 7,
+          level: comm.level,
+          type: "community",
+          size: comm.size,
+          period: comm.period,
+        })),
+      ];
+
+      // Create links from graph to all communities
+      const links = currentGraph.communities.map((comm) => ({
+        source: currentGraph.graph_id,
+        target: comm.community_id,
+        id: `link-${currentGraph.graph_id}-${comm.community_id}`,
+      }));
+
+      return { nodes, links };
+    }
+
+    // For community level and deeper, show the filtered nodes as before
     const filteredNodes =
       selectedCommunityNumber !== null
         ? nodeData.filter((node) => node.community === selectedCommunityNumber)
@@ -71,7 +139,7 @@ export default function Graph() {
       }));
 
     return { nodes, links };
-  }, [selectedCommunityNumber]);
+  }, [selectedPath, selectedCommunityNumber, nodeData, linkData]);
 
   const dropdownMenuItems = [
     {
@@ -265,24 +333,11 @@ export default function Graph() {
         )}
       </div>
 
-      {hoveredNode && graphSettings.preview && (
-        <Card
-          className="absolute p-4 bg-white shadow-lg rounded-lg z-30 max-w-[300px]"
-          style={{
-            left: mousePosition.x,
-            top: mousePosition.y + 15,
-            transform: "translate(-50%, 0)",
-            pointerEvents: "none",
-          }}
-        >
-          <h3 className="font-semibold mb-2 text-xs">{hoveredNode.label}</h3>
-          <div className="text-xs text-muted-foreground">
-            <p>Community: {hoveredNode.community}</p>
-            <p>Level: {hoveredNode.level}</p>
-            <p>Connections: {hoveredNode.val}</p>
-          </div>
-        </Card>
-      )}
+      <HoverCard
+        node={hoveredNode}
+        position={mousePosition}
+        show={graphSettings.preview}
+      />
     </div>
   );
 }

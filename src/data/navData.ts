@@ -4,6 +4,8 @@ interface Community {
   community: number;
   level: number;
   parent?: number;
+  size: number;
+  period: string;
 }
 
 interface GraphData {
@@ -31,12 +33,16 @@ export const navData: NavData = {
           community_title: "5G分享器与5G路由器的关系",
           community: 0,
           level: 0,
+          size: 30,
+          period: "2024-01-01",
         },
         {
           community_id: "graph_1_community_2",
           community_title: "5G模組及其關聯設備",
           community: 1,
           level: 0,
+          size: 20,
+          period: "2024-01-01",
         },
         {
           community_id: "graph_1_community_3",
@@ -44,6 +50,8 @@ export const navData: NavData = {
           community: 2,
           parent: 0,
           level: 1,
+          size: 40,
+          period: "2024-01-01",
         },
         {
           community_id: "graph_1_community_4",
@@ -51,6 +59,8 @@ export const navData: NavData = {
           community: 3,
           parent: 2,
           level: 2,
+          size: 50,
+          period: "2024-01-01",
         },
         {
           community_id: "graph_1_community_5",
@@ -58,6 +68,8 @@ export const navData: NavData = {
           community: 4,
           parent: 3,
           level: 3,
+          size: 90,
+          period: "2024-01-01",
         },
       ],
     },
