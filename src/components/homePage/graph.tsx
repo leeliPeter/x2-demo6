@@ -138,17 +138,13 @@ export default function Graph() {
     }));
   };
 
-  // Add this function to convert graph coordinates to screen coordinates
+  // Update the getScreenCoordinates function
   const getScreenCoordinates = (x: number, y: number) => {
     if (!fgRef.current) return { x: 0, y: 0 };
 
-    // Get the current zoom transform
-    const transform = fgRef.current.zoom();
-
-    return {
-      x: x * transform + dimensions.width / 2,
-      y: y * transform + dimensions.height / 2,
-    };
+    // Use graph2ScreenCoords to get accurate screen coordinates
+    const screenPos = fgRef.current.graph2ScreenCoords(x, y);
+    return screenPos;
   };
 
   return (
@@ -222,6 +218,11 @@ export default function Graph() {
             nodeVal={(node) => node.val}
             nodeAutoColorBy="community"
             linkColor={() => "#999"}
+            linkDirectionalParticles={2}
+            linkDirectionalParticleWidth={2}
+            linkDirectionalParticleSpeed={0.01}
+            linkDirectionalParticleColor={() => "#94a3b8"}
+            linkWidth={1}
             backgroundColor="#ffffff"
             width={dimensions.width}
             height={dimensions.height}
@@ -230,6 +231,31 @@ export default function Graph() {
               if (node) {
                 const screenPos = getScreenCoordinates(node.x, node.y);
                 setMousePosition(screenPos);
+              }
+            }}
+            nodeCanvasObject={(
+              node: any,
+              ctx: CanvasRenderingContext2D,
+              globalScale: number
+            ) => {
+              // Draw the node circle
+              const label = node.label;
+              const fontSize = 12 / globalScale;
+              ctx.font = `${fontSize}px Sans-Serif`;
+              const textWidth = ctx.measureText(label).width;
+              const nodeR = Math.sqrt(node.val) * 3;
+
+              ctx.beginPath();
+              ctx.arc(node.x, node.y, nodeR, 0, 2 * Math.PI);
+              ctx.fillStyle = node.color;
+              ctx.fill();
+
+              // Draw the text below the node
+              if (graphSettings.titles) {
+                ctx.fillStyle = "black";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "top";
+                ctx.fillText(label, node.x, node.y + nodeR + 2);
               }
             }}
           />
@@ -241,13 +267,13 @@ export default function Graph() {
           className="absolute p-4 bg-white shadow-lg rounded-lg z-30 max-w-[300px]"
           style={{
             left: mousePosition.x,
-            top: mousePosition.y + 20,
+            top: mousePosition.y + 15,
             transform: "translate(-50%, 0)",
             pointerEvents: "none",
           }}
         >
-          <h3 className="font-semibold mb-2">{hoveredNode.label}</h3>
-          <div className="text-sm text-muted-foreground">
+          <h3 className="font-semibold mb-2 text-xs">{hoveredNode.label}</h3>
+          <div className="text-xs text-muted-foreground">
             <p>Community: {hoveredNode.community}</p>
             <p>Level: {hoveredNode.level}</p>
             <p>Connections: {hoveredNode.val}</p>
