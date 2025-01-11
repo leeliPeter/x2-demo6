@@ -31,20 +31,20 @@ const transformGraphDataToNav = () => {
     {
       title: "All Data",
       icon: <Database size={16} />,
-      children: navData.graphs.map((graph) => ({
-        title: graph.name,
+      children: navData.graph.map((graph) => ({
+        title: graph.graph_name,
         icon: <Waypoints size={16} />,
         children: graph.communities
-          // First get level 0 communities (parent === -1)
+          // First get level 0 communities
           .filter((community) => community.level === 0)
           .map((community) => ({
-            title: `Community ${community.community}`,
+            title: community.community_title,
             icon: <CircleDotDashed size={16} />,
             community: community.community,
             children: graph.communities
               .filter((c) => c.level === 1 && c.parent === community.community)
               .map((level1Community) => ({
-                title: `Community ${level1Community.community}`,
+                title: level1Community.community_title,
                 icon: <CircleDotDashed size={16} />,
                 community: level1Community.community,
                 children: graph.communities
@@ -53,7 +53,7 @@ const transformGraphDataToNav = () => {
                       c.level === 2 && c.parent === level1Community.community
                   )
                   .map((level2Community) => ({
-                    title: `Community ${level2Community.community}`,
+                    title: level2Community.community_title,
                     icon: <CircleDotDashed size={16} />,
                     community: level2Community.community,
                     children: graph.communities
@@ -63,7 +63,7 @@ const transformGraphDataToNav = () => {
                           c.parent === level2Community.community
                       )
                       .map((level3Community) => ({
-                        title: `Community ${level3Community.community}`,
+                        title: level3Community.community_title,
                         icon: <CircleDotDashed size={16} />,
                         community: level3Community.community,
                       })),
@@ -92,15 +92,15 @@ export function SecondSidebar({
     if (path.length < 3) return null;
 
     const graphName = path[1];
-    const selectedGraph = navData.graphs.find(
-      (graph) => graph.name === graphName
+    const selectedGraph = navData.graph.find(
+      (graph) => graph.graph_name === graphName
     );
     if (!selectedGraph) return null;
 
     const communityTitle = path[path.length - 1];
-    const communityNumber = parseInt(communityTitle.split(" ")[1]);
+    // Find the community by matching the title
     const community = selectedGraph.communities.find(
-      (community) => community.community === communityNumber
+      (community) => community.community_title === communityTitle
     );
 
     return community?.community ?? null;
@@ -115,7 +115,14 @@ export function SecondSidebar({
   const handleItemClick = (item: NavItem, parentTitles: string[] = []) => {
     const newPath = [...parentTitles, item.title];
     dispatch(setPath(newPath));
-    // Remove the direct community number setting since useEffect will handle it
+
+    // Directly set community number if available
+    if (item.community) {
+      dispatch(setCommunityNumber(item.community));
+    } else {
+      dispatch(setCommunityNumber(null));
+    }
+
     if (item.children) {
       toggleItem(item.title);
     }
@@ -147,7 +154,7 @@ export function SecondSidebar({
           <div className="min-w-4">{item.icon}</div>
           <span className="truncate max-w-28">{item.title}</span>
         </div>
-        {item.children && (
+        {item.children && item.children.length > 0 && (
           <ChevronDown
             size={16}
             className={cn(

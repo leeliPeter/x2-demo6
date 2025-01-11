@@ -152,6 +152,9 @@ export default function Graph() {
       ref={containerRef}
       className="flex-1 w-full h-full relative overflow-hidden"
     >
+      <div className="absolute bg-red-500 top-40 left-0 z-30">
+        {selectedCommunityNumber}
+      </div>
       <div className="absolute items-center w-full top-4 left-1/2 -translate-x-1/2 z-20">
         <div className="flex items-start w-full px-6 justify-between text-xl font-semibold text-foreground">
           {selectedPath.length > 1 ? (

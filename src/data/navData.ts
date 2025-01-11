@@ -1,145 +1,63 @@
-import { Company } from "../type/graph";
+interface Community {
+  community_id: string;
+  community_title: string; // use community report title
+  community: number;
+  level: number;
+  parent?: number;
+}
 
-// get navigation data
-export const navData: Company = {
-  id: "1",
-  name: "FutureNest",
-  graphs: [
+interface GraphData {
+  graph_id: string;
+  graph_name: string;
+  communities: Community[];
+}
+
+interface NavData {
+  company_id: string;
+  conpanyName: string;
+  graph: GraphData[];
+}
+
+export const navData: NavData = {
+  company_id: "company_1",
+  conpanyName: "FutureNest",
+  graph: [
     {
-      id: "graph_A_1",
-      name: "Graph A",
+      graph_id: "graph_1",
+      graph_name: "Graph A",
       communities: [
         {
-          id: "community_id_1",
-          level: 0,
-          size: 12,
-          period: "2024-01-01",
+          community_id: "graph_1_community_1",
+          community_title: "5G分享器与5G路由器的关系",
           community: 0,
-          parent: -1,
-          entity_ids: [
-            "community_1_entity_id_1",
-            "community_1_entity_id_2",
-            "community_1_entity_id_3",
-          ],
-          text_unit_ids: [
-            "community_1_text_unit_id_1",
-            "community_1_text_unit_id_2",
-            "community_1_text_unit_id_3",
-          ],
+          level: 0,
         },
         {
-          id: "community_id_2",
-          level: 1,
-          size: 46,
-          period: "2024-01-01",
+          community_id: "graph_1_community_2",
+          community_title: "5G模組及其關聯設備",
           community: 1,
-          parent: 0,
-          entity_ids: [
-            "community_2_entity_id_1",
-            "community_2_entity_id_2",
-            "community_2_entity_id_3",
-          ],
-          text_unit_ids: [
-            "community_2_text_unit_id_1",
-            "community_2_text_unit_id_2",
-            "community_2_text_unit_id_3",
-          ],
+          level: 0,
         },
         {
-          id: "community_id_3",
-          level: 2,
-          size: 100,
-          period: "2024-01-01",
+          community_id: "graph_1_community_3",
+          community_title: "淨利與綜合損益的關係",
           community: 2,
-          parent: 1,
-          entity_ids: [
-            "community_3_entity_id_1",
-            "community_3_entity_id_2",
-            "community_3_entity_id_3",
-          ],
-          text_unit_ids: [
-            "community_3_text_unit_id_1",
-            "community_3_text_unit_id_2",
-            "community_3_text_unit_id_3",
-          ],
+          parent: 0,
+          level: 1,
         },
         {
-          id: "community_id_4",
-          level: 2,
-          size: 100,
-          period: "2024-01-01",
+          community_id: "graph_1_community_4",
+          community_title: "綜合損益與財務指標關係",
           community: 3,
-          parent: 1,
-          entity_ids: [
-            "community_4_entity_id_1",
-            "community_4_entity_id_2",
-            "community_4_entity_id_3",
-          ],
-          text_unit_ids: [
-            "community_4_text_unit_id_1",
-            "community_4_text_unit_id_2",
-            "community_4_text_unit_id_3",
-          ],
-        },
-        {
-          id: "community_id_5",
-          level: 3,
-          size: 100,
-          period: "2024-01-01",
-          community: 4,
           parent: 2,
-          entity_ids: [
-            "community_5_entity_id_1",
-            "community_5_entity_id_2",
-            "community_5_entity_id_3",
-          ],
-          text_unit_ids: [
-            "community_5_text_unit_id_1",
-            "community_5_text_unit_id_2",
-            "community_5_text_unit_id_3",
-          ],
+          level: 2,
         },
         {
-          id: "community_id_6",
-          level: 0,
-          size: 100,
-          period: "2024-01-01",
-          community: 5,
-          parent: -1,
-          entity_ids: [
-            "community_6_entity_id_1",
-            "community_6_entity_id_2",
-            "community_6_entity_id_3",
-          ],
-          text_unit_ids: [
-            "community_6_text_unit_id_1",
-            "community_6_text_unit_id_2",
-            "community_6_text_unit_id_3",
-          ],
-        },
-      ],
-    },
-    {
-      id: "graph_B_1",
-      name: "Graph B",
-      communities: [
-        {
-          id: "community_id_7",
-          level: 0,
-          size: 100,
-          period: "2024-01-01",
-          community: 5,
-          parent: -1,
-          entity_ids: [
-            "community_7_entity_id_1",
-            "community_7_entity_id_2",
-            "community_7_entity_id_3",
-          ],
-          text_unit_ids: [
-            "community_7_text_unit_id_1",
-            "community_7_text_unit_id_2",
-            "community_7_text_unit_id_3",
-          ],
+          community_id: "graph_1_community_5",
+          community_title: "每股盈餘與企業盈利能力",
+          community: 4,
+          parent: 3,
+          level: 3,
         },
       ],
     },
