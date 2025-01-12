@@ -2,7 +2,8 @@
 
 import React, { useRef, useEffect, useState, useMemo } from "react";
 import dynamic from "next/dynamic";
-import { nodeData, linkData } from "@/data/nodeData";
+import { nodeData } from "@/data/nodeData";
+import { linkData } from "@/data/nodeData";
 import { ArrowLeft, Settings2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPath } from "@/redux/features/navigationSlice";
@@ -87,58 +88,67 @@ export default function Graph() {
         {
           id: currentGraph.graph_id,
           label: currentGraph.graph_name,
-          val: 8,
+          val: 10,
           type: "graph",
         },
-        // Community nodes
-        ...currentGraph.communities.map((comm) => ({
-          id: comm.community_id,
-          label: comm.community_title,
-          val: 7,
-          level: comm.level,
-          type: "community",
-          size: comm.size,
-          period: comm.period,
-        })),
+        // Community nodes - only level 0
+        ...currentGraph.communities
+          .filter((comm) => comm.level === 0)
+          .map((comm) => ({
+            id: comm.community_id,
+            label: comm.community_title,
+            val: comm.size / 10,
+            level: comm.level,
+            type: "community",
+            size: comm.size,
+            period: comm.period,
+          })),
       ];
 
-      // Create links from graph to all communities
-      const links = currentGraph.communities.map((comm) => ({
-        source: currentGraph.graph_id,
-        target: comm.community_id,
-        id: `link-${currentGraph.graph_id}-${comm.community_id}`,
-      }));
+      // Create links from graph to filtered communities
+      const links = currentGraph.communities
+        .filter((comm) => comm.level === 0)
+        .map((comm) => ({
+          source: currentGraph.graph_id,
+          target: comm.community_id,
+          id: `link-${currentGraph.graph_id}-${comm.community_id}`,
+        }));
 
       return { nodes, links };
     }
 
     // For community level and deeper, show the filtered nodes as before
-    const filteredNodes =
-      selectedCommunityNumber !== null
-        ? nodeData.filter((node) => node.community === selectedCommunityNumber)
-        : nodeData;
+    if (selectedPath.length > 2) {
+      const filteredNodes = nodeData.filter(
+        (node) => node.community === selectedCommunityNumber
+      );
 
-    const nodes = filteredNodes.map((node) => ({
-      id: node.entity_id,
-      label: node.title,
-      val: node.degree,
-      level: node.level,
-      community: node.community,
-    }));
+      const nodes = filteredNodes.map((node) => ({
+        id: node.entity_id,
+        label: node.title,
+        val: node.degree / 10,
+        level: node.level,
+        type: "entity",
+        community: node.community,
+      }));
 
-    const links = linkData[0].links
-      .filter(
+      // Filter links to only include connections between the filtered nodes
+      const filteredLinks = linkData[0].links.filter(
         (link) =>
-          nodes.some((n) => n.id === link.source) &&
-          nodes.some((n) => n.id === link.target)
-      )
-      .map((link) => ({
+          filteredNodes.some((n) => n.entity_id === link.source) &&
+          filteredNodes.some((n) => n.entity_id === link.target)
+      );
+
+      const links = filteredLinks.map((link) => ({
         source: link.source,
         target: link.target,
         id: link.relationship_id,
       }));
 
-    return { nodes, links };
+      return { nodes, links };
+    }
+
+    return { nodes: [], links: [] };
   }, [selectedPath, selectedCommunityNumber, nodeData, linkData]);
 
   const dropdownMenuItems = [

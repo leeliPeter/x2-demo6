@@ -33,7 +33,7 @@ export const navData: NavData = {
           community_title: "5G分享器与5G路由器的关系",
           community: 0,
           level: 0,
-          size: 30,
+          size: 90,
           period: "2024-01-01",
         },
         {
