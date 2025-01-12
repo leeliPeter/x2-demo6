@@ -45,21 +45,35 @@ export default function HoverCard({ node, position, show }: HoverCardProps) {
         <div className="mt-0.5">
           <IconComponent className="w-4 h-4 text-muted-foreground" />
         </div>
-        <div className="">
-          <h3 className="font-semibold mb-2 text-sm">{node.label}</h3>
-          <div className="text-xs text-muted-foreground flex flex-col gap-1">
-            {typeof node.level === "number" && (
-              <p>Community Level: {node.level}</p>
-            )}
-            {node.size && <p>Size: {node.size}</p>}
-            {node.period && (
-              <p className="flex items-center gap-1">
-                <FolderUp className="w-4 h-4" />
-                Generated @{formatDate(node.period)}
-              </p>
-            )}
+        {node.type === "community" && (
+          <div className="flex flex-col ">
+            <h3 className="font-semibold mb-2 text-sm">{node.label}</h3>
+            <div className="text-xs text-muted-foreground flex flex-col gap-1">
+              {typeof node.level === "number" && (
+                <p>Community Level: {node.level}</p>
+              )}
+              {node.size && <p>Size: {node.size}</p>}
+              {node.period && (
+                <p className="flex items-center gap-1">
+                  <FolderUp className="w-4 h-4" />
+                  Generated @{formatDate(node.period)}
+                </p>
+              )}
+            </div>
           </div>
-        </div>
+        )}
+        {node.type === "node" && (
+          <div className="flex flex-col">
+            <h3 className="font-semibold mb-2 text-sm">{node.label}</h3>
+            <div className="text-xs text-muted-foreground flex flex-col gap-1">
+              {typeof node.degree === "number" && <p>Degree: {node.degree}</p>}
+              {node.category && <p>Type: {node.category}</p>}
+              {typeof node.level === "number" && (
+                <p>Community Level: {node.level}</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </Card>
   );

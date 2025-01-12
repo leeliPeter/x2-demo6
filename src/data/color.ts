@@ -1,80 +1,80 @@
 export const companyColor = "#0165A9";
 
 export const graphColor = [
-  "#FF6B6B", // Coral red
-  "#FF8E3C", // Orange
-  "#FFA94D", // Light orange
-  "#FFD93D", // Golden yellow
-  "#FF9A8B", // Peach
-  "#FF8066", // Salmon
-  "#FF6B8B", // Pink
-  "#FFC75F", // Marigold
-  "#FF7F50", // Coral
-  "#FFAA5A", // Sandy orange
+  "#FF8F8F", // Lighter coral red
+  "#FFA364", // Lighter orange
+  "#FFC17A", // Lighter light orange
+  "#FFE265", // Lighter golden yellow
+  "#FFB3A7", // Lighter peach
+  "#FF9B8B", // Lighter salmon
+  "#FF8FA7", // Lighter pink
+  "#FFD583", // Lighter marigold
+  "#FF9B76", // Lighter coral
+  "#FFC182", // Lighter sandy orange
 ];
 
 export const communityColor = [
-  "#FF6B6B", // Coral red
-  "#FF8E3C", // Orange
-  "#FFA94D", // Light orange
-  "#FFD93D", // Golden yellow
-  "#FF9A8B", // Peach
-  "#FF8066", // Salmon
-  "#FF6B8B", // Pink
-  "#FFC75F", // Marigold
-  "#FF7F50", // Coral
-  "#FFAA5A", // Sandy orange
-  "#E67E22", // Carrot orange
-  "#FF7043", // Deep orange
-  "#FF5252", // Red
-  "#FF4081", // Pink
-  "#FFB74D", // Orange
-  "#FFA726", // Orange
-  "#FFB300", // Amber
-  "#FFD54F", // Yellow
-  "#FF8A65", // Deep orange
-  "#FF7043", // Deep orange
+  "#FF8F8F", // Lighter coral red
+  "#FFA364", // Lighter orange
+  "#FFC17A", // Lighter light orange
+  "#FFE265", // Lighter golden yellow
+  "#FFB3A7", // Lighter peach
+  "#FF9B8B", // Lighter salmon
+  "#FF8FA7", // Lighter pink
+  "#FFD583", // Lighter marigold
+  "#FF9B76", // Lighter coral
+  "#FFC182", // Lighter sandy orange
+  "#F4A261", // Lighter carrot orange
+  "#FF9B76", // Lighter deep orange
+  "#FF7676", // Lighter red
+  "#FF699B", // Lighter pink
+  "#FFCB76", // Lighter orange
+  "#FFC061", // Lighter orange
+  "#FFCC4D", // Lighter amber
+  "#FFE176", // Lighter yellow
+  "#FFAB8F", // Lighter deep orange
+  "#FF9B76", // Lighter deep orange
 ];
 
 export const nodeColor = [
-  "#FF6B6B", // Coral red
-  "#FF8E3C", // Orange
-  "#FFA94D", // Light orange
-  "#FFD93D", // Golden yellow
-  "#FF9A8B", // Peach
-  "#FF8066", // Salmon
-  "#FF6B8B", // Pink
-  "#FFC75F", // Marigold
-  "#FF7F50", // Coral
-  "#FFAA5A", // Sandy orange
-  "#E67E22", // Carrot orange
-  "#FF7043", // Deep orange
-  "#FF5252", // Red
-  "#FF4081", // Pink
-  "#FFB74D", // Orange
-  "#FFA726", // Orange
-  "#FFB300", // Amber
-  "#FFD54F", // Yellow
-  "#FF8A65", // Deep orange
-  "#FF7043", // Deep orange
-  "#FF5722", // Deep orange
-  "#FF6F00", // Amber
-  "#FF8F00", // Amber
-  "#FFA000", // Amber
-  "#FFB300", // Amber
-  "#FFC107", // Amber
-  "#FFCA28", // Amber
-  "#FFD54F", // Amber
-  "#FFE082", // Amber
-  "#FFECB3", // Amber
-  "#FF7043", // Deep orange
-  "#FF8A65", // Deep orange
-  "#FFAB91", // Deep orange
-  "#FFCCBC", // Deep orange
-  "#FBE9E7", // Deep orange
-  "#FFAB91", // Deep orange
-  "#FFCCBC", // Deep orange
-  "#FF8A65", // Deep orange
-  "#FF7043", // Deep orange
-  "#FF5722", // Deep orange
+  "#FF8F8F", // Lighter coral red
+  "#FFA364", // Lighter orange
+  "#FFC17A", // Lighter light orange
+  "#FFE265", // Lighter golden yellow
+  "#FFB3A7", // Lighter peach
+  "#FF9B8B", // Lighter salmon
+  "#FF8FA7", // Lighter pink
+  "#FFD583", // Lighter marigold
+  "#FF9B76", // Lighter coral
+  "#FFC182", // Lighter sandy orange
+  "#F4A261", // Lighter carrot orange
+  "#FF9B76", // Lighter deep orange
+  "#FF7676", // Lighter red
+  "#FF699B", // Lighter pink
+  "#FFCB76", // Lighter orange
+  "#FFC061", // Lighter orange
+  "#FFCC4D", // Lighter amber
+  "#FFE176", // Lighter yellow
+  "#FFAB8F", // Lighter deep orange
+  "#FF9B76", // Lighter deep orange
+  "#FF8566", // Lighter deep orange
+  "#FF9433", // Lighter amber
+  "#FFAB33", // Lighter amber
+  "#FFBA33", // Lighter amber
+  "#FFCC4D", // Lighter amber
+  "#FFD54D", // Lighter amber
+  "#FFDD61", // Lighter amber
+  "#FFE176", // Lighter amber
+  "#FFE899", // Lighter amber
+  "#FFF0C4", // Lighter amber
+  "#FF9B76", // Lighter deep orange
+  "#FFAB8F", // Lighter deep orange
+  "#FFC3B0", // Lighter deep orange
+  "#FFDCD1", // Lighter deep orange
+  "#FFF0EB", // Lighter deep orange
+  "#FFC3B0", // Lighter deep orange
+  "#FFDCD1", // Lighter deep orange
+  "#FFAB8F", // Lighter deep orange
+  "#FF9B76", // Lighter deep orange
+  "#FF8566", // Lighter deep orange
 ];

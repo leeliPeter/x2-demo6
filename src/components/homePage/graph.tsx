@@ -19,6 +19,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
 import HoverCard from "./hoverCard";
+import {
+  companyColor,
+  graphColor,
+  communityColor,
+  nodeColor,
+} from "@/data/color";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
   ssr: false,
@@ -128,7 +134,9 @@ export default function Graph() {
         label: node.title,
         val: node.degree / 10,
         level: node.level,
-        type: "entity",
+        type: "node",
+        category: node.type,
+        degree: node.degree,
         community: node.community,
       }));
 
@@ -225,6 +233,25 @@ export default function Graph() {
     return screenPos;
   };
 
+  const getNodeColor = (node: any) => {
+    if (node.type === "company") return companyColor;
+
+    if (node.type === "graph") {
+      const colorIndex = parseInt(node.id.split("_")[1]) % graphColor.length;
+      return graphColor[colorIndex];
+    }
+
+    if (node.type === "community") {
+      const colorIndex =
+        parseInt(node.id.split("_")[3]) % communityColor.length;
+      return communityColor[colorIndex];
+    }
+
+    // For entity nodes
+    const colorIndex = parseInt(node.id.split("_")[1]) % nodeColor.length;
+    return nodeColor[colorIndex];
+  };
+
   return (
     <div
       ref={containerRef}
@@ -297,7 +324,7 @@ export default function Graph() {
             nodeLabel=""
             nodeRelSize={6}
             nodeVal={(node) => node.val}
-            nodeAutoColorBy="community"
+            nodeColor={getNodeColor}
             linkColor={() => "#999"}
             linkDirectionalParticles={2}
             linkDirectionalParticleWidth={2}
@@ -328,12 +355,12 @@ export default function Graph() {
 
               ctx.beginPath();
               ctx.arc(node.x, node.y, nodeR, 0, 2 * Math.PI);
-              ctx.fillStyle = node.color;
+              ctx.fillStyle = getNodeColor(node);
               ctx.fill();
 
               // Draw the text below the node
               if (graphSettings.titles) {
-                ctx.fillStyle = "black";
+                ctx.fillStyle = "gray";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "top";
                 ctx.fillText(label, node.x, node.y + nodeR + 2);

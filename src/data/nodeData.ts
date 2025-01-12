@@ -172,7 +172,7 @@ export const nodeData: Nodes[] = [
   },
 ];
 
-export const linkData = [
+export const linkData: Links[] = [
   {
     links: [
       // Computer-related connections
