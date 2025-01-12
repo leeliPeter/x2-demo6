@@ -49,6 +49,7 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
   const isCommunity = selectedNode.type === "community";
 
   const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
+  const [selectedTextUnits, setSelectedTextUnits] = useState<string[]>([]);
 
   const toggleAll = (checked: boolean) => {
     if (checked) {
@@ -63,6 +64,24 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
       setSelectedDocs([...selectedDocs, docId]);
     } else {
       setSelectedDocs(selectedDocs.filter((id) => id !== docId));
+    }
+  };
+
+  const toggleAllTextUnits = (checked: boolean) => {
+    if (checked) {
+      setSelectedTextUnits(
+        nodeSheet.text_units.map((unit) => unit.text_unit_id)
+      );
+    } else {
+      setSelectedTextUnits([]);
+    }
+  };
+
+  const toggleOneTextUnit = (checked: boolean, unitId: string) => {
+    if (checked) {
+      setSelectedTextUnits([...selectedTextUnits, unitId]);
+    } else {
+      setSelectedTextUnits(selectedTextUnits.filter((id) => id !== unitId));
     }
   };
 
@@ -152,7 +171,7 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
                                     }
                                   />
                                 </TableCell>
-                                <TableCell className="text-sm">
+                                <TableCell className="text-sm text-orange-700 underline cursor-pointer">
                                   {doc.document_title}
                                 </TableCell>
                               </TableRow>
@@ -180,6 +199,57 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
                           <p>Node Level: {selectedNode.level},</p>
                           <p>Node Degree: {selectedNode.degree}</p>
                         </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="text_units">
+                    <AccordionTrigger>Text Units</AccordionTrigger>
+                    <AccordionContent>
+                      <div className="border rounded-lg overflow-hidden">
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="border-b hover:bg-muted/50">
+                              <TableHead className="w-12 h-12">
+                                <Checkbox
+                                  checked={
+                                    selectedTextUnits.length ===
+                                    nodeSheet.text_units.length
+                                  }
+                                  onCheckedChange={toggleAllTextUnits}
+                                />
+                              </TableHead>
+                              <TableHead>Text Content</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {nodeSheet.text_units.map((unit) => (
+                              <TableRow
+                                key={unit.text_unit_id}
+                                className="border-b hover:bg-muted/50 h-10"
+                              >
+                                <TableCell className="w-12">
+                                  <Checkbox
+                                    checked={selectedTextUnits.includes(
+                                      unit.text_unit_id
+                                    )}
+                                    onCheckedChange={(checked) =>
+                                      toggleOneTextUnit(
+                                        checked as boolean,
+                                        unit.text_unit_id
+                                      )
+                                    }
+                                  />
+                                </TableCell>
+                                <TableCell
+                                  className="text-sm text-orange-700 underline cursor-pointer"
+                                  title={unit.text}
+                                >
+                                  {unit.text.slice(0, 10)}...
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
                       </div>
                     </AccordionContent>
                   </AccordionItem>
