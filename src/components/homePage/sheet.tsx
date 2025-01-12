@@ -117,47 +117,49 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
                   <AccordionItem value="Cited Documents">
                     <AccordionTrigger>Cited Documents</AccordionTrigger>
                     <AccordionContent>
-                      <Table className="border ">
-                        <TableHeader>
-                          <TableRow className="border-b  hover:bg-muted/50">
-                            <TableHead className="w-12 h-12 ">
-                              <Checkbox
-                                checked={
-                                  selectedDocs.length ===
-                                  communitySheet.documents.length
-                                }
-                                onCheckedChange={toggleAll}
-                              />
-                            </TableHead>
-                            <TableHead>Document Name</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {communitySheet.documents.map((doc) => (
-                            <TableRow
-                              key={doc.document_id}
-                              className="border-b hover:bg-muted/50"
-                            >
-                              <TableCell className="w-12 ">
+                      <div className="border rounded-lg overflow-hidden">
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="border-b hover:bg-muted/50">
+                              <TableHead className="w-12 h-12">
                                 <Checkbox
-                                  checked={selectedDocs.includes(
-                                    doc.document_id
-                                  )}
-                                  onCheckedChange={(checked) =>
-                                    toggleOne(
-                                      checked as boolean,
-                                      doc.document_id
-                                    )
+                                  checked={
+                                    selectedDocs.length ===
+                                    communitySheet.documents.length
                                   }
+                                  onCheckedChange={toggleAll}
                                 />
-                              </TableCell>
-                              <TableCell className="text-sm">
-                                {doc.document_title}
-                              </TableCell>
+                              </TableHead>
+                              <TableHead>Document Name</TableHead>
                             </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
+                          </TableHeader>
+                          <TableBody>
+                            {communitySheet.documents.map((doc) => (
+                              <TableRow
+                                key={doc.document_id}
+                                className="border-b hover:bg-muted/50 h-10"
+                              >
+                                <TableCell className="w-12">
+                                  <Checkbox
+                                    checked={selectedDocs.includes(
+                                      doc.document_id
+                                    )}
+                                    onCheckedChange={(checked) =>
+                                      toggleOne(
+                                        checked as boolean,
+                                        doc.document_id
+                                      )
+                                    }
+                                  />
+                                </TableCell>
+                                <TableCell className="text-sm">
+                                  {doc.document_title}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
