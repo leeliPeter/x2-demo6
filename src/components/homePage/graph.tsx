@@ -346,23 +346,23 @@ export default function Graph() {
               }
             }}
             onNodeClick={(node: any) => {
-              if (node.type === "community" || node.type === "node") {
+              if (node.type === "community") {
                 setSelectedNode({
+                  id: node.id,
                   title: node.label,
-                  level: node.type === "community" ? node.level : node.level,
-                  description:
-                    node.type === "community"
-                      ? `This is a level ${node.level} community with ${node.size} nodes`
-                      : `This is a ${node.category} node with degree ${node.degree}`,
-                  communityName:
-                    node.type === "community"
-                      ? node.label
-                      : `Community ${node.community}`,
-                  communityReport:
-                    node.type === "community"
-                      ? "Community analysis report..."
-                      : "Node belongs to community...",
-                  citedDocuments: "Related documents...",
+                  level: node.level,
+                  size: node.size,
+                  type: "community",
+                });
+                setIsSheetOpen(true);
+              } else if (node.type === "node") {
+                setSelectedNode({
+                  id: node.id,
+                  title: node.label,
+                  level: node.level,
+                  degree: node.degree,
+                  category: node.category,
+                  type: node.type,
                 });
                 setIsSheetOpen(true);
               }
