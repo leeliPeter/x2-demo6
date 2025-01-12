@@ -19,7 +19,7 @@ interface NodeSheetProps {
   isOpen: boolean;
   onClose: () => void;
   selectedNode: {
-    level: string;
+    level: number;
     description: string;
     communityName: string;
     communityReport: string;
@@ -39,7 +39,12 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
       >
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
-            {selectedNode.title} - Level {selectedNode.level}
+            {selectedNode.title}
+            {typeof selectedNode.level === "number" && (
+              <span className="text-sm text-muted-foreground">
+                Level {selectedNode.level}
+              </span>
+            )}
           </SheetTitle>
           <div className="flex flex-col w-full gap-4">
             <p className="text-sm text-muted-foreground">

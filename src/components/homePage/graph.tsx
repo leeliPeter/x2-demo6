@@ -25,6 +25,7 @@ import {
   communityColor,
   nodeColor,
 } from "@/data/color";
+import { NodeSheet } from "./sheet";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
   ssr: false,
@@ -50,6 +51,8 @@ export default function Graph() {
   const [hoveredNode, setHoveredNode] = useState<any>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const fgRef = useRef<any>(null);
+  const [selectedNode, setSelectedNode] = useState<any>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   // Update graphData to filter by community
   const graphData = useMemo(() => {
@@ -257,8 +260,9 @@ export default function Graph() {
       ref={containerRef}
       className="flex-1 w-full h-full relative overflow-hidden"
     >
-      <div className="absolute bg-red-500 top-40 left-0 z-30">
-        {selectedCommunityNumber}
+      <div className="absolute bg-red-500 text-white top-40 text-center  left-0 z-30">
+        {typeof selectedCommunityNumber === "number" &&
+          `Community: ${selectedCommunityNumber}`}
       </div>
       <div className="absolute items-center w-full top-4 left-1/2 -translate-x-1/2 z-20">
         <div className="flex items-start w-full px-6 justify-between text-xl font-semibold text-foreground">
@@ -341,6 +345,28 @@ export default function Graph() {
                 setMousePosition(screenPos);
               }
             }}
+            onNodeClick={(node: any) => {
+              if (node.type === "community" || node.type === "node") {
+                setSelectedNode({
+                  title: node.label,
+                  level: node.type === "community" ? node.level : node.level,
+                  description:
+                    node.type === "community"
+                      ? `This is a level ${node.level} community with ${node.size} nodes`
+                      : `This is a ${node.category} node with degree ${node.degree}`,
+                  communityName:
+                    node.type === "community"
+                      ? node.label
+                      : `Community ${node.community}`,
+                  communityReport:
+                    node.type === "community"
+                      ? "Community analysis report..."
+                      : "Node belongs to community...",
+                  citedDocuments: "Related documents...",
+                });
+                setIsSheetOpen(true);
+              }
+            }}
             nodeCanvasObject={(
               node: any,
               ctx: CanvasRenderingContext2D,
@@ -374,6 +400,12 @@ export default function Graph() {
         node={hoveredNode}
         position={mousePosition}
         show={graphSettings.preview}
+      />
+
+      <NodeSheet
+        isOpen={isSheetOpen}
+        onClose={() => setIsSheetOpen(false)}
+        selectedNode={selectedNode}
       />
     </div>
   );
