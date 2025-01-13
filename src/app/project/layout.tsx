@@ -53,7 +53,7 @@ export default function ProjectLayout({ children }: ProjectLayoutProps) {
       </div>
       <div
         className={cn(
-          "h-screen w-[320px] border-l bg-background transition-all duration-300",
+          "h-screen w-[360px] border-l bg-background transition-all duration-300",
           !rightSidebarOpen && "w-0"
         )}
       >

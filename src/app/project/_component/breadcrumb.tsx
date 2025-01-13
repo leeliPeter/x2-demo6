@@ -29,7 +29,7 @@ export function ProjectBreadcrumb({
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1 border-2 border-foreground rounded-md px-2 py-1 cursor-pointer ">
+          <div className="flex items-center gap-1 border-1 border border-foreground rounded-md px-2 py-1 cursor-pointer ">
             <MessageCircleMore className="h-4 w-4" />
             <p className="text-sm ">Ask AI</p>
           </div>
