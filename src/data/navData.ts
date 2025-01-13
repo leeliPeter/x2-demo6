@@ -6,6 +6,7 @@ interface Community {
   parent?: number;
   size: number;
   period: string;
+  text_unit_ids: string[];
 }
 
 interface GraphData {
@@ -35,6 +36,7 @@ export const navData: NavData = {
           level: 0,
           size: 90,
           period: "2024-01-01",
+          text_unit_ids: ["text_unit_1", "text_unit_2"],
         },
         {
           community_id: "graph_1_community_2",
@@ -43,6 +45,7 @@ export const navData: NavData = {
           level: 0,
           size: 20,
           period: "2024-01-01",
+          text_unit_ids: ["text_unit_3", "text_unit_4"],
         },
         {
           community_id: "graph_1_community_3",
@@ -52,6 +55,7 @@ export const navData: NavData = {
           level: 1,
           size: 40,
           period: "2024-01-01",
+          text_unit_ids: ["text_unit_5", "text_unit_6"],
         },
         {
           community_id: "graph_1_community_4",
@@ -61,6 +65,7 @@ export const navData: NavData = {
           level: 2,
           size: 50,
           period: "2024-01-01",
+          text_unit_ids: ["text_unit_7", "text_unit_8"],
         },
         {
           community_id: "graph_1_community_5",
@@ -70,6 +75,7 @@ export const navData: NavData = {
           level: 3,
           size: 90,
           period: "2024-01-01",
+          text_unit_ids: ["text_unit_9", "text_unit_10"],
         },
       ],
     },

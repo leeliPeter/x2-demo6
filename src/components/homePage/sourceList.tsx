@@ -8,10 +8,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { navItems } from "@/data/navData";
-import { useDispatch } from "react-redux";
-import { setPath } from "@/redux/features/navigationSlice";
-import { cn } from "@/lib/utils";
+import { sourceList } from "@/data/sourceList";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 interface SourceListProps {
   selectedPath: string[];
@@ -20,46 +19,40 @@ interface SourceListProps {
   };
 }
 
-interface NavItem {
-  title: string;
-  size?: string;
-  date?: string;
-  children?: NavItem[];
+interface Document {
+  document_id: string;
+  document_title: string;
+  document_content: string;
 }
 
 export default function SourceList({
   selectedPath,
   selectedFilters,
 }: SourceListProps) {
-  const dispatch = useDispatch();
+  const selectedTextUnitIds = useSelector(
+    (state: RootState) => state.navigation.selectedTextUnitIds
+  );
 
-  const getCurrentLevelData = () => {
-    let currentItems = navItems[0].children || [];
-
-    for (let i = 1; i < selectedPath.length; i++) {
-      const pathItem = selectedPath[i];
-      const found = currentItems.find(
-        (item) => item.title === pathItem
-      )?.children;
-      if (found) {
-        currentItems = found;
-      }
-    }
-
-    return currentItems;
-  };
-
-  const handleRowClick = (item: NavItem) => {
-    if (item.children) {
-      const newPath = [...selectedPath, item.title];
-      dispatch(setPath(newPath));
-    }
-  };
-
-  const currentData = getCurrentLevelData();
+  const handleRowClick = (document: Document) => {};
 
   return (
     <div className="w-full h-full p-6">
+      {selectedTextUnitIds.length > 0 && (
+        <div className="mb-4 p-4 bg-muted rounded-lg">
+          <h3 className="text-sm font-semibold mb-2">Selected Text Units:</h3>
+          <div className="flex flex-wrap gap-2">
+            {selectedTextUnitIds.map((id) => (
+              <span
+                key={id}
+                className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-md"
+              >
+                {id}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col gap-4">
         <h2 className="text-2xl font-semibold">
           {selectedPath[selectedPath.length - 1]}
@@ -84,28 +77,23 @@ export default function SourceList({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[50%]">Name</TableHead>
-                <TableHead>Path</TableHead>
-                <TableHead>Size</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead className="w-[50%]">Document Title</TableHead>
+                <TableHead>ID</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {currentData.map((item, index) => (
+              {sourceList.documents.map((doc) => (
                 <TableRow
-                  key={index}
-                  onClick={() => handleRowClick(item)}
-                  className={cn(
-                    "cursor-pointer",
-                    item.children && "hover:bg-muted/80"
-                  )}
+                  key={doc.document_id}
+                  onClick={() => handleRowClick(doc)}
+                  className="cursor-pointer hover:bg-muted/80"
                 >
-                  <TableCell className="font-medium">{item.title}</TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {[...selectedPath.slice(1), item.title].join(" > ")}
+                  <TableCell className="font-medium">
+                    {doc.document_title}
                   </TableCell>
-                  <TableCell>{item.size || "-"}</TableCell>
-                  <TableCell>{item.date || "-"}</TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {doc.document_id}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

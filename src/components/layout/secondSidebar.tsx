@@ -10,7 +10,11 @@ import {
 import { useState, useEffect } from "react";
 import { navData } from "@/data/navData";
 import { useDispatch, useSelector } from "react-redux";
-import { setPath, setCommunityNumber } from "@/redux/features/navigationSlice";
+import {
+  setPath,
+  setCommunityNumber,
+  setTextUnitIds,
+} from "@/redux/features/navigationSlice";
 import { RootState } from "@/redux/store";
 
 interface NavItem {
@@ -116,11 +120,23 @@ export function SecondSidebar({
     const newPath = [...parentTitles, item.title];
     dispatch(setPath(newPath));
 
-    // Directly set community number if available
-    if (item.community) {
+    if (item.community !== undefined) {
       dispatch(setCommunityNumber(item.community));
+
+      // Find text_unit_ids for this community
+      const graphName = parentTitles[1]; // Get graph name from path
+      const graph = navData.graph.find((g) => g.graph_name === graphName);
+      if (graph) {
+        const community = graph.communities.find(
+          (c) => c.community === item.community
+        );
+        if (community) {
+          dispatch(setTextUnitIds(community.text_unit_ids));
+        }
+      }
     } else {
       dispatch(setCommunityNumber(null));
+      dispatch(setTextUnitIds([]));
     }
 
     if (item.children) {

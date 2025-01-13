@@ -3,11 +3,13 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface NavigationState {
   selectedPath: string[];
   selectedCommunityNumber: number | null;
+  selectedTextUnitIds: string[];
 }
 
 const initialState: NavigationState = {
   selectedPath: ["All Data"],
   selectedCommunityNumber: null,
+  selectedTextUnitIds: [],
 };
 
 export const navigationSlice = createSlice({
@@ -20,8 +22,12 @@ export const navigationSlice = createSlice({
     setCommunityNumber: (state, action: PayloadAction<number | null>) => {
       state.selectedCommunityNumber = action.payload;
     },
+    setTextUnitIds: (state, action: PayloadAction<string[]>) => {
+      state.selectedTextUnitIds = action.payload;
+    },
   },
 });
 
-export const { setPath, setCommunityNumber } = navigationSlice.actions;
+export const { setPath, setCommunityNumber, setTextUnitIds } =
+  navigationSlice.actions;
 export default navigationSlice.reducer;
