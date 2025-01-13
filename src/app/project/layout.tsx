@@ -14,7 +14,7 @@ interface ProjectLayoutProps {
 export default function ProjectLayout({ children }: ProjectLayoutProps) {
   const [isSecondSidebarOpen, setIsSecondSidebarOpen] = useState(true);
   const [currentView, setCurrentView] = useState<"list" | "bookmark" | null>(
-    null
+    "list"
   );
   const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
 

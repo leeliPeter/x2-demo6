@@ -2,9 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { useState, useRef, MouseEvent } from "react";
+import Link from "next/link";
 
 const templates = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const projects = Array.from({ length: 10 }, (_, i) => i + 1);
+const projects = Array.from({ length: 2 }, (_, i) => i + 1);
 
 export default function ProjectsPage() {
   const [isDragging, setIsDragging] = useState(false);
@@ -85,21 +86,20 @@ export default function ProjectsPage() {
           <div className="flex-1 p-6">
             <div className="grid grid-cols-4 gap-4 overflow-y-auto">
               {projects.map((project) => (
-                <div
-                  key={project}
-                  className="cursor-pointer border p-3 border-1 border-border h-[160px] rounded-lg hover:bg-accent/50 transition-colors"
-                >
-                  <div className="text-sm font-semibold mt-1">
-                    Template Report {project}
+                <Link key={project} href={`/project`}>
+                  <div className="cursor-pointer border p-3 border-1 border-border h-[160px] rounded-lg hover:bg-accent/50 transition-colors">
+                    <div className="text-sm font-semibold mt-1">
+                      Template Report {project}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-2">
+                      Lorem ipsum dolor sit amet.
+                    </div>
+                    <div className="text-xs leading-6 mt-3 line-clamp-3 text-ellipsis overflow-hidden">
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                      Praesentium consequatur possimus obcaecati. Voluptatibus
+                    </div>
                   </div>
-                  <div className="text-xs text-muted-foreground mt-2">
-                    Lorem ipsum dolor sit amet.
-                  </div>
-                  <div className="text-xs leading-6 mt-3 line-clamp-3 text-ellipsis overflow-hidden">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                    Praesentium consequatur possimus obcaecati. Voluptatibus
-                  </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
