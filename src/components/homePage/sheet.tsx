@@ -73,24 +73,6 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
     }
   };
 
-  const toggleAllTextUnits = (checked: boolean) => {
-    if (checked) {
-      setSelectedTextUnits(
-        nodeSheet.text_units.map((unit) => unit.text_unit_id)
-      );
-    } else {
-      setSelectedTextUnits([]);
-    }
-  };
-
-  const toggleOneTextUnit = (checked: boolean, unitId: string) => {
-    if (checked) {
-      setSelectedTextUnits([...selectedTextUnits, unitId]);
-    } else {
-      setSelectedTextUnits(selectedTextUnits.filter((id) => id !== unitId));
-    }
-  };
-
   const handleDocumentClick = (docId: string) => {
     setSelectedDocs([docId]);
     setIsDocumentSheetOpen(true);

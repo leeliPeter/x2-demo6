@@ -41,7 +41,7 @@ export const navData: NavData = {
         {
           community_id: "graph_1_community_2",
           community_title: "5G模組及其關聯設備",
-          community: 1,
+          community: 0,
           level: 0,
           size: 20,
           period: "2024-01-01",

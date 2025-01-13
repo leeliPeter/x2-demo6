@@ -10,16 +10,16 @@ interface _Document {
   text_unit_ids: string[];
 }
 
-// Community Report table
-interface CommunityReport {
-  id: string;
-  title: string;
-  summary: string;
-  community: number;
-  full_content: string; // to explain the community
-  rank: number;
-  rank_explanation: string;
-}
+// // Community Report table
+// interface CommunityReport {
+//   id: string;
+//   title: string;
+//   summary: string;
+//   community: number;
+//   full_content: string; // to explain the community
+//   rank: number;
+//   rank_explanation: string;
+// }
 
 // Community table
 interface Community {

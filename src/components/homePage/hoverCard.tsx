@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Hexagon, CircleDotDashed, FolderUp } from "lucide-react";
 
 interface HoverCardProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   node: any;
   position: {
     x: number;

@@ -35,6 +35,7 @@ const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
 export default function Graph() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const graphRef = useRef<any>(null);
   const dispatch = useDispatch();
   const selectedPath = useSelector(
@@ -48,9 +49,12 @@ export default function Graph() {
   const selectedCommunityNumber = useSelector(
     (state: RootState) => state.navigation.selectedCommunityNumber
   );
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [hoveredNode, setHoveredNode] = useState<any>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const fgRef = useRef<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedNode, setSelectedNode] = useState<any>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -161,7 +165,7 @@ export default function Graph() {
     }
 
     return { nodes: [], links: [] };
-  }, [selectedPath, selectedCommunityNumber, nodeData, linkData]);
+  }, [selectedPath, selectedCommunityNumber]);
 
   const dropdownMenuItems = [
     {
@@ -236,7 +240,7 @@ export default function Graph() {
     const screenPos = fgRef.current.graph2ScreenCoords(x, y);
     return screenPos;
   };
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getNodeColor = (node: any) => {
     if (node.type === "company") return companyColor;
 
@@ -339,6 +343,7 @@ export default function Graph() {
             backgroundColor="#ffffff"
             width={dimensions.width}
             height={dimensions.height}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onNodeHover={(node: any) => {
               setHoveredNode(node);
               if (node) {
@@ -346,6 +351,7 @@ export default function Graph() {
                 setMousePosition(screenPos);
               }
             }}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onNodeClick={(node: any) => {
               if (node.type === "community") {
                 setSelectedNode({
@@ -370,6 +376,7 @@ export default function Graph() {
               }
             }}
             nodeCanvasObject={(
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               node: any,
               ctx: CanvasRenderingContext2D,
               globalScale: number
@@ -378,7 +385,7 @@ export default function Graph() {
               const label = node.label;
               const fontSize = 12 / globalScale;
               ctx.font = `${fontSize}px Sans-Serif`;
-              const textWidth = ctx.measureText(label).width;
+              // const textWidth = ctx.measureText(label).width;
               const nodeR = Math.sqrt(node.val) * 3;
 
               ctx.beginPath();

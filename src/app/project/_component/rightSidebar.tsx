@@ -1,7 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { Bot, ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown } from "lucide-react";
 import { aiProjectData } from "../projectData";
 import {
   Collapsible,
@@ -31,7 +30,7 @@ interface RightSidebarProps {
   onClose: () => void;
 }
 
-export function ProjectRightSidebar({ isOpen, onClose }: RightSidebarProps) {
+export function ProjectRightSidebar({ isOpen }: RightSidebarProps) {
   const [openChapters, setOpenChapters] = useState<string[]>([]);
   const [openSections, setOpenSections] = useState<string[]>([]);
 
