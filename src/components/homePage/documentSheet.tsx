@@ -7,13 +7,25 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { communitySheet, nodeSheet } from "@/data/sheetData";
+
+interface TextUnit {
+  text_unit_id: string;
+  text: string;
+}
+
+interface Document {
+  document_id: string;
+  document_title: string;
+  document_text: string;
+}
 
 interface DocumentSheetProps {
   isOpen: boolean;
   onClose: () => void;
   selectedDocs?: string[];
   selectedTextUnits?: string[];
+  documents?: Document[];
+  textUnits?: TextUnit[];
 }
 
 export default function DocumentSheet({
@@ -21,6 +33,8 @@ export default function DocumentSheet({
   onClose,
   selectedDocs = [],
   selectedTextUnits = [],
+  documents = [],
+  textUnits = [],
 }: DocumentSheetProps) {
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -37,7 +51,7 @@ export default function DocumentSheet({
           {selectedTextUnits.length > 0 && (
             <div className="mb-8">
               <h3 className="font-semibold mb-2">Node Documents</h3>
-              {nodeSheet.text_units
+              {textUnits
                 .filter((unit) => selectedTextUnits.includes(unit.text_unit_id))
                 .map((unit) => (
                   <div key={unit.text_unit_id} className="mb-4">
@@ -53,7 +67,7 @@ export default function DocumentSheet({
           {selectedDocs.length > 0 && (
             <div>
               <h3 className="font-semibold mb-2">Community Documents</h3>
-              {communitySheet.documents
+              {documents
                 .filter((doc) => selectedDocs.includes(doc.document_id))
                 .map((doc) => (
                   <div key={doc.document_id} className="mb-4">

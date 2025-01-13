@@ -255,16 +255,7 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
                         <div className="border rounded-lg overflow-hidden">
                           <Table>
                             <TableHeader>
-                              <TableRow className="border-b hover:bg-muted/50">
-                                <TableHead className="w-12 h-12">
-                                  <Checkbox
-                                    checked={
-                                      selectedTextUnits.length ===
-                                      nodeSheet.text_units.length
-                                    }
-                                    onCheckedChange={toggleAllTextUnits}
-                                  />
-                                </TableHead>
+                              <TableRow>
                                 <TableHead>Text Content</TableHead>
                               </TableRow>
                             </TableHeader>
@@ -274,19 +265,6 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
                                   key={unit.text_unit_id}
                                   className="border-b hover:bg-muted/50 h-10"
                                 >
-                                  <TableCell className="w-12">
-                                    <Checkbox
-                                      checked={selectedTextUnits.includes(
-                                        unit.text_unit_id
-                                      )}
-                                      onCheckedChange={(checked) =>
-                                        toggleOneTextUnit(
-                                          checked as boolean,
-                                          unit.text_unit_id
-                                        )
-                                      }
-                                    />
-                                  </TableCell>
                                   <TableCell
                                     className="text-sm text-orange-700 underline cursor-pointer"
                                     title={unit.text}
@@ -318,6 +296,8 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
         onClose={() => setIsDocumentSheetOpen(false)}
         selectedDocs={selectedDocs}
         selectedTextUnits={selectedTextUnits}
+        documents={communitySheet.documents}
+        textUnits={nodeSheet.text_units}
       />
     </>
   );
