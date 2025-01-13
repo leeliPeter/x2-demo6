@@ -9,6 +9,7 @@ import {
   FileText,
 } from "lucide-react";
 import { useState } from "react";
+import type { ReactElement } from "react";
 
 interface SecondSidebarProps {
   isOpen?: boolean;
@@ -126,7 +127,7 @@ export function ProjectSecondSidebar({
     );
   };
 
-  const renderNavItem = (item: NavItem, depth = 0): JSX.Element => {
+  const renderNavItem = (item: NavItem, depth = 0): ReactElement => {
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = expandedItems.includes(item.id);
 
