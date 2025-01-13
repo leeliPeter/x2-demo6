@@ -111,6 +111,7 @@ export default function Graph() {
             type: "community",
             size: comm.size,
             period: comm.period,
+            community: comm.community,
           })),
       ];
 
@@ -353,6 +354,7 @@ export default function Graph() {
                   level: node.level,
                   size: node.size,
                   type: "community",
+                  community: node.community,
                 });
                 setIsSheetOpen(true);
               } else if (node.type === "node") {

@@ -26,6 +26,9 @@ import {
 import DocumentSheet from "@/components/homePage/documentSheet";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setPath, setCommunityNumber } from "@/redux/features/navigationSlice";
+import { navData } from "@/data/navData";
 
 interface NodeSheetProps {
   isOpen: boolean;
@@ -36,6 +39,7 @@ interface NodeSheetProps {
     level: number;
     // Community node properties
     size?: number;
+    community?: number;
     // Entity node properties
     degree?: number;
     category?: string;
@@ -44,13 +48,15 @@ interface NodeSheetProps {
 }
 
 export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
+  const dispatch = useDispatch();
+  const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
+  const [selectedTextUnits, setSelectedTextUnits] = useState<string[]>([]);
+  const [isDocumentSheetOpen, setIsDocumentSheetOpen] = useState(false);
+
   if (!selectedNode) return null;
 
   const isCommunity = selectedNode.type === "community";
 
-  const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
-  const [selectedTextUnits, setSelectedTextUnits] = useState<string[]>([]);
-  const [isDocumentSheetOpen, setIsDocumentSheetOpen] = useState(false);
   const toggleAll = (checked: boolean) => {
     if (checked) {
       setSelectedDocs(communitySheet.documents.map((d) => d.document_id));
@@ -95,10 +101,32 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
     setIsDocumentSheetOpen(true);
   };
 
+  const handleExpandDetails = () => {
+    if (!selectedNode || selectedNode.type !== "community") return;
+
+    // Find the graph that contains this community
+    for (const graph of navData.graph) {
+      const community = graph.communities.find(
+        (c) => c.community === selectedNode.community
+      );
+
+      if (community) {
+        // Set the path: [All Data, Graph Name, Community Title]
+        dispatch(
+          setPath(["All Data", graph.graph_name, community.community_title])
+        );
+        // Set the community number
+        dispatch(setCommunityNumber(selectedNode.community || null));
+        onClose(); // Close the sheet after navigation
+        return;
+      }
+    }
+  };
+
   return (
     <>
       <Sheet open={isOpen} onOpenChange={onClose} modal={false}>
-        <SheetContent className="w-[400px] sm:w-[540px] shadow-lg">
+        <SheetContent className="w-[400px]  shadow-lg">
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               {selectedNode.title}
@@ -111,7 +139,10 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
                     {communitySheet.summary}
                   </div>
                   <div className="w-full flex justify-end">
-                    <Button className="w-full flex items-center gap-2">
+                    <Button
+                      className="w-full flex items-center gap-2"
+                      onClick={handleExpandDetails}
+                    >
                       Expand details
                       <ArrowRight className="w-4 h-4" />
                     </Button>
