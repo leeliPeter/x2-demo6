@@ -1,3 +1,9 @@
+// *
+// *
+// show all the documents
+// *
+// *
+
 // document table
 interface Document {
   document_id: string;

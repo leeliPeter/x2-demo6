@@ -1,3 +1,10 @@
+// *
+// *
+// When user click the node, I will provide the entity_id to send request to get the nodeSheet
+// When user click the community, I will provide the community_id
+// *
+// *
+
 // text_unit table
 interface TextUnit {
   text_unit_id: string;

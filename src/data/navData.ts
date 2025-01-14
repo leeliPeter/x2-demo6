@@ -1,3 +1,9 @@
+// *
+// *
+// send pull request to get the navData at the first time
+// *
+// *
+
 interface Community {
   community_id: string;
   community_title: string; // use community report title
@@ -9,12 +15,14 @@ interface Community {
   text_unit_ids: string[];
 }
 
+// create it
 interface GraphData {
   graph_id: string;
   graph_name: string;
   communities: Community[];
 }
 
+// create it
 interface NavData {
   company_id: string;
   conpanyName: string;

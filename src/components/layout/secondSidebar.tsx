@@ -16,6 +16,7 @@ import {
   setTextUnitIds,
 } from "@/redux/features/navigationSlice";
 import { RootState } from "@/redux/store";
+import { usePathname } from "next/navigation";
 
 interface NavItem {
   title: string;
@@ -86,6 +87,7 @@ export function SecondSidebar({
   className,
 }: SecondSidebarProps) {
   const dispatch = useDispatch();
+  const pathname = usePathname();
   const selectedPath = useSelector(
     (state: RootState) => state.navigation.selectedPath
   );
@@ -196,6 +198,7 @@ export function SecondSidebar({
       className={cn(
         "border-r bg-gray-50/40 transition-all duration-300 ease-in-out",
         isOpen ? "w-64" : "w-0 overflow-hidden",
+        pathname === "/projects" ? "hidden" : "",
         className
       )}
     >
