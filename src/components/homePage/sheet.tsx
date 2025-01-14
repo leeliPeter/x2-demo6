@@ -108,11 +108,14 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
   return (
     <>
       <Sheet open={isOpen} onOpenChange={onClose} modal={false}>
-        <SheetContent className="w-[400px]  shadow-lg">
-          <SheetHeader>
+        <SheetContent className="w-[400px] shadow-lg overflow-hidden flex flex-col">
+          <SheetHeader className="flex-none">
             <SheetTitle className="flex items-center gap-2">
               {selectedNode.title}
             </SheetTitle>
+          </SheetHeader>
+
+          <div className="flex-1 overflow-y-auto pr-6 -mr-6 scrollbar-none">
             <div className="flex flex-col w-full gap-4">
               {isCommunity ? (
                 // Community content
@@ -274,11 +277,12 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
                   </Accordion>
                 </>
               )}
-              <div className="flex justify-end mt-4">
-                <Button variant="outline">Edit</Button>
-              </div>
             </div>
-          </SheetHeader>
+          </div>
+
+          <div className="flex justify-end mt-4 pt-4 border-t flex-none">
+            <Button variant="outline">Edit</Button>
+          </div>
         </SheetContent>
       </Sheet>
       <DocumentSheet
