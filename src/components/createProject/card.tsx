@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -32,9 +32,16 @@ interface CardProps {
 }
 
 export default function Card({ isOpen, onClose }: CardProps) {
+  const router = useRouter();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [showStructure, setShowStructure] = useState(false);
+  const [selectedKnowledgeDocs, setSelectedKnowledgeDocs] = useState<string[]>(
+    []
+  );
   const totalSteps = 4;
+  const [isCreating, setIsCreating] = useState(false);
 
   const stepProgress = {
     1: 5,
@@ -62,7 +69,15 @@ export default function Card({ isOpen, onClose }: CardProps) {
   };
 
   const handleNext = () => {
-    if (currentStep < totalSteps) {
+    if (currentStep === totalSteps) {
+      setIsCreating(true);
+      // Simulate API call with timeout
+      setTimeout(() => {
+        setIsCreating(false);
+        router.push("/project");
+        onClose();
+      }, 3000);
+    } else if (currentStep < totalSteps) {
       setCurrentStep((prev) => prev + 1);
     }
   };
@@ -76,11 +91,26 @@ export default function Card({ isOpen, onClose }: CardProps) {
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return <StepOneUpload />;
+        return (
+          <StepOneUpload
+            onFileChange={setUploadedFile}
+            initialFile={uploadedFile}
+          />
+        );
       case 2:
-        return <StepTwoInput />;
+        return (
+          <StepTwoInput
+            showStructure={showStructure}
+            onGenerateStructure={() => setShowStructure(true)}
+          />
+        );
       case 3:
-        return <StepThreeSelect />;
+        return (
+          <StepThreeSelect
+            selectedDocs={selectedKnowledgeDocs}
+            onDocsChange={setSelectedKnowledgeDocs}
+          />
+        );
       case 4:
         return <StepFourConfirm />;
       default:
@@ -173,21 +203,51 @@ export default function Card({ isOpen, onClose }: CardProps) {
             <div className="border-t border-border" />
           </div>
 
-          <div className="mt-6">{renderStep()}</div>
+          <div className="mt-6 transition-all duration-300  ">
+            {renderStep()}
+          </div>
           {/* line */}
           <div className="relative mt-6 -mx-6">
             <div className="border-t border-border" />
           </div>
+          {/* progree bar */}
+          {isCreating && (
+            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center">
+              <div className="w-[80%] space-y-2">
+                <Progress value={100} className="animate-progress" />
+                <p className="text-center text-sm text-muted-foreground">
+                  Creating your project...
+                </p>
+              </div>
+            </div>
+          )}
 
           <div className="flex justify-between">
             <Button
               variant="outline"
               onClick={currentStep === 1 ? handleClose : handleBack}
+              disabled={isCreating}
             >
               {currentStep === 1 ? "Cancel" : "Previous"}
             </Button>
-            <Button onClick={handleNext} disabled={currentStep === totalSteps}>
-              Next
+            <Button
+              onClick={handleNext}
+              disabled={
+                isCreating ||
+                (currentStep === 1 && !uploadedFile) ||
+                (currentStep === 2 && !showStructure) ||
+                (currentStep === 3 && selectedKnowledgeDocs.length === 0)
+              }
+              className={cn(
+                currentStep === totalSteps &&
+                  "bg-orange-800 hover:bg-orange-700"
+              )}
+            >
+              {isCreating
+                ? "Creating..."
+                : currentStep === totalSteps
+                ? "Create"
+                : "Next"}
             </Button>
           </div>
         </DialogContent>

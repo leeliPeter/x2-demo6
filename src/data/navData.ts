@@ -1,6 +1,6 @@
 // *
 // *
-// send pull request to get the navData at the first time
+// send request to get the navData at the first time
 // *
 // *
 
@@ -86,6 +86,11 @@ export const navData: NavData = {
           text_unit_ids: ["text_unit_9", "text_unit_10"],
         },
       ],
+    },
+    {
+      graph_id: "graph_2",
+      graph_name: "Knowledge set B",
+      communities: [],
     },
   ],
 };
