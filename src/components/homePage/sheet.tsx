@@ -263,6 +263,14 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
                         </div>
                       </AccordionContent>
                     </AccordionItem>
+                    <AccordionItem value="cited_documents">
+                      <AccordionTrigger>Cited Documents</AccordionTrigger>
+                      <AccordionContent>
+                        <div className="flex flex-col gap-2 text-sm text-muted-foreground">
+                          {nodeSheet.cited_documents_title}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
                   </Accordion>
                 </>
               )}

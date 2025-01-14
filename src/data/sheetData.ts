@@ -7,6 +7,7 @@ interface NodeSheet {
   entity_id: string;
   description: string; // entity table
   text_units: TextUnit[];
+  cited_documents_title: string; // use document_id in text_unit to find document title
 }
 
 // document table
@@ -83,6 +84,7 @@ Network solution)、平板電腦(Tablet)、智慧型手機 (Smartphone)、智慧
 兼顧性能與效能讓使用者隨時保持生產力。`,
     },
   ],
+  cited_documents_title: "仁寶111年Ch5-7.txt",
 };
 
 export const communitySheet: CommunitySheet = {
