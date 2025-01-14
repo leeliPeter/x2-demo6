@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { Button } from "@/components/ui/button";
 import { setPath } from "@/redux/features/navigationSlice";
+import { usePathname } from "next/navigation";
 
 interface BreadcrumbProps {
   onToggle: () => void;
@@ -15,6 +16,7 @@ export function Breadcrumb({ onToggle }: BreadcrumbProps) {
   const selectedPath = useSelector(
     (state: RootState) => state.navigation.selectedPath
   );
+  const pathname = usePathname();
 
   const handleBreadcrumbClick = (index: number) => {
     // When clicking a breadcrumb item, update path to include only items up to clicked index
@@ -28,7 +30,10 @@ export function Breadcrumb({ onToggle }: BreadcrumbProps) {
         <Button
           variant="ghost"
           size="icon"
-          onClick={onToggle}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggle();
+          }}
           className="-ml-2 pr-2 border-border border-r-2 rounded-none h-full"
         >
           <PanelLeft className="h-4 w-4" />
@@ -36,17 +41,21 @@ export function Breadcrumb({ onToggle }: BreadcrumbProps) {
       </div>
 
       <div className="flex items-center gap-2">
-        {selectedPath.map((item, index) => (
-          <div key={index} className="flex items-center">
-            {index > 0 && <ChevronRight className="h-4 w-4 mx-2" />}
-            <button
-              onClick={() => handleBreadcrumbClick(index)}
-              className="hover:text-foreground transition-colors"
-            >
-              {item}
-            </button>
-          </div>
-        ))}
+        {pathname === "/projects" ? (
+          <div className="flex items-center">Projects</div>
+        ) : (
+          selectedPath.map((item, index) => (
+            <div key={index} className="flex items-center">
+              {index > 0 && <ChevronRight className="h-4 w-4 mx-2" />}
+              <button
+                onClick={() => handleBreadcrumbClick(index)}
+                className="hover:text-foreground transition-colors"
+              >
+                {item}
+              </button>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

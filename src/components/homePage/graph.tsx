@@ -6,7 +6,11 @@ import { nodeData } from "@/data/nodeData";
 import { linkData } from "@/data/nodeData";
 import { ArrowLeft, Settings2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPath } from "@/redux/features/navigationSlice";
+import {
+  setPath,
+  setCommunityNumber,
+  setTextUnitIds,
+} from "@/redux/features/navigationSlice";
 import type { RootState } from "@/redux/store";
 import { navData } from "@/data/navData";
 import {
@@ -234,11 +238,15 @@ export default function Graph() {
 
   // Update the getScreenCoordinates function
   const getScreenCoordinates = (x: number, y: number) => {
-    if (!fgRef.current) return { x: 0, y: 0 };
+    if (!fgRef.current || typeof x !== "number" || typeof y !== "number") {
+      return { x: 0, y: 0 };
+    }
 
-    // Use graph2ScreenCoords to get accurate screen coordinates
     const screenPos = fgRef.current.graph2ScreenCoords(x, y);
-    return screenPos;
+    return {
+      x: isNaN(screenPos.x) ? 0 : screenPos.x,
+      y: isNaN(screenPos.y) ? 0 : screenPos.y,
+    };
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getNodeColor = (node: any) => {
@@ -258,6 +266,15 @@ export default function Graph() {
     // For entity nodes
     const colorIndex = parseInt(node.id.split("_")[1]) % nodeColor.length;
     return nodeColor[colorIndex];
+  };
+
+  // Add this function to handle graph clicks
+  const handleGraphClick = (node: any) => {
+    if (node.type === "graph") {
+      // Create new path with "All Data" and graph name
+      const newPath = ["All Data", node.label];
+      dispatch(setPath(newPath));
+    }
   };
 
   return (
@@ -346,23 +363,22 @@ export default function Graph() {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onNodeHover={(node: any) => {
               setHoveredNode(node);
-              if (node) {
+              if (
+                node &&
+                typeof node.x === "number" &&
+                typeof node.y === "number"
+              ) {
                 const screenPos = getScreenCoordinates(node.x, node.y);
-                setMousePosition(screenPos);
+                setMousePosition({
+                  x: isNaN(screenPos.x) ? 0 : screenPos.x,
+                  y: isNaN(screenPos.y) ? 0 : screenPos.y,
+                });
               }
             }}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onNodeClick={(node: any) => {
-              if (node.type === "community") {
-                setSelectedNode({
-                  id: node.id,
-                  title: node.label,
-                  level: node.level,
-                  size: node.size,
-                  type: "community",
-                  community: node.community,
-                });
-                setIsSheetOpen(true);
+              if (node.type === "graph") {
+                handleGraphClick(node);
               } else if (node.type === "node") {
                 setSelectedNode({
                   id: node.id,
@@ -371,6 +387,16 @@ export default function Graph() {
                   degree: node.degree,
                   category: node.category,
                   type: node.type,
+                });
+                setIsSheetOpen(true);
+              } else if (node.type === "community") {
+                setSelectedNode({
+                  id: node.id,
+                  title: node.label,
+                  level: node.level,
+                  size: node.size,
+                  type: "community",
+                  community: node.community,
                 });
                 setIsSheetOpen(true);
               }
