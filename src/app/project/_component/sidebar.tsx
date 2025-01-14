@@ -37,7 +37,7 @@ export function ProjectSidebar({
     >
       <div className="p-2 border-b mb-2">
         <Link href="/projects">
-          <h2 className="font-semibold bg-slate-600 flex items-center justify-center text-white w-8 h-8 rounded-lg cursor-pointer">
+          <h2 className="font-semibold bg-slate-600 hover:bg-slate-700 flex items-center justify-center text-white w-8 h-8 rounded-lg cursor-pointer">
             <ArrowLeft className="w-4 h-4" />
           </h2>
         </Link>
