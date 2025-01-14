@@ -35,7 +35,7 @@ export const navData: NavData = {
   graph: [
     {
       graph_id: "graph_1",
-      graph_name: "Graph A",
+      graph_name: "Knowledge set A",
       communities: [
         {
           community_id: "graph_1_community_1",

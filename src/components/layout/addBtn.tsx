@@ -8,24 +8,36 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
+import Card from "../createProject/card";
 
 const dropdownItems = [
   {
     title: "Add New Graph",
     icon: <Waypoints className="h-4 w-4" />,
+    action: "graph",
   },
   {
     title: "Add New Source Document",
     icon: <FileText className="h-4 w-4" />,
+    action: "document",
   },
   {
-    title: "Add New Community",
+    title: "Create Project",
     icon: <FilePenLine className="h-4 w-4" />,
+    action: "project",
   },
 ];
 
 export function AddBtn() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isCardOpen, setIsCardOpen] = useState(false);
+
+  const handleItemClick = (action: string) => {
+    setIsDropdownOpen(false);
+    if (action === "project") {
+      setIsCardOpen(true);
+    }
+  };
 
   return (
     <>
@@ -46,7 +58,8 @@ export function AddBtn() {
             {dropdownItems.map((item) => (
               <DropdownMenuItem
                 key={item.title}
-                className="flex items-center justify-end gap-3 cursor-pointer px-4 py-2 text-black bg-background mb-2 rounded-lg transition-colors w-fit"
+                onClick={() => handleItemClick(item.action)}
+                className="flex shadow-lg items-center justify-end gap-3 cursor-pointer px-4 py-2 text-black bg-background mb-2 rounded-lg transition-colors w-fit"
               >
                 {item.icon}
                 <span>{item.title}</span>
@@ -56,6 +69,8 @@ export function AddBtn() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      <Card isOpen={isCardOpen} onClose={() => setIsCardOpen(false)} />
     </>
   );
 }
