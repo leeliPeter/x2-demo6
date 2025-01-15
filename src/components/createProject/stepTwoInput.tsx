@@ -9,8 +9,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Save } from "lucide-react";
 
-const tableData = [
+export const tableData = [
   {
     section: "Introduction",
     prompt: "Set the context for the report",
@@ -48,23 +49,54 @@ const tableData = [
   },
 ];
 
+// Keep original data constant
+const originalTableData = tableData;
+
 interface StepTwoInputProps {
   showStructure: boolean;
   onGenerateStructure: () => void;
+  tableData: typeof tableData;
+  onTableDataChange: (data: typeof tableData) => void;
 }
 
 export default function StepTwoInput({
   showStructure,
   onGenerateStructure,
+  tableData,
+  onTableDataChange,
 }: StepTwoInputProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [editingRow, setEditingRow] = useState<number | null>(null);
+  const [editedData, setEditedData] = useState(tableData);
 
   const handleGenerateStructure = () => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
+      // Use originalTableData instead of tableData prop
+      setEditedData(originalTableData);
+      onTableDataChange(originalTableData);
       onGenerateStructure();
     }, 2000);
+  };
+
+  const handleEdit = (index: number) => {
+    setEditingRow(index);
+  };
+
+  const handleSave = (index: number) => {
+    setEditingRow(null);
+    onTableDataChange(editedData);
+  };
+
+  const handleChange = (
+    index: number,
+    field: "section" | "prompt" | "query",
+    value: string
+  ) => {
+    const newData = [...editedData];
+    newData[index] = { ...newData[index], [field]: value };
+    setEditedData(newData);
   };
 
   const renderTableContent = () => {
@@ -100,14 +132,51 @@ export default function StepTwoInput({
       );
     }
 
-    return tableData.map((item, index) => (
+    return editedData.map((item, index) => (
       <TableRow key={index}>
-        <TableCell className="font-medium">{item.section}</TableCell>
-        <TableCell>{item.prompt}</TableCell>
-        <TableCell>{item.query}</TableCell>
+        <TableCell className="font-medium">
+          {editingRow === index ? (
+            <input
+              className="w-full border rounded px-2 py-1"
+              value={item.section}
+              onChange={(e) => handleChange(index, "section", e.target.value)}
+            />
+          ) : (
+            item.section
+          )}
+        </TableCell>
+        <TableCell>
+          {editingRow === index ? (
+            <Textarea
+              className="w-full min-h-[60px] resize-none scrollbar-hide"
+              value={item.prompt}
+              onChange={(e) => handleChange(index, "prompt", e.target.value)}
+            />
+          ) : (
+            item.prompt
+          )}
+        </TableCell>
+        <TableCell>
+          {editingRow === index ? (
+            <Textarea
+              className="w-full min-h-[60px] resize-none scrollbar-hide"
+              value={item.query}
+              onChange={(e) => handleChange(index, "query", e.target.value)}
+            />
+          ) : (
+            item.query
+          )}
+        </TableCell>
         <TableCell className="text-right">
-          <Button variant="ghost" size="sm" className="underline">
-            Edit
+          <Button
+            variant="ghost"
+            size="sm"
+            className="underline"
+            onClick={() =>
+              editingRow === index ? handleSave(index) : handleEdit(index)
+            }
+          >
+            {editingRow === index ? "Save" : "Edit"}
           </Button>
         </TableCell>
       </TableRow>
@@ -126,7 +195,7 @@ export default function StepTwoInput({
           <p>Project Instructions</p>
           <Textarea
             placeholder="Enter your project instructions or requirements here..."
-            className="min-h-[200px] resize-none"
+            className="min-h-[200px] resize-none scrollbar-hide"
           />
           <div className="mt-2">
             <Button className="p-4" onClick={handleGenerateStructure}>
@@ -135,7 +204,7 @@ export default function StepTwoInput({
           </div>
         </div>
         <div className="flex flex-col gap-4 w-[68%] pl-2">
-          <div className="max-h-[320px] overflow-y-auto scrollbar-hide">
+          <div className="max-h-[320px] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted-foreground/20 [&::-webkit-scrollbar-thumb]:rounded-full">
             <Table>
               <TableHeader className="sticky top-0 bg-background z-10">
                 <TableRow>

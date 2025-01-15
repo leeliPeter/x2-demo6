@@ -144,7 +144,7 @@ export default function StepThreeSelect({
           </div>
         </div>
         <div className="flex flex-col gap-4 w-[33%] pl-2 border-l-2 border-gray-200">
-          <div className="max-h-[320px] overflow-y-auto scrollbar-hide">
+          <div className="max-h-[320px] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted-foreground/20 [&::-webkit-scrollbar-thumb]:rounded-full">
             <Table>
               <TableHeader className="sticky top-0 bg-background z-10">
                 <TableRow>

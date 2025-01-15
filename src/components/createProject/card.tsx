@@ -25,6 +25,7 @@ import StepTwoInput from "./stepTwoInput";
 import StepThreeSelect from "./stepThreeSelect";
 import StepFourConfirm from "./stepFourConfirm";
 import { cn } from "@/lib/utils";
+import { tableData } from "./stepTwoInput";
 
 interface CardProps {
   isOpen: boolean;
@@ -42,6 +43,7 @@ export default function Card({ isOpen, onClose }: CardProps) {
   );
   const totalSteps = 4;
   const [isCreating, setIsCreating] = useState(false);
+  const [tableStructure, setTableStructure] = useState(tableData);
 
   const stepProgress = {
     1: 5,
@@ -102,6 +104,8 @@ export default function Card({ isOpen, onClose }: CardProps) {
           <StepTwoInput
             showStructure={showStructure}
             onGenerateStructure={() => setShowStructure(true)}
+            tableData={tableStructure}
+            onTableDataChange={setTableStructure}
           />
         );
       case 3:
