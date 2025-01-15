@@ -2,12 +2,14 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface NavigationState {
   selectedPath: string[];
+  selectedPathIds: string[];
   selectedCommunityNumber: number | null;
   selectedTextUnitIds: string[];
 }
 
 const initialState: NavigationState = {
   selectedPath: ["All Data"],
+  selectedPathIds: ["company_1"],
   selectedCommunityNumber: null,
   selectedTextUnitIds: [],
 };
@@ -19,6 +21,9 @@ export const navigationSlice = createSlice({
     setPath: (state, action: PayloadAction<string[]>) => {
       state.selectedPath = action.payload;
     },
+    setPathIds: (state, action: PayloadAction<string[]>) => {
+      state.selectedPathIds = action.payload;
+    },
     setCommunityNumber: (state, action: PayloadAction<number | null>) => {
       state.selectedCommunityNumber = action.payload;
     },
@@ -28,6 +33,6 @@ export const navigationSlice = createSlice({
   },
 });
 
-export const { setPath, setCommunityNumber, setTextUnitIds } =
+export const { setPath, setPathIds, setCommunityNumber, setTextUnitIds } =
   navigationSlice.actions;
 export default navigationSlice.reducer;

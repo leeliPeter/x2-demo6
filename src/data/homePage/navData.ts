@@ -12,7 +12,7 @@ interface Community {
   parent?: number;
   size: number;
   period: string;
-  text_unit_ids: string[]; // for source list filter document
+  text_unit_ids: string[]; // for sourcelist to filter document
 }
 
 // create it

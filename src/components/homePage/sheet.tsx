@@ -13,7 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { nodeSheet, communitySheet } from "@/data/sheetData";
+import { nodeSheet, communitySheet } from "@/data/homePage/sheetData";
 import { ArrowRight } from "lucide-react";
 import {
   Table,
@@ -26,9 +26,10 @@ import {
 import DocumentSheet from "@/components/homePage/documentSheet";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setPath, setCommunityNumber } from "@/redux/features/navigationSlice";
-import { navData } from "@/data/navData";
+import { navData } from "@/data/homePage/navData";
+import { RootState } from "@/redux/store";
 
 interface NodeSheetProps {
   isOpen: boolean;
@@ -52,6 +53,10 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
   const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
   const [selectedTextUnits, setSelectedTextUnits] = useState<string[]>([]);
   const [isDocumentSheetOpen, setIsDocumentSheetOpen] = useState(false);
+
+  const selectedPathIds = useSelector(
+    (state: RootState) => state.navigation.selectedPathIds
+  );
 
   if (!selectedNode) return null;
 
@@ -114,7 +119,22 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
               {selectedNode.title}
             </SheetTitle>
           </SheetHeader>
-
+          <div className="flex flex-col gap-2 p-4 bg-muted/50 rounded-lg text-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">ID:</span>
+              <span className="font-medium">{selectedNode.id}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">Type:</span>
+              <span className="font-medium">{selectedNode.type}</span>
+            </div>
+            {selectedPathIds[1] && (
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Graph ID:</span>
+                <span className="font-medium">{selectedPathIds[1]}</span>
+              </div>
+            )}
+          </div>
           <div className="flex-1 overflow-y-auto pr-6 -mr-6 scrollbar-none">
             <div className="flex flex-col w-full gap-4">
               {isCommunity ? (

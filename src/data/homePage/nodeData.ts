@@ -1,6 +1,6 @@
 // *
 // *
-// I will provide community :number
+// I will provide community :number and graph_id
 // and return the nodes based match the community number
 // *
 // *

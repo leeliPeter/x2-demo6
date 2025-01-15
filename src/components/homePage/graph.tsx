@@ -2,13 +2,13 @@
 
 import React, { useRef, useEffect, useState, useMemo } from "react";
 import dynamic from "next/dynamic";
-import { nodeData } from "@/data/nodeData";
-import { linkData } from "@/data/nodeData";
+import { nodeData } from "@/data/homePage/nodeData";
+import { linkData } from "@/data/homePage/nodeData";
 import { ArrowLeft, Settings2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPath } from "@/redux/features/navigationSlice";
 import type { RootState } from "@/redux/store";
-import { navData } from "@/data/navData";
+import { navData } from "@/data/homePage/navData";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -57,6 +57,12 @@ export default function Graph() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedNode, setSelectedNode] = useState<any>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const selectedPathIds = useSelector(
+    (state: RootState) => state.navigation.selectedPathIds
+  );
+
+  // Get graph ID from pathIds[1] if it exists
+  const graphId = selectedPathIds.length > 1 ? selectedPathIds[1] : null;
 
   // Update graphData to filter by community
   const graphData = useMemo(() => {
@@ -279,9 +285,12 @@ export default function Graph() {
       ref={containerRef}
       className="flex-1 w-full h-full relative overflow-hidden"
     >
-      <div className="absolute bg-red-500 text-white top-40 text-center  left-0 z-30">
+      <div className="absolute bg-red-500 text-white top-40 text-center left-0 z-30">
         {typeof selectedCommunityNumber === "number" &&
           `Community: ${selectedCommunityNumber}`}
+      </div>
+      <div className="absolute bg-red-500 text-white top-48 text-center left-0 z-30">
+        {graphId && `Graph: ${graphId}`}
       </div>
       <div className="absolute items-center w-full top-4 left-1/2 -translate-x-1/2 z-20">
         <div className="flex items-start w-full px-6 justify-between text-xl font-semibold text-foreground">

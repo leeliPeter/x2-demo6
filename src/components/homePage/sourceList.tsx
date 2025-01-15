@@ -8,11 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { sourceList } from "@/data/sourceList";
+import { sourceList } from "@/data/homePage/sourceList";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import DocumentSheet from "./documentSheet";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface SourceListProps {
@@ -32,9 +32,20 @@ export default function SourceList({ selectedPath }: SourceListProps) {
   const selectedTextUnitIds = useSelector(
     (state: RootState) => state.navigation.selectedTextUnitIds
   );
+  const selectedPathIds = useSelector(
+    (state: RootState) => state.navigation.selectedPathIds
+  );
   const [isDocumentSheetOpen, setIsDocumentSheetOpen] = useState(false);
   const [selectedDocIds, setSelectedDocIds] = useState<string[]>([]);
   const [viewingDocId, setViewingDocId] = useState<string[]>([]);
+
+  // Get documents for the selected graph
+  const currentGraphDocs = useMemo(() => {
+    const graph = sourceList.graphs.find(
+      (g) => g.graph_id === selectedPathIds[1]
+    );
+    return graph?.documents || [];
+  }, [selectedPathIds]);
 
   const handleDocumentClick = (document: Document) => {
     setViewingDocId([document.document_id]);
@@ -43,7 +54,7 @@ export default function SourceList({ selectedPath }: SourceListProps) {
 
   const toggleAll = (checked: boolean) => {
     if (checked) {
-      setSelectedDocIds(sourceList.documents.map((doc) => doc.document_id));
+      setSelectedDocIds(currentGraphDocs.map((doc) => doc.document_id));
     } else {
       setSelectedDocIds([]);
     }
@@ -57,7 +68,7 @@ export default function SourceList({ selectedPath }: SourceListProps) {
     }
   };
 
-  const transformedDocs = sourceList.documents.map((doc) => ({
+  const transformedDocs = currentGraphDocs.map((doc) => ({
     document_id: doc.document_id,
     document_title: doc.document_title,
     document_text: doc.document_content,
@@ -82,33 +93,23 @@ export default function SourceList({ selectedPath }: SourceListProps) {
           </div>
         )}
 
+        {selectedPathIds[1] && (
+          <div className="mb-4 p-4 bg-muted rounded-lg">
+            <h3 className="text-sm font-semibold mb-2">Selected Graph:</h3>
+            <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-md">
+              {selectedPathIds[1]}
+            </span>
+          </div>
+        )}
+
         <div className="flex flex-col gap-4">
           <h2 className="text-xl font-semibold flex items-center gap-2 text-muted-foreground">
             All the document cited by
-            <p className="text-foreground font-border ">
+            <p className="text-foreground font-border">
               {selectedPath[selectedPath.length - 1]}
             </p>
             :
           </h2>
-          {/* <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>Current Path:</span>
-              <span>{selectedPath.join(" > ")}</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>Active Filters:</span>
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(selectedFilters).map(([label, value]) => (
-                  <span
-                    key={label}
-                    className="bg-gray-100 px-2 py-1 rounded-md"
-                  >
-                    {label}: {value}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div> */}
           <div className="mt-4">
             <div className="border rounded-lg overflow-hidden">
               <Table>
@@ -117,7 +118,7 @@ export default function SourceList({ selectedPath }: SourceListProps) {
                     <TableHead className="w-[50px] h-[42px]">
                       <Checkbox
                         checked={
-                          selectedDocIds.length === sourceList.documents.length
+                          selectedDocIds.length === currentGraphDocs.length
                         }
                         onCheckedChange={toggleAll}
                       />
@@ -127,7 +128,7 @@ export default function SourceList({ selectedPath }: SourceListProps) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {sourceList.documents.map((doc) => (
+                  {currentGraphDocs.map((doc) => (
                     <TableRow key={doc.document_id} className="h-10">
                       <TableCell className="w-[50px]">
                         <Checkbox
