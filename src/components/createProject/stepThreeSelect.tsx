@@ -67,8 +67,8 @@ export default function StepThreeSelect({
     <div className="p-6 flex flex-col -mb-10">
       <p className="text-2xl font-medium">Select Knowledge Set</p>
       <p className="text-sm text-muted-foreground mb-6">
-        A well-defined sample report can help the AI to extract it's structure
-        for your new project.
+        A well-defined sample report can help the AI to extract it&apos;s
+        structure for your new project.
       </p>
       <div className="flex gap-2 w-full">
         <div className="flex flex-col gap-4 w-[22%] h-[320px] border-r-2 border-gray-200 pr-8 box-content">

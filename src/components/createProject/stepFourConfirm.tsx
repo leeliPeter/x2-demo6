@@ -6,7 +6,7 @@ export default function StepFourConfirm() {
     <div className="p-6 flex flex-col -mb-10">
       <p className="text-2xl font-medium">Create Project</p>
       <p className="text-sm text-muted-foreground mb-6">
-        Review your selections and click 'Create Project' to finalize.
+        Review your selections and click &apos;Create Project&apos; to finalize.
       </p>
       <div className="flex items-center gap-2 text-green-700">
         <CircleCheckBig className="h-4 w-4 text-green-700" />

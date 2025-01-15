@@ -48,8 +48,8 @@ export default function StepOneUpload({
     <div className="p-6 flex flex-col max-w-96">
       <div className="text-2xl font-medium">Upload Sample Report</div>
       <div className="text-sm text-muted-foreground mb-6">
-        A well-defined sample report can help the AI to extract it's structure
-        for your new project.
+        A well-defined sample report can help the AI to extract it&apos;s
+        structure for your new project.
       </div>
 
       {!file ? (

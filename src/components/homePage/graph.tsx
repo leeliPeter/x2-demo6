@@ -6,11 +6,7 @@ import { nodeData } from "@/data/nodeData";
 import { linkData } from "@/data/nodeData";
 import { ArrowLeft, Settings2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setPath,
-  setCommunityNumber,
-  setTextUnitIds,
-} from "@/redux/features/navigationSlice";
+import { setPath } from "@/redux/features/navigationSlice";
 import type { RootState } from "@/redux/store";
 import { navData } from "@/data/navData";
 import {
@@ -269,6 +265,7 @@ export default function Graph() {
   };
 
   // Add this function to handle graph clicks
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleGraphClick = (node: any) => {
     if (node.type === "graph") {
       // Create new path with "All Data" and graph name

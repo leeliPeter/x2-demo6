@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Save } from "lucide-react";
 
 export const tableData = [
   {
@@ -84,7 +83,7 @@ export default function StepTwoInput({
     setEditingRow(index);
   };
 
-  const handleSave = (index: number) => {
+  const handleSave = () => {
     setEditingRow(null);
     onTableDataChange(editedData);
   };
@@ -103,8 +102,8 @@ export default function StepTwoInput({
     if (isLoading) {
       return Array(6)
         .fill(0)
-        .map((_, index) => (
-          <TableRow key={index}>
+        .map((_, _index) => (
+          <TableRow key={_index}>
             <TableCell>
               <div className="h-4 bg-muted animate-pulse rounded" />
             </TableCell>
@@ -173,7 +172,7 @@ export default function StepTwoInput({
             size="sm"
             className="underline"
             onClick={() =>
-              editingRow === index ? handleSave(index) : handleEdit(index)
+              editingRow === index ? handleSave() : handleEdit(index)
             }
           >
             {editingRow === index ? "Save" : "Edit"}
@@ -187,8 +186,8 @@ export default function StepTwoInput({
     <div className="p-6 flex flex-col -mb-10">
       <p className="text-2xl font-medium">Extract the structure</p>
       <p className="text-sm text-muted-foreground mb-6">
-        A well-defined sample report can help the AI to extract it's structure
-        for your new project.
+        A well-defined sample report can help the AI to extract it&apos;s
+        structure for your new project.
       </p>
       <div className="flex gap-2 w-full">
         <div className="flex flex-col gap-4 w-[32%] h-[320px] border-r-2 border-gray-200 pr-8 box-content">

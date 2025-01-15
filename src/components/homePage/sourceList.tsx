@@ -28,10 +28,7 @@ interface Document {
   document_content: string;
 }
 
-export default function SourceList({
-  selectedPath,
-  selectedFilters,
-}: SourceListProps) {
+export default function SourceList({ selectedPath }: SourceListProps) {
   const selectedTextUnitIds = useSelector(
     (state: RootState) => state.navigation.selectedTextUnitIds
   );
