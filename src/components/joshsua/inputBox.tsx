@@ -5,9 +5,15 @@ import { Mic, Paperclip, ArrowRight } from "lucide-react";
 
 interface InputBoxProps {
   onSend: (message: string) => void;
+  disabled?: boolean;
+  buttonDisabled?: boolean;
 }
 
-export default function InputBox({ onSend }: InputBoxProps) {
+export default function InputBox({
+  onSend,
+  disabled,
+  buttonDisabled,
+}: InputBoxProps) {
   const [input, setInput] = React.useState("");
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
@@ -24,7 +30,9 @@ export default function InputBox({ onSend }: InputBoxProps) {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      if (!buttonDisabled && input.trim()) {
+        handleSend();
+      }
     }
   };
 
@@ -49,11 +57,14 @@ export default function InputBox({ onSend }: InputBoxProps) {
     <div className="flex rounded-md flex-col w-full gap-2 relative bg-background p-2">
       <Textarea
         ref={textareaRef}
-        placeholder="Type your message..."
+        placeholder={
+          disabled ? "Please wait for AI response..." : "Type a message..."
+        }
         value={input}
         onChange={adjustHeight}
         onKeyDown={handleKeyDown}
         className="min-h-[20px] max-h-[120px] shadow-none bg-background rounded-md border-none focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 resize-none [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted-foreground/20 [&::-webkit-scrollbar-thumb]:rounded-full"
+        disabled={disabled}
       />
       <div className="flex flex-row justify-between w-[95%] mx-auto">
         <Button
@@ -70,7 +81,7 @@ export default function InputBox({ onSend }: InputBoxProps) {
             size="icon"
             className="bg-foreground rounded-full w-8 h-8"
             onClick={handleSend}
-            disabled={!input.trim()}
+            disabled={!input.trim() || buttonDisabled}
           >
             <ArrowRight className="h-10 w-10" />
           </Button>

@@ -35,6 +35,9 @@ export function ProjectBreadcrumb({
           </p>
         </div>
         <div className="flex items-center gap-4">
+          <p className="text-sm text-muted-foreground cursor-pointer  hover:underline">
+            View history
+          </p>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div className="flex items-center gap-1 border-1 border border-foreground rounded-md px-2 py-1 cursor-pointer hover:bg-muted/50">
@@ -42,7 +45,10 @@ export function ProjectBreadcrumb({
                 <p className="text-sm">Ask AI</p>
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[450px] bg-gray-100">
+            <DropdownMenuContent
+              align="end"
+              className="w-[500px] mt-1 bg-gray-100"
+            >
               <ChatBoxCard />
             </DropdownMenuContent>
           </DropdownMenu>

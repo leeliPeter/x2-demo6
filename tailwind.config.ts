@@ -88,10 +88,10 @@ export default {
         },
         twinkle: {
           "0%, 100%": {
-            boxShadow: "0 0 10px 5px rgba(135, 206, 235, 0.5)",
+            boxShadow: "0 0 25px 5px rgba(176, 224, 245, 0.2)",
           },
           "50%": {
-            boxShadow: "0 0 15px 5px rgba(135, 206, 235, 0.9)",
+            boxShadow: "0 0 25px 5px rgba(176, 224, 245, 0.8)",
           },
         },
       },
