@@ -2,6 +2,12 @@
 
 import { cn } from "@/lib/utils";
 import { MessageCircleMore, Bot, Settings2 } from "lucide-react";
+import ChatBoxCard from "@/components/joshsua/chatBoxCard";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface BreadcrumbProps {
   className?: string;
@@ -29,10 +35,18 @@ export function ProjectBreadcrumb({
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1 border-1 border border-foreground rounded-md px-2 py-1 cursor-pointer ">
-            <MessageCircleMore className="h-4 w-4" />
-            <p className="text-sm ">Ask AI</p>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center gap-1 border-1 border border-foreground rounded-md px-2 py-1 cursor-pointer hover:bg-muted/50">
+                <MessageCircleMore className="h-4 w-4" />
+                <p className="text-sm">Ask AI</p>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[450px] bg-gray-100">
+              <ChatBoxCard />
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <div
             className={cn(
               "group p-2 rounded-md cursor-pointer",
