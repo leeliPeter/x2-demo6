@@ -208,10 +208,10 @@ export default function StepTwoInput({
             <Table>
               <TableHeader className="sticky top-0 bg-background z-10">
                 <TableRow>
-                  <TableHead>Section</TableHead>
-                  <TableHead>Prompt</TableHead>
-                  <TableHead>Query</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
+                  <TableHead className="w-[125px]">Section</TableHead>
+                  <TableHead className="w-[40%]">Prompt</TableHead>
+                  <TableHead className="w-[40%]">Query</TableHead>
+                  <TableHead className="text-right w-[40px]">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>{renderTableContent()}</TableBody>

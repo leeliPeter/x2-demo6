@@ -207,8 +207,18 @@ export default function Card({ isOpen, onClose }: CardProps) {
             <div className="border-t border-border" />
           </div>
 
-          <div className="mt-6 transition-all duration-300  ">
-            {renderStep()}
+          <div className="overflow-hidden">
+            <div
+              className={cn(
+                "transition-all duration-300 ease-in-out",
+                currentStep === 1 && "h-[250px]",
+                currentStep === 2 && "h-[420px]",
+                currentStep === 3 && "h-[420px]",
+                currentStep === 4 && "h-[200px]"
+              )}
+            >
+              {renderStep()}
+            </div>
           </div>
           {/* line */}
           <div className="relative mt-6 -mx-6">
