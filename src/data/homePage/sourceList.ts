@@ -25,7 +25,7 @@ interface SourceList {
 export const sourceList: SourceList = {
   graphs: [
     {
-      graph_id: "graph_1_id",
+      graph_id: "graph_1",
       graph_name: "Knowledge set A",
       documents: [
         {

@@ -131,7 +131,7 @@ export function SecondSidebar({
       const graphName = newPath[1];
       const graph = navData.graph.find((g) => g.graph_name === graphName);
       if (graph) {
-        pathIds.push(graph.graph_id); // This will be our graph ID
+        pathIds.push(graph.graph_id); // This adds "graph_1"
 
         // Find community ID if it exists
         if (newPath.length > 2) {

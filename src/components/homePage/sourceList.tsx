@@ -39,8 +39,13 @@ export default function SourceList({ selectedPath }: SourceListProps) {
   const [selectedDocIds, setSelectedDocIds] = useState<string[]>([]);
   const [viewingDocId, setViewingDocId] = useState<string[]>([]);
 
-  // Get documents for the selected graph
+  // Get documents for the selected graph or all documents if no graph selected
   const currentGraphDocs = useMemo(() => {
+    if (!selectedPathIds[1]) {
+      // If no graph selected, return all documents from all graphs
+      return sourceList.graphs.flatMap((graph) => graph.documents);
+    }
+    // Otherwise return documents from selected graph
     const graph = sourceList.graphs.find(
       (g) => g.graph_id === selectedPathIds[1]
     );
@@ -104,11 +109,17 @@ export default function SourceList({ selectedPath }: SourceListProps) {
 
         <div className="flex flex-col gap-4">
           <h2 className="text-xl font-semibold flex items-center gap-2 text-muted-foreground">
-            All the document cited by
-            <p className="text-foreground font-border">
-              {selectedPath[selectedPath.length - 1]}
-            </p>
-            :
+            {selectedPathIds[1] ? (
+              <>
+                All the document cited by
+                <p className="text-foreground font-border">
+                  {selectedPath[selectedPath.length - 1]}
+                </p>
+                :
+              </>
+            ) : (
+              "All Documents:"
+            )}
           </h2>
           <div className="mt-4">
             <div className="border rounded-lg overflow-hidden">
