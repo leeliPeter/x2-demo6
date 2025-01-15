@@ -5,7 +5,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
-import { ChevronsUpDown, Check, ArrowUpRight, MoveUpRight } from "lucide-react";
+import { ChevronsUpDown, Check, ArrowUpRight } from "lucide-react";
 
 export default function FakeResponce() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -70,19 +70,19 @@ export default function FakeResponce() {
           </div>
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-2">
-          <div className="rounded-md  justify-between  px-4 py-3 font-mono text-sm flex  gap-2 hover:bg-background hover:text-foreground">
-            <Check className="text-green-500" /> Updated variable "年初現金餘額"
-            at Section 1.2
+          <div className="rounded-md justify-between px-4 py-3 font-mono text-sm flex gap-2 hover:bg-background hover:text-foreground">
+            <Check className="text-green-500" /> Updated variable
+            &quot;年初現金餘額&quot; at Section 1.2
             <ArrowUpRight className="text-muted-foreground" />
           </div>
-          <div className="rounded-md  px-4 py-3 font-mono text-sm flex  gap-2 hover:bg-background hover:text-foreground">
+          <div className="rounded-md px-4 py-3 font-mono text-sm flex gap-2 hover:bg-background hover:text-foreground">
             <Check className="text-green-500" /> Updated variable
-            "全年來自營業活動淨現金流量" at Section 1.3
+            &quot;全年來自營業活動淨現金流量&quot; at Section 1.3
             <ArrowUpRight className="text-muted-foreground" />
           </div>
-          <div className="rounded-md  px-4 py-3 font-mono text-sm flex  gap-2 hover:bg-background hover:text-foreground">
+          <div className="rounded-md px-4 py-3 font-mono text-sm flex gap-2 hover:bg-background hover:text-foreground">
             <Check className="text-green-500" /> Updated variable
-            "全年因投資活動淨現金流量" at Section 1.4
+            &quot;全年因投資活動淨現金流量&quot; at Section 1.4
             <ArrowUpRight className="text-muted-foreground" />
           </div>
         </CollapsibleContent>

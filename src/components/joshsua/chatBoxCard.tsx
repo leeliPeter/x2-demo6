@@ -142,7 +142,7 @@ export default function ChatBoxCard() {
             <div className="w-full flex flex-col gap-6 mt-2 justify-center items-center">
               <JoshuaBall size={15} />
               <p className="text-base font-semibold text-muted-foreground">
-                Test : try to input "prompt" or any word.
+                Test : try to input &quot;prompt&quot; or any word.
               </p>
             </div>
             {messages.map((message) => (
