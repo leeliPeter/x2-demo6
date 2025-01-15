@@ -69,7 +69,7 @@ export default function StepOneUpload({
               {isDragActive ? "Drop the file here" : "Upload your File"}
             </p>
             <p className="text-xs text-gray-400 font-family:Roboto">
-              Click here to uploador drag it here
+              Click here to upload or drag it here
             </p>
             <p className="text-xs text-gray-400 font-family:Roboto">
               PDF, DOC, DOCX, XLS, XLSX
