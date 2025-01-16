@@ -12,6 +12,8 @@ import { Copy, MessageSquare, PenLine, GripVertical } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setPendingMessage, setIsOpen } from "@/redux/features/chatSlice";
 import type { Section, SubSection, Chapter } from "./projectData";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import type { DropResult } from "@hello-pangea/dnd";
 
 type SelectedItem = {
   type: "chapter" | "section" | "subsection";
@@ -204,66 +206,116 @@ export default function ProjectPage() {
     </Popover>
   );
 
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+
+    const newData = JSON.parse(JSON.stringify(data));
+    const sourceChapter = newData.chapters[parseInt(result.source.droppableId)];
+    const destChapter =
+      newData.chapters[parseInt(result.destination.droppableId)];
+
+    // Remove from source
+    const [movedSection] = sourceChapter.sections.splice(
+      result.source.index,
+      1
+    );
+    // Add to destination
+    destChapter.sections.splice(result.destination.index, 0, movedSection);
+
+    setData(newData);
+    updateProjectData(newData);
+  };
+
   return (
     <div className="bg-border flex-1 h-full px-4 overflow-hidden overflow-y-auto">
-      <div className="w-full bg-background rounded-lg my-4">
-        <div className="px-8 py-10 space-y-8 h-full">
-          {data.chapters.map((chapter) => (
-            <div key={chapter.title} className="space-y-4">
-              {renderItem(
-                "chapter",
-                chapter.title,
-                <>
-                  <h2 className="text-xl font-bold">{chapter.title}</h2>
-                  <p className="text-sm">{chapter.description}</p>
-                </>,
-                chapter.description
-              )}
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="w-full bg-background rounded-lg my-4">
+          <div className="px-8 py-10 space-y-8 h-full">
+            {data.chapters.map((chapter, chapterIndex) => (
+              <div key={chapter.title} className="space-y-4">
+                {renderItem(
+                  "chapter",
+                  chapter.title,
+                  <>
+                    <h2 className="text-xl font-bold">{chapter.title}</h2>
+                    <p className="text-sm">{chapter.description}</p>
+                  </>,
+                  chapter.description
+                )}
 
-              <div className="pl-6 space-y-6">
-                {chapter.sections?.map((section) => (
-                  <div key={section.title} className="space-y-2">
-                    {renderItem(
-                      "section",
-                      section.title,
-                      <>
-                        <div className="group relative">
-                          <GripVertical className="h-4 w-4 absolute -left-6 top-2 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing" />
-                          <h3 className="text-lg font-semibold">
-                            {section.title}
-                          </h3>
-                          <p className="text-sm">{section.description}</p>
-                        </div>
-                      </>,
-                      section.description
-                    )}
+                <Droppable droppableId={`${chapterIndex}`}>
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                      className="pl-6 space-y-6"
+                    >
+                      {chapter.sections?.map((section, index) => (
+                        <Draggable
+                          key={section.title}
+                          draggableId={section.title}
+                          index={index}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              className="space-y-2"
+                            >
+                              {renderItem(
+                                "section",
+                                section.title,
+                                <>
+                                  <div className="group relative">
+                                    <div
+                                      {...provided.dragHandleProps}
+                                      className="absolute -left-6 top-2"
+                                    >
+                                      <GripVertical className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing" />
+                                    </div>
+                                    <h3 className="text-lg font-semibold">
+                                      {section.title}
+                                    </h3>
+                                    <p className="text-sm">
+                                      {section.description}
+                                    </p>
+                                  </div>
+                                </>,
+                                section.description
+                              )}
 
-                    <div className="pl-6 space-y-4 mt-4">
-                      {section.subSections?.map((subsection) => (
-                        <div key={subsection.title}>
-                          {renderItem(
-                            "subsection",
-                            subsection.title,
-                            <>
-                              <h4 className="text-base font-semibold">
-                                {subsection.title}
-                              </h4>
-                              <p className="text-sm">
-                                {subsection.description}
-                              </p>
-                            </>,
-                            subsection.description
+                              <div className="pl-6 space-y-4 mt-4">
+                                {section.subSections?.map((subsection) => (
+                                  <div key={subsection.title}>
+                                    {renderItem(
+                                      "subsection",
+                                      subsection.title,
+                                      <>
+                                        <h4 className="text-base font-semibold">
+                                          {subsection.title}
+                                        </h4>
+                                        <p className="text-sm">
+                                          {subsection.description}
+                                        </p>
+                                      </>,
+                                      subsection.description
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           )}
-                        </div>
+                        </Draggable>
                       ))}
+                      {provided.placeholder}
                     </div>
-                  </div>
-                ))}
+                  )}
+                </Droppable>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      </DragDropContext>
     </div>
   );
 }

@@ -9,6 +9,7 @@ import {
   FileText,
 } from "lucide-react";
 import { useState } from "react";
+import { projectData } from "../projectData";
 import type { ReactElement } from "react";
 
 interface SecondSidebarProps {
@@ -127,38 +128,74 @@ export function ProjectSecondSidebar({
     );
   };
 
-  const renderNavItem = (item: NavItem, depth = 0): ReactElement => {
-    const hasChildren = item.children && item.children.length > 0;
-    const isExpanded = expandedItems.includes(item.id);
-
-    return (
-      <div key={item.id} className={cn("relative ", depth > 0 && "ml-6")}>
+  const renderChapters = (): ReactElement[] => {
+    return projectData.chapters.map((chapter) => (
+      <div key={chapter.title} className="relative">
         <button
-          onClick={() => toggleItem(item.id)}
+          onClick={() => toggleItem(chapter.title)}
           className="flex items-center w-full gap-2 py-2 px-2 text-sm hover:bg-muted/80 rounded-lg"
         >
           <div className="flex items-center gap-2 w-full">
-            {depth === 0 && <Heading1 className="w-4 h-4" />}
-            {depth === 1 && <Heading2 className="w-4 h-4" />}
-            <span>{item.title}</span>
+            <Heading1 className="w-4 h-4" />
+            <span>{chapter.title}</span>
           </div>
-          {hasChildren && (
+          {chapter.sections && chapter.sections.length > 0 && (
             <ChevronDown
               className={cn(
                 "h-4 w-4 transition-transform",
-                isExpanded && "transform rotate-180"
+                expandedItems.includes(chapter.title) && "transform rotate-180"
               )}
             />
           )}
         </button>
-        {hasChildren && isExpanded && (
+        {chapter.sections && expandedItems.includes(chapter.title) && (
           <div className="relative">
             <div className="absolute left-4 top-0 bottom-0 w-px bg-border" />
-            {item.children.map((child) => renderNavItem(child, depth + 1))}
+            <div className="ml-6">
+              {chapter.sections.map((section) => (
+                <div key={section.title}>
+                  <button
+                    onClick={() => toggleItem(section.title)}
+                    className="flex items-center w-full gap-2 py-2 px-2 text-sm hover:bg-muted/80 rounded-lg"
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      <Heading2 className="w-4 h-4" />
+                      <span>{section.title}</span>
+                    </div>
+                    {section.subSections && section.subSections.length > 0 && (
+                      <ChevronDown
+                        className={cn(
+                          "h-4 w-4 transition-transform",
+                          expandedItems.includes(section.title) &&
+                            "transform rotate-180"
+                        )}
+                      />
+                    )}
+                  </button>
+                  {section.subSections &&
+                    expandedItems.includes(section.title) && (
+                      <div className="relative ml-6">
+                        <div className="absolute left-4 top-0 bottom-0 w-px bg-border" />
+                        {section.subSections.map((subsection) => (
+                          <button
+                            key={subsection.title}
+                            className="flex items-center w-full gap-2 py-2 px-2 text-sm hover:bg-muted/80 rounded-lg"
+                          >
+                            <div className="flex items-center gap-2 w-full">
+                              <FileText className="w-4 h-4" />
+                              <span>{subsection.title}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
-    );
+    ));
   };
 
   const renderSourceList = () => {
@@ -191,7 +228,7 @@ export function ProjectSecondSidebar({
       <div className="py-2 px-3 border-b">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-slate-500 text-base">
-            Project Name
+            {projectData.name}
           </h2>
           <div className="cursor-pointer hover:bg-border rounded-lg p-2">
             <PencilLine className="w-4 h-4 text-slate-500" />
@@ -202,7 +239,7 @@ export function ProjectSecondSidebar({
       {currentView === "list" ? (
         <div className="flex-1 overflow-auto p-3 text-muted-foreground">
           <p className="text-xs py-2">Outlines</p>
-          {navItems.map((item) => renderNavItem(item))}
+          {renderChapters()}
         </div>
       ) : (
         renderSourceList()
