@@ -1,33 +1,33 @@
-interface SubSubSection {
+export interface SubSubSection {
   title: string;
   description: string;
 }
 
-interface SubSection {
+export interface SubSection {
   title: string;
   description: string;
   subSubSections?: SubSubSection[];
 }
 
-interface Section {
+export interface Section {
   title: string;
   description: string;
   subSections?: SubSection[];
 }
 
-interface Chapter {
+export interface Chapter {
   title: string;
   description: string;
   sections?: Section[];
 }
 
-interface ProjectData {
+export interface ProjectData {
   id: string;
   name: string;
   chapters: Chapter[];
 }
 
-export const projectData: ProjectData = {
+export let projectData = {
   id: "1",
   name: "Project 1",
   chapters: [
@@ -117,6 +117,10 @@ export const projectData: ProjectData = {
       ],
     },
   ],
+};
+
+export const updateProjectData = (newData: typeof projectData) => {
+  projectData = JSON.parse(JSON.stringify(newData));
 };
 
 interface AI_Section {

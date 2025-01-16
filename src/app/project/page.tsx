@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { projectData } from "./projectData";
+import { projectData, updateProjectData } from "./projectData";
 import {
   Popover,
   PopoverContent,
@@ -11,22 +11,37 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Copy, MessageSquare, PenLine } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setPendingMessage, setIsOpen } from "@/redux/features/chatSlice";
+import type { Section, SubSection, Chapter } from "./projectData";
 
 type SelectedItem = {
   type: "chapter" | "section" | "subsection";
   title: string;
 } | null;
 
+interface EditState {
+  isEditing: boolean;
+  text: string;
+}
+
 export default function ProjectPage() {
   const dispatch = useDispatch();
   const [selectedItem, setSelectedItem] = React.useState<SelectedItem>(null);
   const [selectedText, setSelectedText] = React.useState("");
+  const [editState, setEditState] = React.useState<EditState>({
+    isEditing: false,
+    text: "",
+  });
+  const [data, setData] = React.useState(projectData);
 
   const handleClick = (
     type: "chapter" | "section" | "subsection",
     title: string,
     description: string
   ) => {
+    if (editState.isEditing && isSelected(type, title)) {
+      return;
+    }
+
     const selection = window.getSelection();
     const selectedText = selection?.toString().trim();
 
@@ -35,7 +50,7 @@ export default function ProjectPage() {
       setSelectedText("");
     } else {
       setSelectedItem({ type, title });
-      setSelectedText(selectedText || `${title}\n${description}`);
+      setSelectedText(selectedText || description);
     }
   };
 
@@ -44,19 +59,69 @@ export default function ProjectPage() {
     switch (value) {
       case "copy":
         navigator.clipboard.writeText(selectedText);
+        setSelectedItem(null);
         break;
       case "chat":
         dispatch(setIsOpen(true));
         setTimeout(() => {
           dispatch(setPendingMessage(selectedText));
         }, 100);
+        setSelectedItem(null);
         break;
       case "edit":
-        console.log("Edit:", selectedText);
+        setEditState({ isEditing: true, text: selectedText });
         break;
     }
-    setSelectedItem(null);
     setSelectedText("");
+  };
+
+  const handleSaveEdit = () => {
+    if (!selectedItem) return;
+
+    const newData = JSON.parse(JSON.stringify(data));
+    const { type, title } = selectedItem;
+
+    switch (type) {
+      case "chapter":
+        const chapterIndex = newData.chapters.findIndex(
+          (c: Chapter) => c.title === title
+        );
+        if (chapterIndex !== -1) {
+          newData.chapters[chapterIndex].description = editState.text;
+        }
+        break;
+
+      case "section":
+        for (const chapter of newData.chapters) {
+          const section = chapter.sections?.find(
+            (s: Section) => s.title === title
+          );
+          if (section) {
+            section.description = editState.text;
+            break;
+          }
+        }
+        break;
+
+      case "subsection":
+        for (const chapter of newData.chapters) {
+          for (const section of chapter.sections || []) {
+            const subsection = section.subSections?.find(
+              (s: SubSection) => s.title === title
+            );
+            if (subsection) {
+              subsection.description = editState.text;
+              break;
+            }
+          }
+        }
+        break;
+    }
+
+    setData(newData);
+    updateProjectData(newData);
+    setEditState({ isEditing: false, text: "" });
+    setSelectedItem(null);
   };
 
   const isSelected = (
@@ -84,22 +149,58 @@ export default function ProjectPage() {
           `}
           onClick={() => handleClick(type, title, description)}
         >
-          {content}
+          {editState.isEditing && isSelected(type, title) ? (
+            <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
+              <textarea
+                value={editState.text}
+                onChange={(e) =>
+                  setEditState({ ...editState, text: e.target.value })
+                }
+                className="w-full min-h-[100px] p-2 rounded border border-input bg-background focus:outline-none focus:ring-0 focus:border-input [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full"
+                autoFocus
+              />
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditState({ isEditing: false, text: "" });
+                    setSelectedItem(null);
+                  }}
+                  className="px-3 py-1 rounded bg-secondary hover:bg-secondary/80"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSaveEdit();
+                  }}
+                  className="px-3 py-1 rounded bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          ) : (
+            content
+          )}
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-fit p-1" side="top" align="start">
-        <ToggleGroup type="single" onValueChange={handleAction}>
-          <ToggleGroupItem value="copy" size="sm">
-            <Copy className="h-4 w-4" />
-          </ToggleGroupItem>
-          <ToggleGroupItem value="chat" size="sm">
-            <MessageSquare className="h-4 w-4" />
-          </ToggleGroupItem>
-          <ToggleGroupItem value="edit" size="sm">
-            <PenLine className="h-4 w-4" />
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </PopoverContent>
+      {!editState.isEditing && (
+        <PopoverContent className="w-fit p-1" side="top" align="start">
+          <ToggleGroup type="single" onValueChange={handleAction}>
+            <ToggleGroupItem value="copy" size="sm">
+              <Copy className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="chat" size="sm">
+              <MessageSquare className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="edit" size="sm">
+              <PenLine className="h-4 w-4" />
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </PopoverContent>
+      )}
     </Popover>
   );
 
@@ -107,7 +208,7 @@ export default function ProjectPage() {
     <div className="bg-border flex-1 h-full px-4 overflow-hidden overflow-y-auto">
       <div className="w-full bg-background rounded-lg my-4">
         <div className="px-8 py-10 space-y-8 h-full">
-          {projectData.chapters.map((chapter) => (
+          {data.chapters.map((chapter) => (
             <div key={chapter.title} className="space-y-4">
               {renderItem(
                 "chapter",
