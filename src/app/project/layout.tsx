@@ -6,6 +6,7 @@ import { ProjectBreadcrumb } from "./_component/breadcrumb";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { ProjectRightSidebar } from "./_component/rightSidebar";
+import { Toaster } from "sonner";
 
 interface ProjectLayoutProps {
   children: React.ReactNode;
@@ -62,6 +63,7 @@ export default function ProjectLayout({ children }: ProjectLayoutProps) {
           onClose={() => setRightSidebarOpen(false)}
         />
       </div>
+      <Toaster richColors position="bottom-right" />
     </div>
   );
 }

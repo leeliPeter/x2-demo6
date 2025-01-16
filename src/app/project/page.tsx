@@ -14,6 +14,7 @@ import { setPendingMessage, setIsOpen } from "@/redux/features/chatSlice";
 import type { Section, SubSection, Chapter } from "./projectData";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import type { DropResult } from "@hello-pangea/dnd";
+import { toast } from "sonner";
 
 type SelectedItem = {
   type: "chapter" | "section" | "subsection";
@@ -61,6 +62,10 @@ export default function ProjectPage() {
     switch (value) {
       case "copy":
         navigator.clipboard.writeText(selectedText);
+        toast.success("Copied to clipboard", {
+          description: "The selected text has been copied to your clipboard.",
+          position: "bottom-right",
+        });
         setSelectedItem(null);
         break;
       case "chat":
