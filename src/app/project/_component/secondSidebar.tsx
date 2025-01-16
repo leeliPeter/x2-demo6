@@ -18,51 +18,6 @@ interface SecondSidebarProps {
   currentView: "list" | "bookmark" | null;
 }
 
-interface NavItem {
-  id: string;
-  title: string;
-  children: NavItem[];
-}
-
-const navItems = [
-  {
-    id: "Chapter 1",
-    title: "Chapter 1",
-    children: [
-      { id: "Section 1.1", title: "Section 1.1", children: [] },
-      { id: "Section 1.2", title: "Section 1.2", children: [] },
-      { id: "Section 1.3", title: "Section 1.3", children: [] },
-      {
-        id: "Section 1.4",
-        title: "Section 1.4",
-        children: [
-          { id: "Section 1.4.1", title: "Section 1.4.1", children: [] },
-          { id: "Section 1.4.2", title: "Section 1.4.2", children: [] },
-          { id: "Section 1.4.3", title: "Section 1.4.3", children: [] },
-        ],
-      },
-    ],
-  },
-  {
-    id: "Chapter 2",
-    title: "Chapter 2",
-    children: [
-      { id: "Section 2.1", title: "Section 2.1", children: [] },
-      {
-        id: "Section 2.2",
-        title: "Section 2.2",
-        children: [
-          { id: "Section 2.2.1", title: "Section 2.2.1", children: [] },
-          { id: "Section 2.2.2", title: "Section 2.2.2", children: [] },
-          { id: "Section 2.2.3", title: "Section 2.2.3", children: [] },
-        ],
-      },
-      { id: "Section 2.3", title: "Section 2.3", children: [] },
-      { id: "Section 2.4", title: "Section 2.4", children: [] },
-    ],
-  },
-];
-
 const sourceList = [
   {
     id: "Source 1",

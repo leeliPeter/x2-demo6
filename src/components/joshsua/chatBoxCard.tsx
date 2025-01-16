@@ -97,18 +97,18 @@ export default function ChatBoxCard() {
     scrollToBottom();
   }, [messages]);
 
-  const handleNewMessage = (content: string) => {
+  const handleNewMessage = React.useCallback((message: string) => {
     if (isAiResponding) return;
 
     const isPrompt =
-      content.toLowerCase().includes("prompt") ||
-      content.toLowerCase().includes("system") ||
-      content.toLowerCase().includes("指令");
+      message.toLowerCase().includes("prompt") ||
+      message.toLowerCase().includes("system") ||
+      message.toLowerCase().includes("指令");
 
     const userMessage: Message = {
       id: ++lastMessageId.current,
       sender: "user",
-      content,
+      content: message,
       timestamp: new Date().toLocaleTimeString(),
       isPromptResponse: false,
     };
@@ -141,15 +141,14 @@ export default function ChatBoxCard() {
         setIsAiResponding(false);
       }
     }, 1000);
-  };
+  }, []);
 
-  // Process pending message when it exists
   React.useEffect(() => {
     if (pendingMessage) {
       handleNewMessage(pendingMessage);
       dispatch(setPendingMessage(null));
     }
-  }, [pendingMessage]);
+  }, [pendingMessage, dispatch, handleNewMessage]);
 
   return (
     <Card className=" h-[670px] flex flex-col bg-gray-100">

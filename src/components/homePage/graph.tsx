@@ -235,7 +235,7 @@ export default function Graph() {
       dispatch(setPath(newPath));
 
       // Update pathIds based on new path length
-      let newPathIds = ["company_1"];
+      const newPathIds = ["company_1"];
       if (newPath.length > 1) {
         // If we're going back to a graph level, include the graph ID
         const graphName = newPath[1];
