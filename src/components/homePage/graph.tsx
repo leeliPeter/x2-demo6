@@ -6,7 +6,12 @@ import { nodeData } from "@/data/homePage/nodeData";
 import { linkData } from "@/data/homePage/nodeData";
 import { ArrowLeft, Settings2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPath } from "@/redux/features/navigationSlice";
+import {
+  setPath,
+  setPathIds,
+  setCommunityNumber,
+  setTextUnitIds,
+} from "@/redux/features/navigationSlice";
 import type { RootState } from "@/redux/store";
 import { navData } from "@/data/homePage/navData";
 import {
@@ -228,6 +233,21 @@ export default function Graph() {
     if (selectedPath.length > 1) {
       const newPath = selectedPath.slice(0, -1);
       dispatch(setPath(newPath));
+
+      // Update pathIds based on new path length
+      let newPathIds = ["company_1"];
+      if (newPath.length > 1) {
+        // If we're going back to a graph level, include the graph ID
+        const graphName = newPath[1];
+        const graph = navData.graph.find((g) => g.graph_name === graphName);
+        if (graph) {
+          newPathIds.push(graph.graph_id);
+        }
+      }
+
+      dispatch(setPathIds(newPathIds));
+      dispatch(setCommunityNumber(null));
+      dispatch(setTextUnitIds([]));
     }
   };
 
@@ -274,9 +294,20 @@ export default function Graph() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleGraphClick = (node: any) => {
     if (node.type === "graph") {
-      // Create new path with "All Data" and graph name
+      // Set the path
       const newPath = ["All Data", node.label];
       dispatch(setPath(newPath));
+
+      // Set the pathIds
+      const pathIds = ["company_1"]; // Start with company ID
+      const graphId = node.id; // Get graph ID directly from node
+      pathIds.push(graphId);
+
+      dispatch(setPathIds(pathIds));
+
+      // Reset community number and text unit ids when switching graphs
+      dispatch(setCommunityNumber(null));
+      dispatch(setTextUnitIds([]));
     }
   };
 

@@ -135,7 +135,7 @@ export default function ChatBoxCard() {
   };
 
   return (
-    <Card className=" h-[700px] flex flex-col bg-gray-100">
+    <Card className=" h-[670px] flex flex-col bg-gray-100">
       <CardContent className="flex-1 p-0 overflow-hidden">
         <ScrollArea ref={scrollAreaRef} className="h-full px-4">
           <div className="flex flex-col space-y-4 py-4">
