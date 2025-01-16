@@ -8,7 +8,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Copy, MessageSquare, PenLine } from "lucide-react";
+import { Copy, MessageSquare, PenLine, GripVertical } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setPendingMessage, setIsOpen } from "@/redux/features/chatSlice";
 import type { Section, SubSection, Chapter } from "./projectData";
@@ -227,10 +227,13 @@ export default function ProjectPage() {
                       "section",
                       section.title,
                       <>
-                        <h3 className="text-lg font-semibold">
-                          {section.title}
-                        </h3>
-                        <p className="text-sm">{section.description}</p>
+                        <div className="group relative">
+                          <GripVertical className="h-4 w-4 absolute -left-6 top-2 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing" />
+                          <h3 className="text-lg font-semibold">
+                            {section.title}
+                          </h3>
+                          <p className="text-sm">{section.description}</p>
+                        </div>
                       </>,
                       section.description
                     )}
