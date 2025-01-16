@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/popover";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Copy, MessageSquare, PenLine } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { setPendingMessage, setIsOpen } from "@/redux/features/chatSlice";
 
 type SelectedItem = {
   type: "chapter" | "section" | "subsection";
@@ -16,16 +18,24 @@ type SelectedItem = {
 } | null;
 
 export default function ProjectPage() {
+  const dispatch = useDispatch();
   const [selectedItem, setSelectedItem] = React.useState<SelectedItem>(null);
+  const [selectedText, setSelectedText] = React.useState("");
 
   const handleClick = (
     type: "chapter" | "section" | "subsection",
-    title: string
+    title: string,
+    description: string
   ) => {
+    const selection = window.getSelection();
+    const selectedText = selection?.toString().trim();
+
     if (selectedItem?.type === type && selectedItem?.title === title) {
       setSelectedItem(null);
+      setSelectedText("");
     } else {
       setSelectedItem({ type, title });
+      setSelectedText(selectedText || `${title}\n${description}`);
     }
   };
 
@@ -33,16 +43,20 @@ export default function ProjectPage() {
     if (!selectedItem) return;
     switch (value) {
       case "copy":
-        navigator.clipboard.writeText(selectedItem.title);
+        navigator.clipboard.writeText(selectedText);
         break;
       case "chat":
-        console.log("Chat about:", selectedItem.title);
+        dispatch(setIsOpen(true));
+        setTimeout(() => {
+          dispatch(setPendingMessage(selectedText));
+        }, 100);
         break;
       case "edit":
-        console.log("Edit:", selectedItem.title);
+        console.log("Edit:", selectedText);
         break;
     }
     setSelectedItem(null);
+    setSelectedText("");
   };
 
   const isSelected = (
@@ -55,7 +69,8 @@ export default function ProjectPage() {
   const renderItem = (
     type: "chapter" | "section" | "subsection",
     title: string,
-    content: React.ReactNode
+    content: React.ReactNode,
+    description: string
   ) => (
     <Popover open={isSelected(type, title)}>
       <PopoverTrigger asChild>
@@ -67,7 +82,7 @@ export default function ProjectPage() {
                 : "hover:bg-accent"
             }
           `}
-          onClick={() => handleClick(type, title)}
+          onClick={() => handleClick(type, title, description)}
         >
           {content}
         </div>
@@ -100,7 +115,8 @@ export default function ProjectPage() {
                 <>
                   <h2 className="text-xl font-bold">{chapter.title}</h2>
                   <p className="text-sm">{chapter.description}</p>
-                </>
+                </>,
+                chapter.description
               )}
 
               <div className="pl-6 space-y-6">
@@ -114,7 +130,8 @@ export default function ProjectPage() {
                           {section.title}
                         </h3>
                         <p className="text-sm">{section.description}</p>
-                      </>
+                      </>,
+                      section.description
                     )}
 
                     <div className="pl-6 space-y-4 mt-4">
@@ -130,7 +147,8 @@ export default function ProjectPage() {
                               <p className="text-sm">
                                 {subsection.description}
                               </p>
-                            </>
+                            </>,
+                            subsection.description
                           )}
                         </div>
                       ))}

@@ -8,6 +8,9 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useSelector, useDispatch } from "react-redux";
+import { setIsOpen } from "@/redux/features/chatSlice";
+import type { RootState } from "@/redux/store";
 
 interface BreadcrumbProps {
   className?: string;
@@ -20,6 +23,9 @@ export function ProjectBreadcrumb({
   setRightSidebarOpen,
   rightSidebarOpen,
 }: BreadcrumbProps) {
+  const dispatch = useDispatch();
+  const isOpen = useSelector((state: RootState) => state.chat.isOpen);
+
   return (
     <div
       className={cn(
@@ -38,7 +44,10 @@ export function ProjectBreadcrumb({
           <p className="text-sm text-muted-foreground cursor-pointer  hover:underline">
             View history
           </p>
-          <DropdownMenu>
+          <DropdownMenu
+            open={isOpen}
+            onOpenChange={(open) => dispatch(setIsOpen(open))}
+          >
             <DropdownMenuTrigger asChild>
               <div className="flex items-center gap-1 border-1 border border-foreground rounded-md px-2 py-1 cursor-pointer hover:bg-muted/50">
                 <MessageCircleMore className="h-4 w-4" />

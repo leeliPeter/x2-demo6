@@ -4,6 +4,10 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import InputBox from "./inputBox";
 import FakeResponce from "./fakeResponce";
+import { useSelector, useDispatch } from "react-redux";
+import { setPendingMessage } from "@/redux/features/chatSlice";
+import type { RootState } from "@/redux/store";
+
 interface Message {
   id: number;
   sender: "user" | "ai";
@@ -27,6 +31,11 @@ const aiResponses = [
 ];
 
 export default function ChatBoxCard() {
+  const dispatch = useDispatch();
+  const pendingMessage = useSelector(
+    (state: RootState) => state.chat.pendingMessage
+  );
+
   const lastMessageId = React.useRef(1);
   const [isAiResponding, setIsAiResponding] = React.useState(false);
 
@@ -133,6 +142,14 @@ export default function ChatBoxCard() {
       }
     }, 1000);
   };
+
+  // Process pending message when it exists
+  React.useEffect(() => {
+    if (pendingMessage) {
+      handleNewMessage(pendingMessage);
+      dispatch(setPendingMessage(null));
+    }
+  }, [pendingMessage]);
 
   return (
     <Card className=" h-[670px] flex flex-col bg-gray-100">
