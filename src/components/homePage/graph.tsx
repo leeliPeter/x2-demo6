@@ -1,9 +1,7 @@
 "use client";
 
-import React, { useRef, useEffect, useState, useMemo } from "react";
+import React, { useRef, useEffect, useState, useMemo, useContext } from "react";
 import dynamic from "next/dynamic";
-import { nodeData } from "@/data/homePage/nodeData";
-import { linkData } from "@/data/homePage/nodeData";
 import { ArrowLeft, Settings2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -13,7 +11,7 @@ import {
   setTextUnitIds,
 } from "@/redux/features/navigationSlice";
 import type { RootState } from "@/redux/store";
-import { navData } from "@/data/homePage/navData";
+import { NavDataContext, NodeDataContext } from "@/redux/provider";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -66,31 +64,41 @@ export default function Graph() {
     (state: RootState) => state.navigation.selectedPathIds
   );
 
+  // Get data from context
+  const navData = useContext(NavDataContext);
+  const nodeData = useContext(NodeDataContext);
+
   // Get graph ID from pathIds[1] if it exists
   const graphId = selectedPathIds.length > 1 ? selectedPathIds[1] : null;
 
   // Update graphData to filter by community
   const graphData = useMemo(() => {
+    if (!navData || !nodeData) return { nodes: [], links: [] };
+
     // If path length is 1 (All Data), show company-graph connections
     if (selectedPath.length === 1) {
       const nodes = [
         // Company node
         {
           id: navData.company_id,
-          label: navData.conpanyName,
+          label: navData.company_name,
           type: "company",
-          val: 10, // Larger size for company node
+          val: 10,
         },
-        // Graph nodes
-        ...navData.graph.map((graph) => ({
-          id: graph.graph_id,
-          label: graph.graph_name,
-          type: "graph",
-          val: 7,
-        })),
+        // Graph nodes with entity counts
+        ...navData.graph.map((graph) => {
+          const graphEntities = nodeData.nodes.filter(
+            (node) => graph.graph_id === graphId
+          );
+          return {
+            id: graph.graph_id,
+            label: `${graph.graph_name} (${graphEntities.length})`,
+            type: "graph",
+            val: Math.max(7, graphEntities.length / 10),
+          };
+        }),
       ];
 
-      // Create links from company to all graphs
       const links = navData.graph.map((graph) => ({
         source: navData.company_id,
         target: graph.graph_id,
@@ -100,7 +108,7 @@ export default function Graph() {
       return { nodes, links };
     }
 
-    // If path length is 2 (Graph level), show all communities in the graph
+    // If path length is 2 (Graph level), show communities
     if (selectedPath.length === 2) {
       const currentGraph = navData.graph.find(
         (g) => g.graph_name === selectedPath[1]
@@ -108,29 +116,31 @@ export default function Graph() {
       if (!currentGraph) return { nodes: [], links: [] };
 
       const nodes = [
-        // Graph node at center
         {
           id: currentGraph.graph_id,
           label: currentGraph.graph_name,
           val: 10,
           type: "graph",
         },
-        // Community nodes - only level 0
         ...currentGraph.communities
           .filter((comm) => comm.level === 0)
-          .map((comm) => ({
-            id: comm.community_id,
-            label: comm.community_title,
-            val: comm.size / 10,
-            level: comm.level,
-            type: "community",
-            size: comm.size,
-            period: comm.period,
-            community: comm.community,
-          })),
+          .map((comm) => {
+            const communityNodes = nodeData.nodes.filter(
+              (node) => node.community === comm.community
+            );
+            return {
+              id: comm.community_id,
+              label: `${comm.community_title} (${communityNodes.length})`,
+              val: Math.max(5, communityNodes.length / 10),
+              level: comm.level,
+              type: "community",
+              size: communityNodes.length,
+              period: comm.period,
+              community: comm.community,
+            };
+          }),
       ];
 
-      // Create links from graph to filtered communities
       const links = currentGraph.communities
         .filter((comm) => comm.level === 0)
         .map((comm) => ({
@@ -142,9 +152,9 @@ export default function Graph() {
       return { nodes, links };
     }
 
-    // For community level and deeper, show the filtered nodes as before
-    if (selectedPath.length > 2) {
-      const filteredNodes = nodeData.filter(
+    // For community level, show filtered nodes and their connections
+    if (selectedPath.length > 2 && selectedCommunityNumber !== null) {
+      const filteredNodes = nodeData.nodes.filter(
         (node) => node.community === selectedCommunityNumber
       );
 
@@ -159,24 +169,20 @@ export default function Graph() {
         community: node.community,
       }));
 
-      // Filter links to only include connections between the filtered nodes
-      const filteredLinks = linkData[0].links.filter(
-        (link) =>
-          filteredNodes.some((n) => n.entity_id === link.source) &&
-          filteredNodes.some((n) => n.entity_id === link.target)
-      );
-
-      const links = filteredLinks.map((link) => ({
-        source: link.source,
-        target: link.target,
-        id: link.relationship_id,
-      }));
+      const nodeIds = new Set(filteredNodes.map((n) => n.entity_id));
+      const links = nodeData.links
+        .filter((link) => nodeIds.has(link.source) && nodeIds.has(link.target))
+        .map((link) => ({
+          source: link.source,
+          target: link.target,
+          id: link.relationship_id,
+        }));
 
       return { nodes, links };
     }
 
     return { nodes: [], links: [] };
-  }, [selectedPath, selectedCommunityNumber]);
+  }, [selectedPath, selectedCommunityNumber, navData, nodeData]);
 
   const dropdownMenuItems = [
     {
@@ -230,14 +236,12 @@ export default function Graph() {
   }, []);
 
   const handleBackClick = () => {
-    if (selectedPath.length > 1) {
+    if (selectedPath.length > 1 && navData) {
       const newPath = selectedPath.slice(0, -1);
       dispatch(setPath(newPath));
 
-      // Update pathIds based on new path length
       const newPathIds = ["company_1"];
       if (newPath.length > 1) {
-        // If we're going back to a graph level, include the graph ID
         const graphName = newPath[1];
         const graph = navData.graph.find((g) => g.graph_name === graphName);
         if (graph) {
