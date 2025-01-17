@@ -198,8 +198,8 @@ export function SecondSidebar({
         onClick={() => handleItemClick(item, parentTitles)}
         className={cn(
           "w-full flex items-center justify-between px-3 py-2 text-sm rounded-md",
-          "hover:bg-gray-100 transition-colors",
-          expandedItems.includes(item.title) ? "bg-gray-100" : "text-gray-600"
+          "hover:bg-gray-100 transition-colors"
+          // expandedItems.includes(item.title) ? "bg-gray-100" : "text-gray-600"
         )}
       >
         <div className="flex items-center gap-2 ">
@@ -236,9 +236,16 @@ export function SecondSidebar({
         className
       )}
     >
-      <div className="p-4 ">
+      <div className="p-4 h-full">
         <div className="text-xs mb-2 text-sidebar-foreground">Data Center</div>
-        <nav className="space-y-1">
+        <nav
+          className="space-y-1 h-[calc(100vh-6rem)] overflow-y-auto pr-2 
+          [&::-webkit-scrollbar]:w-2
+          [&::-webkit-scrollbar-thumb]:rounded-full
+          [&::-webkit-scrollbar-thumb]:bg-gray-300
+          [&::-webkit-scrollbar-thumb]:hover:bg-gray-400
+          [&::-webkit-scrollbar-track]:bg-transparent"
+        >
           {navigationItems.map((item) => renderNavItem(item))}
         </nav>
       </div>

@@ -71,6 +71,9 @@ export default function Graph() {
   // Get graph ID from pathIds[1] if it exists
   const graphId = selectedPathIds.length > 1 ? selectedPathIds[1] : null;
 
+  // Add this at the top of the component
+  const colorMap = useRef(new Map<string, string>()).current;
+
   // Update graphData to filter by community
   const graphData = useMemo(() => {
     if (!navData || !nodeData) return { nodes: [], links: [] };
@@ -84,17 +87,19 @@ export default function Graph() {
           label: navData.company_name,
           type: "company",
           val: 10,
+          color: companyColor,
         },
         // Graph nodes with entity counts
-        ...navData.graph.map((graph) => {
+        ...navData.graph.map((graph, index) => {
           const graphEntities = nodeData.nodes.filter(
             (node) => graph.graph_id === graphId
           );
           return {
             id: graph.graph_id,
-            label: `${graph.graph_name} (${graphEntities.length})`,
+            label: `${graph.graph_name}`,
             type: "graph",
-            val: Math.max(7, graphEntities.length / 10),
+            val: Math.max(7),
+            color: graphColor[index % graphColor.length],
           };
         }),
       ];
@@ -121,6 +126,7 @@ export default function Graph() {
           label: currentGraph.graph_name,
           val: 10,
           type: "graph",
+          color: graphColor[0],
         },
         ...currentGraph.communities
           .filter((comm) => comm.level === 0)
@@ -137,6 +143,7 @@ export default function Graph() {
               size: communityNodes.length,
               period: comm.period,
               community: comm.community,
+              color: communityColor[comm.community % communityColor.length],
             };
           }),
       ];
@@ -167,6 +174,7 @@ export default function Graph() {
         category: node.type,
         degree: node.degree,
         community: node.community,
+        color: nodeColor[Math.floor(Math.random() * nodeColor.length)],
       }));
 
       const nodeIds = new Set(filteredNodes.map((n) => n.entity_id));
@@ -276,22 +284,33 @@ export default function Graph() {
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getNodeColor = (node: any) => {
-    if (node.type === "company") return companyColor;
+    // For company node
+    if (node.type === "company") {
+      return companyColor;
+    }
 
+    // For graph nodes
     if (node.type === "graph") {
-      const colorIndex = parseInt(node.id.split("_")[1]) % graphColor.length;
-      return graphColor[colorIndex];
+      const index = parseInt(node.id.split("_")[1]) % graphColor.length;
+      return graphColor[index];
     }
 
+    // For community nodes
     if (node.type === "community") {
-      const colorIndex =
-        parseInt(node.id.split("_")[3]) % communityColor.length;
-      return communityColor[colorIndex];
+      const index = node.community % communityColor.length;
+      return communityColor[index];
     }
 
-    // For entity nodes
-    const colorIndex = parseInt(node.id.split("_")[1]) % nodeColor.length;
-    return nodeColor[colorIndex];
+    // For entity nodes - use consistent random color
+    if (node.type === "node") {
+      if (!colorMap.has(node.id)) {
+        const index = Math.floor(Math.random() * nodeColor.length);
+        colorMap.set(node.id, nodeColor[index]);
+      }
+      return colorMap.get(node.id);
+    }
+
+    return "#cccccc"; // Default color
   };
 
   // Add this function to handle graph clicks
@@ -391,7 +410,7 @@ export default function Graph() {
             nodeLabel=""
             nodeRelSize={6}
             nodeVal={(node) => node.val}
-            nodeColor={getNodeColor}
+            nodeColor={(node) => node.color || getNodeColor(node)}
             linkColor={() => "#999"}
             linkDirectionalParticles={2}
             linkDirectionalParticleWidth={2}
@@ -457,7 +476,7 @@ export default function Graph() {
 
               ctx.beginPath();
               ctx.arc(node.x, node.y, nodeR, 0, 2 * Math.PI);
-              ctx.fillStyle = getNodeColor(node);
+              ctx.fillStyle = node.color || getNodeColor(node);
               ctx.fill();
 
               // Draw the text below the node
