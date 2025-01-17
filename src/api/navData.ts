@@ -73,16 +73,18 @@ const getAllGraphs = async (): Promise<Graph[]> => {
 export interface NavData {
   company_id: string;
   company_name: string;
-  graphs: {
+  graph: {
     graph_id: string;
     graph_name: string;
     communities: {
       community_id: string;
       community_title: string;
+      community: number;
       level: number;
       parent?: number;
       size: number;
       period: string;
+      text_unit_ids: string[];
     }[];
   }[];
 }
@@ -106,16 +108,18 @@ export const getNavData = async (): Promise<NavData[]> => {
     const navData: NavData = {
       company_id: "default_company", // You might want to get this from somewhere
       company_name: "Company_name", // You might want to get this from somewhere
-      graphs: graphs.map((graph) => ({
+      graph: graphs.map((graph) => ({
         graph_id: graph.id,
         graph_name: graph.name,
         communities: (communitiesByGraph[graph.id] || []).map((community) => ({
           community_id: community.id,
           community_title: `Community ${community.community}`,
+          community: community.community,
           level: community.level,
           parent: community.parent,
           size: community.size,
           period: community.period,
+          text_unit_ids: [],
         })),
       })),
     };

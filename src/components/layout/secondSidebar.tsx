@@ -7,8 +7,8 @@ import {
   Database,
   CircleDotDashed,
 } from "lucide-react";
-import { useState, useEffect } from "react";
-import { navData } from "@/data/homePage/navData";
+import { useState, useEffect, useContext } from "react";
+import { NavDataContext } from "@/redux/provider";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setPath,
@@ -18,8 +18,10 @@ import {
 } from "@/redux/features/navigationSlice";
 import { RootState } from "@/redux/store";
 import { usePathname } from "next/navigation";
+import { NavData } from "@/api/navData";
 
 interface NavItem {
+  id: string;
   title: string;
   icon?: React.ReactNode;
   children?: NavItem[];
@@ -32,33 +34,38 @@ interface SecondSidebarProps {
 }
 
 // Function to transform navData into navigation items
-const transformGraphDataToNav = () => {
+const transformGraphDataToNav = (navData: NavData) => {
   const navItems: NavItem[] = [
     {
+      id: "all-data",
       title: "All Data",
       icon: <Database size={16} />,
       children: navData.graph.map((graph) => ({
+        id: graph.graph_id,
         title: graph.graph_name,
         icon: <Waypoints size={16} />,
         children: graph.communities
-          // First get level 0 communities
           .filter((community) => community.level === 0)
           .map((community) => ({
+            id: community.community_id,
             title: community.community_title,
             icon: <CircleDotDashed size={16} />,
             community: community.community,
             children: graph.communities
               .filter((c) => c.level === 1 && c.parent === community.community)
               .map((level1Community) => ({
+                id: level1Community.community_id,
                 title: level1Community.community_title,
                 icon: <CircleDotDashed size={16} />,
                 community: level1Community.community,
                 children: graph.communities
                   .filter(
                     (c) =>
-                      c.level === 2 && c.parent === level1Community.community
+                      c.level === 2 &&
+                      c.parent === parseInt(level1Community.community_id)
                   )
                   .map((level2Community) => ({
+                    id: level2Community.community_id,
                     title: level2Community.community_title,
                     icon: <CircleDotDashed size={16} />,
                     community: level2Community.community,
@@ -66,9 +73,10 @@ const transformGraphDataToNav = () => {
                       .filter(
                         (c) =>
                           c.level === 3 &&
-                          c.parent === level2Community.community
+                          c.parent === parseInt(level2Community.community_id)
                       )
                       .map((level3Community) => ({
+                        id: level3Community.community_id,
                         title: level3Community.community_title,
                         icon: <CircleDotDashed size={16} />,
                         community: level3Community.community,
@@ -87,16 +95,17 @@ export function SecondSidebar({
   isOpen = true,
   className,
 }: SecondSidebarProps) {
+  const navData = useContext(NavDataContext);
   const dispatch = useDispatch();
   const pathname = usePathname();
   const selectedPath = useSelector(
     (state: RootState) => state.navigation.selectedPath
   );
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
-  const navigationItems = transformGraphDataToNav();
+  const navigationItems = navData ? transformGraphDataToNav(navData) : [];
 
   const findCommunityNumber = (path: string[]) => {
-    if (path.length < 3) return null;
+    if (!navData || path.length < 3) return null;
 
     const graphName = path[1];
     const selectedGraph = navData.graph.find(
@@ -105,12 +114,11 @@ export function SecondSidebar({
     if (!selectedGraph) return null;
 
     const communityTitle = path[path.length - 1];
-    // Find the community by matching the title
     const community = selectedGraph.communities.find(
       (community) => community.community_title === communityTitle
     );
 
-    return community?.community ?? null;
+    return community ? community.community : null;
   };
 
   // Watch for path changes and update community number
@@ -129,7 +137,7 @@ export function SecondSidebar({
     if (newPath.length > 1) {
       // Find graph ID
       const graphName = newPath[1];
-      const graph = navData.graph.find((g) => g.graph_name === graphName);
+      const graph = navData?.graph.find((g) => g.graph_name === graphName);
       if (graph) {
         pathIds.push(graph.graph_id); // This adds "graph_1"
 
@@ -149,13 +157,17 @@ export function SecondSidebar({
 
     if (item.community !== undefined) {
       dispatch(setCommunityNumber(item.community));
-      const graph = navData.graph.find((g) => g.graph_name === parentTitles[1]);
-      if (graph) {
-        const community = graph.communities.find(
-          (c) => c.community === item.community
+      if (navData) {
+        const graph = navData.graph.find(
+          (g) => g.graph_name === parentTitles[1]
         );
-        if (community) {
-          dispatch(setTextUnitIds(community.text_unit_ids));
+        if (graph) {
+          const community = graph.communities.find(
+            (c) => c.community === item.community
+          );
+          if (community) {
+            dispatch(setTextUnitIds(community.text_unit_ids));
+          }
         }
       }
     } else {
@@ -181,7 +193,7 @@ export function SecondSidebar({
     depth = 0,
     parentTitles: string[] = []
   ) => (
-    <div key={item.title} className="space-y-1">
+    <div key={item.id} className="space-y-1">
       <button
         onClick={() => handleItemClick(item, parentTitles)}
         className={cn(
