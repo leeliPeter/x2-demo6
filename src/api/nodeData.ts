@@ -39,10 +39,12 @@ export interface Entity {
   graph: string;
 }
 
-export const getEntities = async (): Promise<Entity[]> => {
+export const getEntitiesByGraphId = async (
+  graphId: string
+): Promise<Entity[]> => {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/graphs/entities`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/graphs/entities/${graphId}`,
       {
         method: "GET",
         headers: {
@@ -58,7 +60,7 @@ export const getEntities = async (): Promise<Entity[]> => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching entities:", error);
+    console.error("Error fetching entities by graph ID:", error);
     throw error;
   }
 };
@@ -118,7 +120,7 @@ export const getNodeData = async (
     // Fetch all required data in parallel
     const [nodes, entities, relations] = await Promise.all([
       getNodes(),
-      getEntities(),
+      getEntitiesByGraphId(graphId),
       getRelations(),
     ]);
 
@@ -134,11 +136,18 @@ export const getNodeData = async (
       return acc;
     }, {} as { [key: string]: Entity });
 
+    // Create a map of node.id to entity.id for relationship mapping
+    const nodeEntityMap = filteredNodes.reduce((acc, node) => {
+      acc[node.id] = node.entity;
+      return acc;
+    }, {} as { [nodeId: string]: string });
+
     // Transform nodes with entity data
     const transformedNodes = filteredNodes
       .filter((node) => node.entity in entityMap) // Only include nodes with matching entities
       .map((node) => ({
-        entity_id: node.id,
+        graph_id: graphId,
+        entity_id: node.entity, // Use entity_id instead of node.id
         title: node.title,
         degree: node.degree,
         level: node.level,
@@ -146,19 +155,21 @@ export const getNodeData = async (
         community: node.community,
       }));
 
-    // Filter relations to only include connections between transformed nodes
-    const nodeIds = new Set(transformedNodes.map((n) => n.entity_id));
+    // Create a set of valid entity IDs from transformed nodes
+    const validEntityIds = new Set(transformedNodes.map((n) => n.entity_id));
+
+    // Filter and transform relations to use entity IDs
     const transformedLinks = relations
       .filter(
         (relation) =>
-          nodeIds.has(relation.source) &&
-          nodeIds.has(relation.target) &&
+          validEntityIds.has(relation.source) &&
+          validEntityIds.has(relation.target) &&
           relation.graph === graphId
       )
       .map((relation) => ({
         relationship_id: relation.id,
-        source: relation.source,
-        target: relation.target,
+        source: relation.source, // Already using entity_id
+        target: relation.target, // Already using entity_id
       }));
 
     return {
