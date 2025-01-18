@@ -40,11 +40,13 @@ interface CommunitySheetProps {
     level: number;
     size: number;
   } | null;
+  isOpen: boolean;
   onClose: () => void;
 }
 
 export default function CommunitySheet({
   selectedCommunity,
+  isOpen,
   onClose,
 }: CommunitySheetProps) {
   const dispatch = useDispatch();
@@ -112,7 +114,7 @@ export default function CommunitySheet({
 
   return (
     <>
-      <Sheet open={!!selectedCommunity} onOpenChange={onClose} modal={false}>
+      <Sheet open={isOpen} onOpenChange={onClose} modal={false}>
         <SheetContent className="w-[400px] shadow-lg overflow-hidden flex flex-col">
           <SheetHeader className="flex-none">
             <SheetTitle className="flex items-center gap-2">

@@ -60,7 +60,8 @@ export default function Graph() {
   const fgRef = useRef<any>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedNode, setSelectedNode] = useState<any>(null);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isNodeSheetOpen, setIsNodeSheetOpen] = useState(false);
+  const [isCommunitySheetOpen, setIsCommunitySheetOpen] = useState(false);
   const selectedPathIds = useSelector(
     (state: RootState) => state.navigation.selectedPathIds
   );
@@ -353,6 +354,7 @@ export default function Graph() {
         level: node.level,
         size: node.size,
       });
+      setIsCommunitySheetOpen(true);
     } else if (node.type === "node") {
       setSelectedNode({
         id: node.id,
@@ -362,7 +364,7 @@ export default function Graph() {
         category: node.category,
         type: node.type,
       });
-      setIsSheetOpen(true);
+      setIsNodeSheetOpen(true);
     } else if (node.type === "graph") {
       handleGraphClick(node);
     }
@@ -509,12 +511,13 @@ export default function Graph() {
 
       <NodeSheet
         selectedNode={selectedNode}
-        isOpen={isSheetOpen}
-        onClose={() => setIsSheetOpen(false)}
+        isOpen={isNodeSheetOpen}
+        onClose={() => setIsNodeSheetOpen(false)}
       />
       <CommunitySheet
         selectedCommunity={selectedCommunity}
-        onClose={() => setSelectedCommunity(null)}
+        isOpen={isCommunitySheetOpen}
+        onClose={() => setIsCommunitySheetOpen(false)}
       />
     </div>
   );
