@@ -25,10 +25,10 @@ import {
 } from "@/components/ui/table";
 import DocumentSheet from "@/components/homePage/documentSheet";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPath, setCommunityNumber } from "@/redux/features/navigationSlice";
-import { navData } from "@/data/homePage/navData";
+import { NavDataContext } from "@/redux/provider";
 import { RootState } from "@/redux/store";
 
 interface NodeSheetProps {
@@ -50,6 +50,7 @@ interface NodeSheetProps {
 
 export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
   const dispatch = useDispatch();
+  const navData = useContext(NavDataContext);
   const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
   const [selectedTextUnits, setSelectedTextUnits] = useState<string[]>([]);
   const [isDocumentSheetOpen, setIsDocumentSheetOpen] = useState(false);
@@ -58,7 +59,7 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
     (state: RootState) => state.navigation.selectedPathIds
   );
 
-  if (!selectedNode) return null;
+  if (!selectedNode || !navData) return null;
 
   const isCommunity = selectedNode.type === "community";
 
@@ -93,21 +94,21 @@ export function NodeSheet({ isOpen, onClose, selectedNode }: NodeSheetProps) {
 
     // Find the graph that contains this community
     for (const graph of navData.graph) {
-      const community = graph.communities.find(
-        (c) => c.community === selectedNode.community
-      );
+      const community = graph.communities.find((c) => {
+        return c.community === selectedNode.community;
+      });
 
       if (community) {
-        // Set the path: [All Data, Graph Name, Community Title]
         dispatch(
           setPath(["All Data", graph.graph_name, community.community_title])
         );
-        // Set the community number
         dispatch(setCommunityNumber(selectedNode.community || null));
-        onClose(); // Close the sheet after navigation
+        onClose();
         return;
       }
     }
+
+    console.log("No matching community found");
   };
 
   return (

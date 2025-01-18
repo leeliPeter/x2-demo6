@@ -137,7 +137,7 @@ export default function Graph() {
             return {
               id: comm.community_id,
               label: `${comm.community_title} (${communityNodes.length})`,
-              val: Math.max(5, communityNodes.length / 10),
+              val: Math.max(3, communityNodes.length / 10),
               level: comm.level,
               type: "community",
               size: communityNodes.length,
@@ -168,7 +168,7 @@ export default function Graph() {
       const nodes = filteredNodes.map((node) => ({
         id: node.entity_id,
         label: node.title,
-        val: node.degree / 10,
+        val: node.degree / 5,
         level: node.level,
         type: "node",
         category: node.type,

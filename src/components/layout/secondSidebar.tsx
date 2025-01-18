@@ -242,8 +242,8 @@ export function SecondSidebar({
           className="space-y-1 h-[calc(100vh-6rem)] overflow-y-auto pr-2 
           [&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-thumb]:bg-gray-300
-          [&::-webkit-scrollbar-thumb]:hover:bg-gray-400
+          [&::-webkit-scrollbar-thumb]:bg-gray-200
+          [&::-webkit-scrollbar-thumb]:hover:bg-gray-300
           [&::-webkit-scrollbar-track]:bg-transparent"
         >
           {navigationItems.map((item) => renderNavItem(item))}
