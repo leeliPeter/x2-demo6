@@ -28,7 +28,7 @@ import {
   communityColor,
   nodeColor,
 } from "@/data/color";
-import { NodeSheet } from "./sheet";
+import NodeSheet from "./nodeSheet";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
   ssr: false,
@@ -497,11 +497,13 @@ export default function Graph() {
         show={graphSettings.preview}
       />
 
-      <NodeSheet
+      <NodeSheet entityId={selectedNode?.id} />
+
+      {/* <NodeSheet
         isOpen={isSheetOpen}
         onClose={() => setIsSheetOpen(false)}
         selectedNode={selectedNode}
-      />
+      /> */}
     </div>
   );
 }

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { getNodeSheet, type NodeSheetResponse } from "@/api/nodesheet";
 
 interface NodeSheetProps {
-  entityId: string;
+  entityId?: string;
 }
 
 export default function NodeSheet({ entityId }: NodeSheetProps) {
@@ -11,31 +11,38 @@ export default function NodeSheet({ entityId }: NodeSheetProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchNodeSheet = async () => {
+      if (!entityId) return;
+
       try {
         const data = await getNodeSheet(entityId);
-        setNodeSheet(data);
+        if (isMounted) {
+          setNodeSheet(data);
+        }
       } catch (error) {
-        console.error(error);
-        setError(
-          error instanceof Error ? error.message : "Failed to fetch data"
-        );
+        if (isMounted) {
+          console.error(error);
+          setError(
+            error instanceof Error ? error.message : "Failed to fetch data"
+          );
+        }
       }
     };
 
     fetchNodeSheet();
-  }, []);
+    return () => {
+      isMounted = false;
+    };
+  }, [entityId]);
 
-  if (error) {
-    return <div className="text-red-500">Error: {error}</div>;
-  }
-
-  if (!nodeSheet) {
-    return <div>Loading...</div>;
-  }
+  if (!entityId) return null;
+  if (error) return <div className="text-red-500">Error: {error}</div>;
+  if (!nodeSheet) return <div>Loading...</div>;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 absolute top-0 left-0">
       <div className="text-sm text-muted-foreground">
         {nodeSheet.description}
       </div>
