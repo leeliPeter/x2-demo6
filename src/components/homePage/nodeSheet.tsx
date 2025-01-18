@@ -6,6 +6,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import {
   Accordion,
@@ -92,6 +93,9 @@ export default function NodeSheet({
             <SheetTitle className="flex items-center gap-2">
               {selectedNode.title}
             </SheetTitle>
+            <SheetDescription>
+              View node details and related text units
+            </SheetDescription>
           </SheetHeader>
 
           <div className="flex-1 overflow-y-auto scrollbar-none">

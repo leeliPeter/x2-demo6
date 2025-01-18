@@ -6,6 +6,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import {
   Accordion,
@@ -62,6 +63,9 @@ export default function CommunitySheet({
           <SheetTitle className="flex items-center gap-2">
             {selectedCommunity.label}
           </SheetTitle>
+          <SheetDescription>
+            View community information and related documents
+          </SheetDescription>
         </SheetHeader>
 
         <div className="flex flex-col gap-2 p-4 bg-muted/50 rounded-lg text-sm">
