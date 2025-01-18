@@ -3,10 +3,17 @@ import React, { useState, useEffect } from "react";
 import { getNodeSheet, type NodeSheetResponse } from "@/api/nodesheet";
 
 interface NodeSheetProps {
-  entityId?: string;
+  selectedNode?: {
+    id: string;
+    title: string;
+    level: number;
+    degree?: number;
+    category?: string;
+    type: string;
+  };
 }
 
-export default function NodeSheet({ entityId }: NodeSheetProps) {
+export default function NodeSheet({ selectedNode }: NodeSheetProps) {
   const [nodeSheet, setNodeSheet] = useState<NodeSheetResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,10 +21,10 @@ export default function NodeSheet({ entityId }: NodeSheetProps) {
     let isMounted = true;
 
     const fetchNodeSheet = async () => {
-      if (!entityId) return;
+      if (!selectedNode?.id) return;
 
       try {
-        const data = await getNodeSheet(entityId);
+        const data = await getNodeSheet(selectedNode.id);
         if (isMounted) {
           setNodeSheet(data);
         }
@@ -35,27 +42,48 @@ export default function NodeSheet({ entityId }: NodeSheetProps) {
     return () => {
       isMounted = false;
     };
-  }, [entityId]);
+  }, [selectedNode?.id]);
 
-  if (!entityId) return null;
+  if (!selectedNode?.id) return null;
   if (error) return <div className="text-red-500">Error: {error}</div>;
   if (!nodeSheet) return <div>Loading...</div>;
 
   return (
-    <div className="space-y-4 absolute top-0 left-0">
-      <div className="text-sm text-muted-foreground">
-        {nodeSheet.description}
-      </div>
-      <div className="space-y-2">
-        <h3 className="text-sm font-medium">Text Units</h3>
-        {nodeSheet.text_units.map((unit) => (
-          <div key={unit.id} className="text-sm">
-            <p className="text-muted-foreground">{unit.text}</p>
-            <p className="text-xs text-muted-foreground/60">
-              From: {unit.document.title}
-            </p>
+    <div className="fixed top-0 right-0 w-96 h-screen bg-white shadow-lg z-50">
+      <div className="p-4">Title: {selectedNode.title}</div>
+      <div className="h-[calc(100vh-60px)] overflow-y-auto">
+        <div className="p-4 space-y-6">
+          <div className="text-sm text-muted-foreground">
+            Description: {nodeSheet.description || "No description"}
           </div>
-        ))}
+          <div className="text-sm text-muted-foreground">
+            Detail:
+            <div>type: {selectedNode.category}</div>
+            <div>Level: {selectedNode.level}</div>
+            <div>Degree: {selectedNode.degree}</div>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            Text Units:
+            <div className="space-y-2">
+              {nodeSheet.text_units.map((unit) => (
+                <div key={unit.id} className="hover:bg-gray-100 p-2 rounded">
+                  {unit.text.slice(0, 10)}
+                  {unit.text.length > 10 ? "..." : ""}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            Documents:
+            <div className="space-y-2">
+              {nodeSheet.text_units.map((unit) => (
+                <div key={unit.id} className="hover:bg-gray-100 p-2 rounded">
+                  {unit.document.title}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

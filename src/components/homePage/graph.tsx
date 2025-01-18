@@ -497,13 +497,7 @@ export default function Graph() {
         show={graphSettings.preview}
       />
 
-      <NodeSheet entityId={selectedNode?.id} />
-
-      {/* <NodeSheet
-        isOpen={isSheetOpen}
-        onClose={() => setIsSheetOpen(false)}
-        selectedNode={selectedNode}
-      /> */}
+      <NodeSheet selectedNode={selectedNode} />
     </div>
   );
 }
