@@ -8,6 +8,7 @@ import { getNodes } from "@/api/nodes";
 import { getEntities } from "@/api/entities";
 import { getRelations } from "@/api/relations";
 import { getGraphDetail } from "@/api/graph_detail";
+import { getNodeSheet } from "@/api/nodesheet";
 import {
   Collapsible,
   CollapsibleContent,
@@ -93,8 +94,10 @@ export default async function Page() {
   const entities = await getEntities();
   const relations = await getRelations();
   const graphDetails = await getGraphDetail();
+  const nodesheet = await getNodeSheet("0028da7c-5fb4-4b9c-810d-bd2f4f52f481");
 
   const apiResults = [
+    { title: "Node Sheet", data: nodesheet },
     { title: "Graph Details", data: graphDetails },
     { title: "Communities", data: communities },
     { title: "Graphs", data: graphs },

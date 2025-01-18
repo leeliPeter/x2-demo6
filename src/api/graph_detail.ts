@@ -4,6 +4,8 @@
 // NEXT_PUBLIC_API_URL=http://genialtx-x2-dev-lb-728896293.ap-northeast-1.elb.amazonaws.com
 
 export interface GraphDetail {
+  company_id: string;
+  company_name: string;
   graph: {
     graph_id: string;
     graph_name: string;
