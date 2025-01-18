@@ -7,6 +7,7 @@ import { getTextUnits } from "@/api/text_units";
 import { getNodes } from "@/api/nodes";
 import { getEntities } from "@/api/entities";
 import { getRelations } from "@/api/relations";
+import { getGraphDetail } from "@/api/graph_detail";
 import {
   Collapsible,
   CollapsibleContent,
@@ -91,8 +92,10 @@ export default async function Page() {
   const nodes = await getNodes();
   const entities = await getEntities();
   const relations = await getRelations();
+  const graphDetails = await getGraphDetail();
 
   const apiResults = [
+    { title: "Graph Details", data: graphDetails },
     { title: "Communities", data: communities },
     { title: "Graphs", data: graphs },
     { title: "Communities by Graph ID", data: communitiesByGraphId },
