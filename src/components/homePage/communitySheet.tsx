@@ -20,6 +20,16 @@ import {
   type CommunitySheetResponse,
 } from "@/api/communitySheet";
 import DocumentSheet from "./documentSheet";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setPath,
+  setPathIds,
+  setCommunityNumber,
+  setTextUnitIds,
+} from "@/redux/features/navigationSlice";
+import type { RootState } from "@/redux/store";
+import { useContext } from "react";
+import { NavDataContext } from "@/redux/provider";
 
 interface CommunitySheetProps {
   selectedCommunity?: {
@@ -37,6 +47,11 @@ export default function CommunitySheet({
   selectedCommunity,
   onClose,
 }: CommunitySheetProps) {
+  const dispatch = useDispatch();
+  const navData = useContext(NavDataContext);
+  const selectedPath = useSelector(
+    (state: RootState) => state.navigation.selectedPath
+  );
   const [communitySheet, setCommunitySheet] =
     useState<CommunitySheetResponse | null>(null);
   const [isDocumentSheetOpen, setIsDocumentSheetOpen] = useState(false);
@@ -65,6 +80,34 @@ export default function CommunitySheet({
     setIsDocumentSheetOpen(true);
   };
 
+  const handleExpandDetails = () => {
+    if (!selectedCommunity || !navData) return;
+
+    // Find the graph that contains this community
+    const graph = navData.graph.find((g) =>
+      g.communities.some((c) => c.community_id === selectedCommunity.id)
+    );
+
+    if (graph) {
+      // Set new path
+      const newPath = ["All Data", graph.graph_name, selectedCommunity.label];
+      dispatch(setPath(newPath));
+
+      // Set path IDs
+      const pathIds = ["company_1", graph.graph_id, selectedCommunity.id];
+      dispatch(setPathIds(pathIds));
+
+      // Set community number and text unit IDs
+      dispatch(setCommunityNumber(selectedCommunity.community));
+      const community = graph.communities.find(
+        (c) => c.community_id === selectedCommunity.id
+      );
+      if (community) {
+        dispatch(setTextUnitIds(community.text_unit_ids));
+      }
+    }
+  };
+
   if (!selectedCommunity) return null;
 
   return (
@@ -80,7 +123,7 @@ export default function CommunitySheet({
             </SheetDescription>
           </SheetHeader>
 
-          <div className="flex flex-col gap-2 p-4 bg-muted/50 rounded-lg text-sm">
+          {/* <div className="flex flex-col gap-2 p-4 bg-muted/50 rounded-lg text-sm">
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">ID:</span>
               <span className="font-medium">{selectedCommunity.id}</span>
@@ -89,6 +132,18 @@ export default function CommunitySheet({
               <span className="text-muted-foreground">Type:</span>
               <span className="font-medium">{selectedCommunity.type}</span>
             </div>
+          </div> */}
+          <div className="">
+            <Button
+              variant="default"
+              className="w-full"
+              onClick={handleExpandDetails}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <span>Expand details</span>
+                <ArrowRight />
+              </div>
+            </Button>
           </div>
 
           <div className="flex-1 overflow-y-auto pr-6 -mr-6 scrollbar-none">

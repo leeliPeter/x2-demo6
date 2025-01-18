@@ -145,7 +145,7 @@ export default function Graph() {
             );
             return {
               id: comm.community_id,
-              label: `${comm.community_title} (${communityNodes.length})`,
+              label: `${comm.community_title}`,
               val: Math.max(3, communityNodes.length / 10),
               level: comm.level,
               type: "community",
