@@ -13,6 +13,7 @@ import { RootState } from "@/redux/store";
 import { useState, useMemo, useEffect } from "react";
 import { getDocuments } from "@/api/documents";
 import type { Document } from "@/api/documents";
+import DocumentSheet from "./documentSheet";
 import Loading from "@/components/loading";
 
 interface SourceListProps {
@@ -135,6 +136,15 @@ export default function SourceList({ selectedPath }: SourceListProps) {
           </div>
         </div>
       </div>
+
+      <DocumentSheet
+        document={{
+          title: documents.find((d) => d.id === viewingDocId[0])?.title || "",
+          text: documents.find((d) => d.id === viewingDocId[0])?.text || "",
+        }}
+        isOpen={isDocumentSheetOpen}
+        onClose={() => setIsDocumentSheetOpen(false)}
+      />
     </>
   );
 }
