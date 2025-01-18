@@ -497,7 +497,11 @@ export default function Graph() {
         show={graphSettings.preview}
       />
 
-      <NodeSheet selectedNode={selectedNode} />
+      <NodeSheet
+        selectedNode={selectedNode}
+        isOpen={isSheetOpen}
+        onClose={() => setIsSheetOpen(false)}
+      />
     </div>
   );
 }

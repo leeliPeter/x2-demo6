@@ -22,7 +22,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
 import DocumentSheet from "./documentSheet";
 
 interface NodeSheetProps {
@@ -34,9 +33,15 @@ interface NodeSheetProps {
     category?: string;
     type: string;
   };
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export default function NodeSheet({ selectedNode }: NodeSheetProps) {
+export default function NodeSheet({
+  selectedNode,
+  isOpen,
+  onClose,
+}: NodeSheetProps) {
   const [nodeSheet, setNodeSheet] = useState<NodeSheetResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
@@ -81,7 +86,7 @@ export default function NodeSheet({ selectedNode }: NodeSheetProps) {
 
   return (
     <>
-      <Sheet open={true} modal={false}>
+      <Sheet open={isOpen} onOpenChange={onClose} modal={false}>
         <SheetContent className="w-[400px] shadow-lg overflow-hidden flex flex-col">
           <SheetHeader className="flex-none">
             <SheetTitle className="flex items-center gap-2">
@@ -161,7 +166,9 @@ export default function NodeSheet({ selectedNode }: NodeSheetProps) {
           </div>
 
           <div className="flex justify-end mt-4 pt-4 border-t flex-none">
-            <Button variant="outline">Edit</Button>
+            <Button variant="outline" onClick={onClose}>
+              Close
+            </Button>
           </div>
         </SheetContent>
       </Sheet>
