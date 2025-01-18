@@ -45,7 +45,7 @@ export default function NodeSheet({
 }: NodeSheetProps) {
   const [nodeSheet, setNodeSheet] = useState<NodeSheetResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
+  // const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
   const [selectedTextUnits, setSelectedTextUnits] = useState<string[]>([]);
   const [isDocumentSheetOpen, setIsDocumentSheetOpen] = useState(false);
 

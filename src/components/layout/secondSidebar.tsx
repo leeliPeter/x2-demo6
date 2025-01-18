@@ -104,28 +104,28 @@ export function SecondSidebar({
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const navigationItems = navData ? transformGraphDataToNav(navData) : [];
 
-  const findCommunityNumber = (path: string[]) => {
-    if (!navData || path.length < 3) return null;
-
-    const graphName = path[1];
-    const selectedGraph = navData.graph.find(
-      (graph) => graph.graph_name === graphName
-    );
-    if (!selectedGraph) return null;
-
-    const communityTitle = path[path.length - 1];
-    const community = selectedGraph.communities.find(
-      (community) => community.community_title === communityTitle
-    );
-
-    return community ? community.community : null;
-  };
-
-  // Watch for path changes and update community number
+  // Move findCommunityNumber inside useEffect
   useEffect(() => {
+    const findCommunityNumber = (path: string[]) => {
+      if (!navData || path.length < 3) return null;
+
+      const graphName = path[1];
+      const selectedGraph = navData.graph.find(
+        (graph) => graph.graph_name === graphName
+      );
+      if (!selectedGraph) return null;
+
+      const communityTitle = path[path.length - 1];
+      const community = selectedGraph.communities.find(
+        (community) => community.community_title === communityTitle
+      );
+
+      return community ? community.community : null;
+    };
+
     const communityNumber = findCommunityNumber(selectedPath);
     dispatch(setCommunityNumber(communityNumber));
-  }, [selectedPath, dispatch]);
+  }, [selectedPath, dispatch, navData]); // Add navData to dependencies
 
   const handleItemClick = (item: NavItem, parentTitles: string[] = []) => {
     const newPath = [...parentTitles, item.title];

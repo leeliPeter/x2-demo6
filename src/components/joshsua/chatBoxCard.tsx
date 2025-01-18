@@ -52,7 +52,7 @@ export default function ChatBoxCard() {
   const scrollAreaRef = React.useRef<HTMLDivElement>(null);
   const typingSpeed = 50; // milliseconds per word
 
-  const scrollToBottom = () => {
+  const scrollToBottom = React.useCallback(() => {
     if (scrollAreaRef.current) {
       const scrollContainer = scrollAreaRef.current.querySelector(
         "[data-radix-scroll-area-viewport]"
@@ -61,87 +61,93 @@ export default function ChatBoxCard() {
         scrollContainer.scrollTop = scrollContainer.scrollHeight;
       }
     }
-  };
+  }, []);
 
   const generateAIResponse = () => {
     const randomIndex = Math.floor(Math.random() * aiResponses.length);
     return aiResponses[randomIndex];
   };
 
-  const typeMessage = (fullMessage: string, messageId: number) => {
-    const words = fullMessage.split(" ");
-    let currentWordIndex = 0;
+  const typeMessage = React.useCallback(
+    (fullMessage: string, messageId: number) => {
+      const words = fullMessage.split(" ");
+      let currentWordIndex = 0;
 
-    const typingInterval = setInterval(() => {
-      if (currentWordIndex <= words.length) {
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === messageId
-              ? {
-                  ...msg,
-                  content: words.slice(0, currentWordIndex).join(" "),
-                  isTyping: currentWordIndex < words.length,
-                }
-              : msg
-          )
-        );
-        currentWordIndex++;
-        scrollToBottom();
-      } else {
-        clearInterval(typingInterval);
-      }
-    }, typingSpeed);
-  };
+      const typingInterval = setInterval(() => {
+        if (currentWordIndex <= words.length) {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === messageId
+                ? {
+                    ...msg,
+                    content: words.slice(0, currentWordIndex).join(" "),
+                    isTyping: currentWordIndex < words.length,
+                  }
+                : msg
+            )
+          );
+          currentWordIndex++;
+          scrollToBottom();
+        } else {
+          clearInterval(typingInterval);
+        }
+      }, typingSpeed);
+    },
+    [scrollToBottom, typingSpeed]
+  );
 
   React.useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, scrollToBottom]);
 
-  const handleNewMessage = React.useCallback((message: string) => {
-    if (isAiResponding) return;
+  const handleNewMessage = React.useCallback(
+    (message: string) => {
+      if (isAiResponding) return;
 
-    const isPrompt =
-      message.toLowerCase().includes("prompt") ||
-      message.toLowerCase().includes("system") ||
-      message.toLowerCase().includes("指令");
+      const isPrompt =
+        message.toLowerCase().includes("prompt") ||
+        message.toLowerCase().includes("system") ||
+        message.toLowerCase().includes("指令");
 
-    const userMessage: Message = {
-      id: ++lastMessageId.current,
-      sender: "user",
-      content: message,
-      timestamp: new Date().toLocaleTimeString(),
-      isPromptResponse: false,
-    };
+      const userMessage: Message = {
+        id: ++lastMessageId.current,
+        sender: "user",
+        content: message,
+        timestamp: new Date().toLocaleTimeString(),
+        isPromptResponse: false,
+      };
 
-    setMessages((prev) => [...prev, userMessage]);
-    setIsAiResponding(true);
+      setMessages((prev) => [...prev, userMessage]);
+      setIsAiResponding(true);
 
-    setTimeout(() => {
-      const aiResponse = generateAIResponse();
-      const aiMessageId = ++lastMessageId.current;
+      setTimeout(() => {
+        const aiResponse = generateAIResponse();
+        const aiMessageId = ++lastMessageId.current;
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: aiMessageId,
-          sender: "ai",
-          content: aiResponse,
-          timestamp: new Date().toLocaleTimeString(),
-          isTyping: true,
-          isPromptResponse: isPrompt,
-        },
-      ]);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: aiMessageId,
+            sender: "ai",
+            content: aiResponse,
+            timestamp: new Date().toLocaleTimeString(),
+            isTyping: true,
+            isPromptResponse: isPrompt,
+          },
+        ]);
 
-      if (!isPrompt) {
-        typeMessage(aiResponse, aiMessageId);
-        setTimeout(() => {
+        if (!isPrompt) {
+          typeMessage(aiResponse, aiMessageId);
+          setTimeout(() => {
+            setIsAiResponding(false);
+          }, (aiResponse.split(" ").length + 1) * typingSpeed);
+        } else {
           setIsAiResponding(false);
-        }, (aiResponse.split(" ").length + 1) * typingSpeed);
-      } else {
-        setIsAiResponding(false);
-      }
-    }, 1000);
-  }, []);
+        }
+      }, 1000);
+    },
+    [isAiResponding, typeMessage]
+  );
 
   React.useEffect(() => {
     if (pendingMessage) {

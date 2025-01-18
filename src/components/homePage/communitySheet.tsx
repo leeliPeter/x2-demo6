@@ -20,14 +20,14 @@ import {
   type CommunitySheetResponse,
 } from "@/api/communitySheet";
 import DocumentSheet from "./documentSheet";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   setPath,
   setPathIds,
   setCommunityNumber,
   setTextUnitIds,
 } from "@/redux/features/navigationSlice";
-import type { RootState } from "@/redux/store";
+// import type { RootState } from "@/redux/store";
 import { useContext } from "react";
 import { NavDataContext } from "@/redux/provider";
 import {
@@ -59,9 +59,9 @@ export default function CommunitySheet({
 }: CommunitySheetProps) {
   const dispatch = useDispatch();
   const navData = useContext(NavDataContext);
-  const selectedPath = useSelector(
-    (state: RootState) => state.navigation.selectedPath
-  );
+  // const selectedPath = useSelector(
+  //   (state: RootState) => state.navigation.selectedPath
+  // );
   const [communitySheet, setCommunitySheet] =
     useState<CommunitySheetResponse | null>(null);
   const [isDocumentSheetOpen, setIsDocumentSheetOpen] = useState(false);
@@ -183,39 +183,41 @@ export default function CommunitySheet({
                     </div>
                   </AccordionContent>
                 </AccordionItem>
-
-                <AccordionItem value="documents">
-                  <AccordionTrigger>Documents</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="border rounded-lg overflow-hidden">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Document Title</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {communitySheet?.documents.map((doc, index) => (
-                            <TableRow
-                              key={`${doc.id}-${index}`}
-                              className="cursor-pointer hover:bg-muted/50"
-                              onClick={() =>
-                                handleDocumentClick({
-                                  title: doc.title,
-                                  text: doc.text,
-                                })
-                              }
-                            >
-                              <TableCell className="text-sm text-orange-700 underline cursor-pointer">
-                                {doc.title}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
+                {communitySheet?.documents &&
+                  communitySheet?.documents.length > 0 && (
+                    <AccordionItem value="documents">
+                      <AccordionTrigger>Documents</AccordionTrigger>
+                      <AccordionContent>
+                        <div className="border rounded-lg overflow-hidden">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Document Title</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {communitySheet?.documents.map((doc, index) => (
+                                <TableRow
+                                  key={`${doc.id}-${index}`}
+                                  className="cursor-pointer hover:bg-muted/50"
+                                  onClick={() =>
+                                    handleDocumentClick({
+                                      title: doc.title,
+                                      text: doc.text,
+                                    })
+                                  }
+                                >
+                                  <TableCell className="text-sm text-orange-700 underline cursor-pointer">
+                                    {doc.title}
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
               </Accordion>
             </div>
           </div>

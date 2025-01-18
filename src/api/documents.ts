@@ -3,8 +3,6 @@
 // .evn
 // NEXT_PUBLIC_API_URL=http://genialtx-x2-dev-lb-728896293.ap-northeast-1.elb.amazonaws.com
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
 export interface Document {
   text_unit_ids: string[];
   id: string;

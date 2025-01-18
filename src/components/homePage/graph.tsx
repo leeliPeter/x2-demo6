@@ -62,9 +62,9 @@ export default function Graph() {
   const [selectedNode, setSelectedNode] = useState<any>(null);
   const [isNodeSheetOpen, setIsNodeSheetOpen] = useState(false);
   const [isCommunitySheetOpen, setIsCommunitySheetOpen] = useState(false);
-  const selectedPathIds = useSelector(
-    (state: RootState) => state.navigation.selectedPathIds
-  );
+  // const selectedPathIds = useSelector(
+  //   (state: RootState) => state.navigation.selectedPathIds
+  // );
   const [selectedCommunity, setSelectedCommunity] = useState<{
     id: string;
     type: string;
@@ -79,7 +79,7 @@ export default function Graph() {
   const nodeData = useContext(NodeDataContext);
 
   // Get graph ID from pathIds[1] if it exists
-  const graphId = selectedPathIds.length > 1 ? selectedPathIds[1] : null;
+  // const graphId = selectedPathIds.length > 1 ? selectedPathIds[1] : null;
 
   // Add this at the top of the component
   const colorMap = useRef(new Map<string, string>()).current;
@@ -101,9 +101,9 @@ export default function Graph() {
         },
         // Graph nodes with entity counts
         ...navData.graph.map((graph, index) => {
-          const graphEntities = nodeData.nodes.filter(
-            (node) => graph.graph_id === graphId
-          );
+          // const graphEntities = nodeData.nodes.filter(
+          //   (node) => graph.graph_id === graphId
+          // );
           return {
             id: graph.graph_id,
             label: `${graph.graph_name}`,
@@ -343,7 +343,7 @@ export default function Graph() {
       dispatch(setTextUnitIds([]));
     }
   };
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleNodeClick = (node: any) => {
     if (node.type === "community") {
       setSelectedCommunity({
@@ -471,7 +471,6 @@ export default function Graph() {
                 });
               }
             }}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onNodeClick={handleNodeClick}
             nodeCanvasObject={(
               // eslint-disable-next-line @typescript-eslint/no-explicit-any

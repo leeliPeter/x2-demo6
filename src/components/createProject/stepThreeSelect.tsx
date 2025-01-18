@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { createProjectDocument } from "@/data/createProjectDocument";
 import { CircleCheckbox } from "@/components/ui/circle-checkbox";
 import { Checkbox } from "@/components/ui/checkbox";
-import DocumentSheet from "@/components/homePage/documentSheet";
+// import DocumentSheet from "@/components/homePage/documentSheet";
 import { Trash2 } from "lucide-react";
 import {
   Table,
@@ -24,8 +24,8 @@ export default function StepThreeSelect({
   onDocsChange,
 }: StepThreeSelectProps) {
   const [selectedSet, setSelectedSet] = useState<string | null>(null);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [selectedDocForSheet, setSelectedDocForSheet] = useState<string[]>([]);
+  // const [isSheetOpen, setIsSheetOpen] = useState(false);
+  // const [selectedDocForSheet, setSelectedDocForSheet] = useState<string[]>([]);
 
   // Get all documents from all knowledge sets
   const allDocuments = createProjectDocument.knowledge_sets.flatMap((set) =>
@@ -58,10 +58,10 @@ export default function StepThreeSelect({
     );
   };
 
-  const handleDocumentClick = (documentId: string) => {
-    setSelectedDocForSheet([documentId]);
-    setIsSheetOpen(true);
-  };
+  // const handleDocumentClick = (documentId: string) => {
+  //   setSelectedDocForSheet([documentId]);
+  //   setIsSheetOpen(true);
+  // };
 
   return (
     <div className="p-6 flex flex-col -mb-10">
@@ -132,7 +132,7 @@ export default function StepThreeSelect({
                       </TableCell>
                       <TableCell
                         className="font-medium text-orange-700 underline cursor-pointer"
-                        onClick={() => handleDocumentClick(doc.document_id)}
+                        // onClick={() => handleDocumentClick(doc.document_id)}
                       >
                         {doc.document_title}
                       </TableCell>
@@ -187,12 +187,12 @@ export default function StepThreeSelect({
         </div>
       </div>
 
-      <DocumentSheet
+      {/* <DocumentSheet
         isOpen={isSheetOpen}
         onClose={() => setIsSheetOpen(false)}
         selectedDocs={selectedDocForSheet}
         documents={currentSetDocuments}
-      />
+      /> */}
     </div>
   );
 }
