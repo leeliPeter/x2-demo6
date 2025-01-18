@@ -8,24 +8,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { sourceList } from "@/data/homePage/sourceList";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import DocumentSheet from "./documentSheet";
-import { useState, useMemo } from "react";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useState, useMemo, useEffect } from "react";
+import { getDocuments } from "@/api/documents";
+import type { Document } from "@/api/documents";
 
 interface SourceListProps {
   selectedPath: string[];
   selectedFilters: {
     [key: string]: string;
   };
-}
-
-interface Document {
-  document_id: string;
-  document_title: string;
-  document_content: string;
 }
 
 export default function SourceList({ selectedPath }: SourceListProps) {
@@ -36,48 +29,40 @@ export default function SourceList({ selectedPath }: SourceListProps) {
     (state: RootState) => state.navigation.selectedPathIds
   );
   const [isDocumentSheetOpen, setIsDocumentSheetOpen] = useState(false);
-  const [selectedDocIds, setSelectedDocIds] = useState<string[]>([]);
   const [viewingDocId, setViewingDocId] = useState<string[]>([]);
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Get documents for the selected graph or all documents if no graph selected
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      try {
+        const data = await getDocuments();
+        setDocuments(data);
+      } catch (error) {
+        console.error("Failed to fetch documents:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDocuments();
+  }, []);
+
   const currentGraphDocs = useMemo(() => {
-    if (!selectedPathIds[1]) {
-      // If no graph selected, return all documents from all graphs
-      return sourceList.graphs.flatMap((graph) => graph.documents);
+    if (selectedTextUnitIds.length === 0) {
+      return documents;
     }
-    // Otherwise return documents from selected graph
-    const graph = sourceList.graphs.find(
-      (g) => g.graph_id === selectedPathIds[1]
+
+    return documents.filter((doc) =>
+      doc.text_unit_ids.some((textUnitId) =>
+        selectedTextUnitIds.includes(textUnitId)
+      )
     );
-    return graph?.documents || [];
-  }, [selectedPathIds]);
+  }, [documents, selectedTextUnitIds]);
 
   const handleDocumentClick = (document: Document) => {
-    setViewingDocId([document.document_id]);
+    setViewingDocId([document.id]);
     setIsDocumentSheetOpen(true);
   };
-
-  const toggleAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedDocIds(currentGraphDocs.map((doc) => doc.document_id));
-    } else {
-      setSelectedDocIds([]);
-    }
-  };
-
-  const toggleOne = (checked: boolean, docId: string) => {
-    if (checked) {
-      setSelectedDocIds((prev) => [...prev, docId]);
-    } else {
-      setSelectedDocIds((prev) => prev.filter((id) => id !== docId));
-    }
-  };
-
-  const transformedDocs = currentGraphDocs.map((doc) => ({
-    document_id: doc.document_id,
-    document_title: doc.document_title,
-    document_text: doc.document_content,
-  }));
 
   return (
     <>
@@ -126,37 +111,17 @@ export default function SourceList({ selectedPath }: SourceListProps) {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[50px] h-[42px]">
-                      <Checkbox
-                        checked={
-                          selectedDocIds.length === currentGraphDocs.length
-                        }
-                        onCheckedChange={toggleAll}
-                      />
-                    </TableHead>
                     <TableHead>Document Title</TableHead>
-                    <TableHead>ID</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {currentGraphDocs.map((doc) => (
-                    <TableRow key={doc.document_id} className="h-10">
-                      <TableCell className="w-[50px]">
-                        <Checkbox
-                          checked={selectedDocIds.includes(doc.document_id)}
-                          onCheckedChange={(checked) =>
-                            toggleOne(checked as boolean, doc.document_id)
-                          }
-                        />
-                      </TableCell>
+                    <TableRow key={doc.id} className="h-10">
                       <TableCell
                         className="font-medium text-orange-700 underline cursor-pointer hover:bg-muted/80"
                         onClick={() => handleDocumentClick(doc)}
                       >
-                        {doc.document_title}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {doc.document_id}
+                        {doc.title}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -166,15 +131,6 @@ export default function SourceList({ selectedPath }: SourceListProps) {
           </div>
         </div>
       </div>
-
-      <DocumentSheet
-        isOpen={isDocumentSheetOpen}
-        onClose={() => setIsDocumentSheetOpen(false)}
-        selectedDocs={viewingDocId}
-        selectedTextUnits={selectedTextUnitIds}
-        documents={transformedDocs}
-        textUnits={[]}
-      />
     </>
   );
 }

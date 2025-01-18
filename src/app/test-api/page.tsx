@@ -9,6 +9,7 @@ import { getEntities } from "@/api/entities";
 import { getRelations } from "@/api/relations";
 import { getGraphDetail } from "@/api/graph_detail";
 import { getNodeSheet } from "@/api/nodesheet";
+import { getDocuments } from "@/api/documents";
 import {
   Collapsible,
   CollapsibleContent,
@@ -81,6 +82,14 @@ export interface TextUnit {
   };
 }
 
+export interface Document {
+  text_unit_ids: string[];
+  id: string;
+  human_readable_id: string;
+  title: string;
+  text: string;
+}
+
 export default async function Page() {
   // Fetch all data
   const communities = await getAllCommunities();
@@ -94,10 +103,11 @@ export default async function Page() {
   const entities = await getEntities();
   const relations = await getRelations();
   const graphDetails = await getGraphDetail();
+  const documents = await getDocuments();
   // const nodesheet = await getNodeSheet("0028da7c-5fb4-4b9c-810d-bd2f4f52f481");
 
   const apiResults = [
-    // { title: "Node Sheet", data: nodesheet },
+    { title: "Documents", data: documents },
     { title: "Graph Details", data: graphDetails },
     { title: "Communities", data: communities },
     { title: "Graphs", data: graphs },
