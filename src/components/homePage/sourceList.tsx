@@ -13,6 +13,7 @@ import { RootState } from "@/redux/store";
 import { useState, useMemo, useEffect } from "react";
 import { getDocuments } from "@/api/documents";
 import type { Document } from "@/api/documents";
+import Loading from "@/components/loading";
 
 interface SourceListProps {
   selectedPath: string[];
@@ -36,6 +37,7 @@ export default function SourceList({ selectedPath }: SourceListProps) {
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
+        setLoading(true);
         const data = await getDocuments();
         setDocuments(data);
       } catch (error) {
@@ -64,10 +66,12 @@ export default function SourceList({ selectedPath }: SourceListProps) {
     setIsDocumentSheetOpen(true);
   };
 
+  if (loading) return <Loading />;
+
   return (
     <>
       <div className="w-full h-full p-6">
-        {selectedTextUnitIds.length > 0 && (
+        {/* {selectedTextUnitIds.length > 0 && (
           <div className="mb-4 p-4 bg-muted rounded-lg">
             <h3 className="text-sm font-semibold mb-2">Selected Text Units:</h3>
             <div className="flex flex-wrap gap-2">
@@ -81,16 +85,16 @@ export default function SourceList({ selectedPath }: SourceListProps) {
               ))}
             </div>
           </div>
-        )}
+        )} */}
 
-        {selectedPathIds[1] && (
+        {/* {selectedPathIds[1] && (
           <div className="mb-4 p-4 bg-muted rounded-lg">
             <h3 className="text-sm font-semibold mb-2">Selected Graph:</h3>
             <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-md">
               {selectedPathIds[1]}
             </span>
           </div>
-        )}
+        )} */}
 
         <div className="flex flex-col gap-4">
           <h2 className="text-xl font-semibold flex items-center gap-2 text-muted-foreground">

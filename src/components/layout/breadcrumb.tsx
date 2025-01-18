@@ -4,7 +4,11 @@ import { ChevronRight, PanelLeft } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { Button } from "@/components/ui/button";
-import { setPath } from "@/redux/features/navigationSlice";
+import {
+  setPath,
+  setPathIds,
+  setTextUnitIds,
+} from "@/redux/features/navigationSlice";
 import { usePathname } from "next/navigation";
 
 interface BreadcrumbProps {
@@ -19,9 +23,16 @@ export function Breadcrumb({ onToggle }: BreadcrumbProps) {
   const pathname = usePathname();
 
   const handleBreadcrumbClick = (index: number) => {
-    // When clicking a breadcrumb item, update path to include only items up to clicked index
     const newPath = selectedPath.slice(0, index + 1);
-    dispatch(setPath(newPath));
+
+    // Reset to initial state when clicking "All Data"
+    if (newPath[0] === "All Data" && newPath.length === 1) {
+      dispatch(setPath(["All Data"]));
+      dispatch(setPathIds(["company_1"]));
+      dispatch(setTextUnitIds([]));
+    } else {
+      dispatch(setPath(newPath));
+    }
   };
 
   return (
