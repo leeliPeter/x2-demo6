@@ -23,8 +23,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import DocumentSheet from "./documentSheet";
 
+import TextSheet from "./textSheet";
 interface NodeSheetProps {
   selectedNode?: {
     id: string;
@@ -177,7 +177,7 @@ export default function NodeSheet({
         </SheetContent>
       </Sheet>
 
-      <DocumentSheet
+      <TextSheet
         isOpen={isDocumentSheetOpen}
         onClose={() => setIsDocumentSheetOpen(false)}
         selectedTextUnits={selectedTextUnits}
