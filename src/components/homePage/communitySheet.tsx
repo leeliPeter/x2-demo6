@@ -30,6 +30,14 @@ import {
 import type { RootState } from "@/redux/store";
 import { useContext } from "react";
 import { NavDataContext } from "@/redux/provider";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface CommunitySheetProps {
   selectedCommunity?: {
@@ -179,27 +187,32 @@ export default function CommunitySheet({
                 <AccordionItem value="documents">
                   <AccordionTrigger>Documents</AccordionTrigger>
                   <AccordionContent>
-                    <div className="space-y-4">
-                      {communitySheet?.documents.map((doc, index) => (
-                        <div
-                          key={`${doc.id}-${index}`}
-                          className="text-sm space-y-2 p-4 bg-muted/10 rounded-lg cursor-pointer hover:bg-muted/20"
-                          onClick={() =>
-                            handleDocumentClick({
-                              title: doc.title,
-                              text: doc.text,
-                            })
-                          }
-                        >
-                          <div className="font-medium text-primary hover:underline">
-                            {doc.title}
-                          </div>
-                          <div className="text-muted-foreground whitespace-pre-wrap">
-                            {doc.text.slice(0, 100)}
-                            {doc.text.length > 100 ? "..." : ""}
-                          </div>
-                        </div>
-                      ))}
+                    <div className="border rounded-lg overflow-hidden">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Document Title</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {communitySheet?.documents.map((doc, index) => (
+                            <TableRow
+                              key={`${doc.id}-${index}`}
+                              className="cursor-pointer hover:bg-muted/50"
+                              onClick={() =>
+                                handleDocumentClick({
+                                  title: doc.title,
+                                  text: doc.text,
+                                })
+                              }
+                            >
+                              <TableCell className="text-sm text-orange-700 underline cursor-pointer">
+                                {doc.title}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
@@ -219,6 +232,8 @@ export default function CommunitySheet({
             title: selectedDocument?.title || "",
             text: selectedDocument?.text || "",
           }}
+          isOpen={isDocumentSheetOpen}
+          onClose={() => setIsDocumentSheetOpen(false)}
         />
       )}
     </>

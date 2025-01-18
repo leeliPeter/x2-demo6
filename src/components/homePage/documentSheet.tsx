@@ -1,17 +1,40 @@
 import React from "react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 
 interface DocumentSheetProps {
   document: {
     title: string;
     text: string;
   };
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export default function documentSheet({ document }: DocumentSheetProps) {
+export default function DocumentSheet({
+  document,
+  isOpen,
+  onClose,
+}: DocumentSheetProps) {
   return (
-    <div className="absolute z-90 top-0 left-0 w-full h-full bg-gray-500 text-white">
-      <div className="text-2xl font-bold">{document.title}</div>
-      <div className="text-sm whitespace-pre-wrap">{document.text}</div>
-    </div>
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent className="w-[500px] shadow-lg overflow-hidden flex flex-col">
+        <SheetHeader className="flex-none">
+          <SheetTitle className="flex items-center gap-2">
+            {document.title}
+          </SheetTitle>
+          <SheetDescription>View document content</SheetDescription>
+        </SheetHeader>
+
+        <div className="flex-1 overflow-y-auto scrollbar-none mt-4">
+          <div className="text-sm whitespace-pre-wrap">{document.text}</div>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }
