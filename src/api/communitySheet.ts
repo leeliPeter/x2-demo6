@@ -4,9 +4,9 @@ export interface CommunitySheetResponse {
   rank: number;
   rank_explanation: string;
   documents: {
-    document_id: string;
-    document_title: string;
-    document_text: string;
+    id: string;
+    title: string;
+    text: string;
   }[];
 }
 

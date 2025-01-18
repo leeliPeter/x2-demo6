@@ -29,6 +29,7 @@ import {
   nodeColor,
 } from "@/data/color";
 import NodeSheet from "./nodeSheet";
+import CommunitySheet from "./communitySheet";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
   ssr: false,
@@ -63,6 +64,14 @@ export default function Graph() {
   const selectedPathIds = useSelector(
     (state: RootState) => state.navigation.selectedPathIds
   );
+  const [selectedCommunity, setSelectedCommunity] = useState<{
+    id: string;
+    type: string;
+    label: string;
+    community: number;
+    level: number;
+    size: number;
+  } | null>(null);
 
   // Get data from context
   const navData = useContext(NavDataContext);
@@ -334,6 +343,31 @@ export default function Graph() {
     }
   };
 
+  const handleNodeClick = (node: any) => {
+    if (node.type === "community") {
+      setSelectedCommunity({
+        id: node.id,
+        type: node.type,
+        label: node.label,
+        community: node.community,
+        level: node.level,
+        size: node.size,
+      });
+    } else if (node.type === "node") {
+      setSelectedNode({
+        id: node.id,
+        title: node.label,
+        level: node.level,
+        degree: node.degree,
+        category: node.category,
+        type: node.type,
+      });
+      setIsSheetOpen(true);
+    } else if (node.type === "graph") {
+      handleGraphClick(node);
+    }
+  };
+
   return (
     <div
       ref={containerRef}
@@ -436,31 +470,7 @@ export default function Graph() {
               }
             }}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onNodeClick={(node: any) => {
-              if (node.type === "graph") {
-                handleGraphClick(node);
-              } else if (node.type === "node") {
-                setSelectedNode({
-                  id: node.id,
-                  title: node.label,
-                  level: node.level,
-                  degree: node.degree,
-                  category: node.category,
-                  type: node.type,
-                });
-                setIsSheetOpen(true);
-              } else if (node.type === "community") {
-                setSelectedNode({
-                  id: node.id,
-                  title: node.label,
-                  level: node.level,
-                  size: node.size,
-                  type: "community",
-                  community: node.community,
-                });
-                setIsSheetOpen(true);
-              }
-            }}
+            onNodeClick={handleNodeClick}
             nodeCanvasObject={(
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               node: any,
@@ -501,6 +511,10 @@ export default function Graph() {
         selectedNode={selectedNode}
         isOpen={isSheetOpen}
         onClose={() => setIsSheetOpen(false)}
+      />
+      <CommunitySheet
+        selectedCommunity={selectedCommunity}
+        onClose={() => setSelectedCommunity(null)}
       />
     </div>
   );
