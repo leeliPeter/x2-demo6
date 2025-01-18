@@ -156,12 +156,14 @@ export default function CommunitySheet({
         </SheetContent>
       </Sheet>
 
-      <DocumentSheet
-        document={{
-          title: selectedDocument?.title || "",
-          text: selectedDocument?.text || "",
-        }}
-      />
+      {isDocumentSheetOpen && (
+        <DocumentSheet
+          document={{
+            title: selectedDocument?.title || "",
+            text: selectedDocument?.text || "",
+          }}
+        />
+      )}
     </>
   );
 }
